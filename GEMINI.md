@@ -1,0 +1,2 @@
+Mobile App Development Course with Android Studio (2025.1.1) Compose UI. The course consistes of two parts, Part-I Jetpack Compose UI, Part-II Mobile App development using other tools, like Firebase, Room.
+- write or update Marp based md file in Korean always.
