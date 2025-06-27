@@ -1,28 +1,29 @@
 package com.example.app_01
 
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.example.app_01.R // ✅ R 클래스를 import 해야 합니다.
 import com.example.app_01.ui.theme.ComposeLabTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             ComposeLabTheme {
                 MainScreen()
@@ -33,149 +34,39 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen() {
-    ProfileCardBox()
-}
-
-@Composable
-fun MainScreen_with_padding() {
-    Scaffold(
-        topBar = {
-            Text(
-                text = "ComposeLab",
-                modifier = Modifier.statusBarsPadding()
-            )
-        }
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            ProfileCardBox()
-        }
-    }
-}
-
-@Composable
-fun ProfileCardStage0() {
-    Text("Hello Compose")
-}
-
-@Composable
-fun ProfileCardStage1() {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.compose),
-            contentDescription = "Profile Picture",
+    Scaffold(modifier = Modifier.fillMaxSize().padding(32.dp)) { innerPadding ->
+        // Column: UI 요소들을 세로로 나열하는 컨테이너입니다.
+        Column(
+            // modifier: Composable의 크기, 패딩, 정렬 등 속성을 지정합니다.
             modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-    }
-}
+                .fillMaxSize() // 화면 전체를 차지하도록 설정
+                .padding(innerPadding), // Scaffold가 제공하는 패딩 적용
 
-@Composable
-fun ProfileCardStage2() {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.compose),
-            contentDescription = "Profile Picture",
-            modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text("홍길동", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-    }
-}
+            // verticalArrangement: 세로 방향 정렬을 지정합니다. (여기서는 중앙)
+            verticalArrangement = Arrangement.Center,
 
-@Composable
-fun ProfileCardStage3() {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.compose),
-            contentDescription = "Profile Picture",
-            modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Column {
-            Text("홍길동", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text("안녕하세요, Compose를 배우고 있습니다.", fontSize = 14.sp)
-        }
-    }
-}
-
-@Composable
-fun ProfileCardBox() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            elevation = CardDefaults.cardElevation(4.dp)
+            // horizontalAlignment: 가로 방향 정렬을 지정합니다. (모든 자식 요소들이 중앙 정렬됨)
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.compose),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Column {
-                    Text("홍길동", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                    Text("Android 개발자 & Compose 학습자", fontSize = 14.sp)
-                }
-            }
+            // 첫 번째 Text Composable
+            Text(text = "Compose Coffee")
+
+            // Image Composable
+            Image(
+                // painterResource: drawable 리소스를 불러옵니다.
+                // R.drawable.compose 는 Step 1에서 추가한 compose.jpg를 가리킵니다.
+                painter = painterResource(id = R.drawable.compose),
+                contentDescription = "Compose Coffee Logo"
+            )
+
+            // 두 번째 Text Composable
+            Text(text = "우송대 정문 앞")
         }
     }
 }
 
-@Preview(name = "Stage 0 - 텍스트만")
+@Preview(showBackground = true)
 @Composable
-fun PreviewStage0() {
-    ProfileCardStage0()
-}
-
-@Preview(name = "Stage 1 - 이미지만")
-@Composable
-fun PreviewStage1() {
-    ProfileCardStage1()
-}
-
-@Preview(name = "Stage 2 - Row로 이미지 + 이름")
-@Composable
-fun PreviewStage2() {
-    ProfileCardStage2()
-}
-
-@Preview(name = "Stage 3 - Column으로 이름 + 소개")
-@Composable
-fun PreviewStage3() {
-    ProfileCardStage3()
-}
-
-@Preview(name = "Stage 4 - Box 레이아웃으로 프로필 카드 완성", showBackground = true)
-@Composable
-fun PreviewStage4() {
-    ProfileCardBox()
+fun DefaultPreview() {
+    MainScreen()
 }
