@@ -1,4 +1,4 @@
-package com.example.app_03
+package com.example.app_01
 
 import android.content.res.Configuration
 import android.os.Bundle
@@ -18,14 +18,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.app_05.ui.theme.ComposeLabTheme
+import com.example.app_01.ui.theme.ComposeLabTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeLabTheme {
-                MainScreen_with_padding()
+                MainScreen()
             }
         }
     }
@@ -64,7 +64,7 @@ fun ProfileCardStage1() {
         modifier = Modifier.padding(16.dp)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.profile_picture),
+            painter = painterResource(id = R.drawable.compose),
             contentDescription = "Profile Picture",
             modifier = Modifier
                 .size(64.dp)
@@ -81,7 +81,7 @@ fun ProfileCardStage2() {
         modifier = Modifier.padding(16.dp)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.profile_picture),
+            painter = painterResource(id = R.drawable.compose),
             contentDescription = "Profile Picture",
             modifier = Modifier
                 .size(64.dp)
@@ -100,7 +100,7 @@ fun ProfileCardStage3() {
         modifier = Modifier.padding(16.dp)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.profile_picture),
+            painter = painterResource(id = R.drawable.compose),
             contentDescription = "Profile Picture",
             modifier = Modifier
                 .size(64.dp)
@@ -133,7 +133,7 @@ fun ProfileCardBox() {
                 modifier = Modifier.padding(16.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.profile_picture),
+                    painter = painterResource(id = R.drawable.compose),
                     contentDescription = "Profile Picture",
                     modifier = Modifier
                         .size(64.dp)
@@ -177,5 +177,5 @@ fun PreviewStage3() {
 @Preview(name = "Stage 4 - Box 레이아웃으로 프로필 카드 완성", showBackground = true)
 @Composable
 fun PreviewStage4() {
-    ProfileCardStage4()
+    ProfileCardBox()
 }
