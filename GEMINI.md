@@ -43,11 +43,22 @@ app 모듈: 전체 예제를 통합하고 실행하는 메인 애플리케이션
 
 주석은 수강생에게 직접 설명하는 것처럼 친절하고 명확한 어조로 작성합니다.
 
-기본 템플릿 준수:
+기본 템플�� 준수:
 
 모든 MainActivity.kt 파일은 아래 "5. 기본 코드 템플릿" 섹션에 정의된 Scaffold 구조를 기본 골격으로 사용합니다.
 
-5. 기본 코드 템플릿 (Default Code Template)
+5. UI 디자인 명세 작성 (UI Design Specification)
+각 `app_xx` 모듈의 루트 디렉토리에는 `app_xx_design.md` 파일을 생성하여 해당 모듈의 UI 구조를 명세합니다.
+
+*   **파일 위치**: `app_xx/app_xx_design.md`
+*   **내용**:
+    *   **화면 개요**: 해당 UI의 목적과 기능을 한글로 간략히 설명합니다.
+    *   **UI 구조**: Mermaid 다이어그램을 사용하여 화면의 컴포저블 계층 구조를 시각적으로 표현합니다.
+        *   다이어그램은 `graph TD` (Top-Down) 방향으로 작성합니다.
+        *   UI 요소들이 세로로 명확하게 나열되도록 노드를 순차적으로 연결하여 가독성을 높입니다.
+    *   **주요 컴포저블 설명**: 화면에 사용된 핵심 컴포저블의 역할과 주요 속성을 한글로 상세히 설명합니다.
+
+6. 기본 코드 템플릿 (Default Code Template)
 package com.example.composelab // 패키지 이름은 모듈에 맞게 변경
 
 import android.os.Bundle
@@ -126,3 +137,12 @@ fun MainScreenPreview() {
         AppContent(modifier = Modifier.fillMaxSize() )
     }
 }
+
+7. 프롬프트 파일 사용법 (prompt.txt)
+복잡하고 긴 명령어를 CLI에 직접 입력하는 불편함을 해소하기 위해, 프로젝트 루트 디렉토리에 `prompt.txt` 파일을 활용할 수 있습니다.
+
+1.  **`prompt.txt` 파일 생성**: 프로젝트의 가장 상위 폴더(루트 디렉토리)에 `prompt.txt` 파일을 생성합니다.
+2.  **명령어 작성**: 텍스트 편집기로 `prompt.txt` 파일을 열어, 실행하고자 하는 작업 내용을 자유롭게 작성합니다. (예: 신규 모듈 생성, 코드 수정, 리팩토링 등)
+3.  **CLI에서 실행 요청**: CLI 창에 간단하게 `"prompt 파일 실행해줘"` 또는 `"prompt.txt 읽어서 실행해줘"` 와 같이 요청합니다.
+
+Gemini가 `prompt.txt` 파일의 내용을 읽어, 작성된 명령어를 순차적으로 수행할 것입니다. 이 파일은 `.gitignore`에 등록되어 있어 Git 원격 저장소에는 공유되지 않으므로, 개인적인 작업 지시를 자유롭게 작성할 수 있습니다.
