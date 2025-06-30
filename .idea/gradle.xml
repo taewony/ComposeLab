@@ -17,6 +17,11 @@
             <option value="$PROJECT_DIR$/app_04" />
             <option value="$PROJECT_DIR$/app_05" />
             <option value="$PROJECT_DIR$/app_06" />
+            <option value="$PROJECT_DIR$/app_11" />
+            <option value="$PROJECT_DIR$/app_11_jetpack" />
+            <option value="$PROJECT_DIR$/app_13_todotask" />
+            <option value="$PROJECT_DIR$/app_13_wellness" />
+            <option value="$PROJECT_DIR$/app_98_bubble_game" />
           </set>
         </option>
       </GradleProjectSettings>
