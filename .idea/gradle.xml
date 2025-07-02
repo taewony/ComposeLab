@@ -11,16 +11,19 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/app_01" />
-            <option value="$PROJECT_DIR$/app_02" />
-            <option value="$PROJECT_DIR$/app_03" />
-            <option value="$PROJECT_DIR$/app_04" />
-            <option value="$PROJECT_DIR$/app_05" />
-            <option value="$PROJECT_DIR$/app_06" />
+            <option value="$PROJECT_DIR$/app_01_compose_coffee" />
+            <option value="$PROJECT_DIR$/app_02_kakao_email" />
+            <option value="$PROJECT_DIR$/app_03_profile" />
+            <option value="$PROJECT_DIR$/app_04_keypad" />
+            <option value="$PROJECT_DIR$/app_05_count" />
+            <option value="$PROJECT_DIR$/app_06_stopwatch" />
             <option value="$PROJECT_DIR$/app_11" />
             <option value="$PROJECT_DIR$/app_11_jetpack" />
             <option value="$PROJECT_DIR$/app_13_todotask" />
-            <option value="$PROJECT_DIR$/app_13_wellness" />
+            <option value="$PROJECT_DIR$/app_22_box" />
+            <option value="$PROJECT_DIR$/app_22_newsapp" />
+            <option value="$PROJECT_DIR$/app_22_state" />
+            <option value="$PROJECT_DIR$/app_22_wellness" />
             <option value="$PROJECT_DIR$/app_98_bubble_game" />
           </set>
         </option>
