@@ -118,3 +118,20 @@
 * **Compose 실습(app_16): 실시간 익명 채팅 앱 만들기**
     * `Firebase Auth`로 익명 로그인을 구현하고, `Firestore`를 이용해 사용자들이 보낸 메시지를 모든 접속자에게 실시간으로 보여주는 간단한 채팅 앱을 최종 프로젝트로 완성합니다.
     
+## 📚 앱 모듈 목록
+
+* app_01_compose_coffee
+* app_02_kakao_email
+* app_03_profile
+* app_04_keypad
+* app_05_count
+* app_06_stopwatch
+* app_11_dropdown
+* app_11_jetpack
+* app_13_todotask
+* app_22_box
+* app_22_newsapp
+* app_22_state
+* app_22_wellness
+* app_98_bubble_game
+* app_99
