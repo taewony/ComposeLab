@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.app_04"
+    namespace = "com.example.app_04_keypad"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.app_04"
+        applicationId = "com.example.app_04_keypad"
         minSdk = 32
         targetSdk = 35
         versionCode = 1

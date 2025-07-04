@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.bubblegame"
+    namespace = "com.example.app_98_bubble_game"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.bubblegame"
+        applicationId = "com.example.app_98_bubble_game"
         minSdk = 32
         targetSdk = 35
         versionCode = 1

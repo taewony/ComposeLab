@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.app_13_wellness"
+    namespace = "com.example.app_22_wellness"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.app_13_wellness"
+        applicationId = "com.example.app_22_wellness"
         minSdk = 32
         targetSdk = 35
         versionCode = 1

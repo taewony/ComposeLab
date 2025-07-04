@@ -40,6 +40,25 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Composable
+fun MainScreen2() {
+    Scaffold(modifier = Modifier.fillMaxSize().padding(32.dp)) { innerPadding ->
+        Column(modifier = Modifier.fillMaxSize()) {
+            Text("My App started!!", modifier = Modifier.padding(16.dp))
+            Text("Hello Compose", modifier = Modifier.padding(16.dp).background(Color.Green))
+            Row {
+                Text("This is left.", modifier = Modifier.weight(1f))
+                Text("This is right.", modifier = Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MainScreenPreview2() {
+    MainScreen2()
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
@@ -88,7 +107,7 @@ fun CenteredContentPreview() {
                 Column(
                     modifier = Modifier
                         .padding(innerPadding)
-                        .fillMaxSize(),
+                        .fillMaxSize()  ,
                     verticalArrangement = Arrangement.Center, // 수직 중앙 정렬
                     horizontalAlignment = Alignment.CenterHorizontally      // 수평 중앙 정렬
                 ) {
@@ -102,22 +121,3 @@ fun CenteredContentPreview() {
     }
 }
 
-@Composable
-fun MainScreen2() {
-    Scaffold(modifier = Modifier.fillMaxSize().padding(32.dp)) { innerPadding ->
-        Column(modifier = Modifier.fillMaxSize()) {
-            Text("My App started!!", modifier = Modifier.padding(16.dp))
-            Text("Hello Compose", modifier = Modifier.padding(16.dp).background(Color.Green))
-            Row {
-                Text("This is left.", modifier = Modifier.weight(1f))
-                Text("This is right.", modifier = Modifier.weight(1f))
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview2() {
-    MainScreen2()
-}

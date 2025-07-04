@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.app_02"
+    namespace = "com.example.app_02_kakao_email"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.app_02"
+        applicationId = "com.example.app_02_kakao_email"
         minSdk = 32
         targetSdk = 35
         versionCode = 1

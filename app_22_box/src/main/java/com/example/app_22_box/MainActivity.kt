@@ -29,31 +29,66 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeLabTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ProfileCard()
+                    ProfileCardStep2()
                 }
             }
         }
     }
 }
 
+/**
+ * 1단계: Box 레이아웃의 기본 사용법을 보여줍니다.
+ * 이 단계에서는 Box 내부에 배경 이미지만을 배치합니다.
+ */
 @Composable
-fun ProfileCard() {
+fun ProfileCardStep1() {
     // 프로젝트의 res/drawable 폴더에 있는 profile.jpg 로드
     val profileImage: Painter = painterResource(id = R.drawable.profile)
 
-    Box(modifier = Modifier.size(300.dp)) { // Box 크기 설정 (실제 프로젝트에 맞게 조정)
-        // 배경 이미지
+    // Box의 크기를 300dp로 설정하고, 내부에 이미지를 채웁니다.
+    Box(modifier = Modifier.size(300.dp)) {
         Image(
             painter = profileImage,
             contentDescription = "Profile Image",
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize() // Box 크기에 맞춰 이미지를 채웁니다.
+        )
+    }
+}
+
+/**
+ * 1단계 ProfileCardStep1의 미리보기입니다.
+ * showBackground = true를 설정하여 배경을 표시합니다.
+ */
+@Preview(name = "1단계: 배경 이미지만 있는 프로필 카드", showBackground = true)
+@Composable
+fun ProfileCardStep1Preview() {
+    ComposeLabTheme {
+        ProfileCardStep1()
+    }
+}
+
+/**
+ * 2단계: 1단계에서 만든 Box 레이아웃에 텍스트 정보를 추가합니다.
+ * Box의 align Modifier를 사용하여 텍스트 컬럼을 오른쪽 하단에 배치합니다.
+ */
+@Composable
+fun ProfileCardStep2() {
+    // 프로젝트의 res/drawable 폴더에 있는 profile.jpg 로드
+    val profileImage: Painter = painterResource(id = R.drawable.profile)
+
+    // Box의 크기를 300dp로 설정하고, 내부에 이미지를 채웁니다.
+    Box(modifier = Modifier.size(300.dp)) {
+        Image(
+            painter = profileImage,
+            contentDescription = "Profile Image",
+            modifier = Modifier.fillMaxSize() // Box 크기에 맞춰 이미지를 채웁니다.
         )
 
-        // 오른쪽 하단에 위치한 컬럼
+        // 오른쪽 하단에 위치한 컬럼: Box의 align Modifier를 사용하여 정렬합니다.
         Column(
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp) // 여백 추가
+                .align(Alignment.BottomEnd) // Box의 오른쪽 하단에 정렬
+                .padding(16.dp) // 내부 여백 추가
         ) {
             Text("이름: 홍길동")
             Text("직책: SW 엔지니어")
@@ -61,10 +96,14 @@ fun ProfileCard() {
     }
 }
 
-@Preview(showBackground = true)
+/**
+ * 2단계 ProfileCardStep2의 미리보기입니다.
+ * showBackground = true를 설정하여 배경을 표시합니다.
+ */
+@Preview(name = "2단계: 텍스트가 추가된 프로필 카드", showBackground = true)
 @Composable
-fun ProfileCardPreview() {
+fun ProfileCardStep2Preview() {
     ComposeLabTheme {
-        ProfileCard()
+        ProfileCardStep2()
     }
 }

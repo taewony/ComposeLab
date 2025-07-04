@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.app_06"
+    namespace = "com.example.app_06_stopwatch"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.app_06"
+        applicationId = "com.example.app_06_stopwatch"
         minSdk = 32
         targetSdk = 35
         versionCode = 1

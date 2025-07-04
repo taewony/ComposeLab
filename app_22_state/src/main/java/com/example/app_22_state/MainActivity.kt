@@ -13,10 +13,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue // Can be removed if using 'by' delegate only
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,9 +37,85 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ComposeLabTheme {
-                // CounterMainScreen()
-                CheckboxMainScreen()
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    WellnessScreen2()
+                    // CounterMainScreen()
+                    // CheckboxMainScreen()
+                }
             }
+        }
+    }
+}
+
+@Composable
+fun WellnessScreen0(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.padding(16.dp)) {
+        var count = 0 // 하루 동안 마신 물잔 개수를 추적
+        Text(
+            text = "You've had $count glasses.",
+            modifier = modifier.padding(top = 32.dp)
+        )
+        Button(
+            onClick = { count++ },
+            Modifier
+                .padding(top = 8.dp)
+        ) {
+            Text("Add one")
+        }
+    }
+}
+
+@Composable
+fun WellnessScreen1(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.padding(16.dp)) {
+        // Changes to count are now tracked by Compose
+        val count: MutableState<Int> = remember { mutableStateOf(0) }
+        Text(
+            text = "You've had ${count.value} glasses.",
+            modifier = modifier.padding(top = 32.dp)
+        )
+        Button(
+            onClick = { count.value++ },
+            Modifier
+                .padding(top = 8.dp)
+        ) {
+            Text("Add one")
+        }
+    }
+}
+
+@Composable
+fun WellnessScreen2(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.padding(16.dp)) {
+        // Changes to count are now tracked by Compose
+        var count by remember { mutableStateOf(0) }
+        Text(
+            text = "You've had $count glasses.",
+            modifier = modifier.padding(top = 32.dp)
+        )
+        Button(
+            onClick = { count++ },
+            Modifier
+                .padding(top = 8.dp)
+        ) {
+            Text("Add one")
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun WellnessScreenPreview() {
+    ComposeLabTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            WellnessScreen1()
         }
     }
 }
@@ -50,7 +130,6 @@ fun CheckboxMainScreen() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         // Now this refers to androidx.compose.material3.Checkbox
         Checkbox(
             checked = state,

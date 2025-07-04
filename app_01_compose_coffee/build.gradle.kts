@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.app_01"
+    namespace = "com.example.app_01_compose_coffee"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.app_01"
+        applicationId = "com.example.app_01_compose_coffee"
         minSdk = 32
         targetSdk = 35
         versionCode = 1
