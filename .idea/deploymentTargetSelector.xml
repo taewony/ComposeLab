@@ -14,9 +14,6 @@
       <SelectionState runConfigName="Preview_Stopwatch_01">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="app_01">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="app_02">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -44,9 +41,6 @@
       <SelectionState runConfigName="app_13_todotask">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="app_13_wellness">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="app_22_newsapp">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -63,6 +57,12 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="MainActivity (2)">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="app_22_wellness">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="app_01_compose_coffee">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
