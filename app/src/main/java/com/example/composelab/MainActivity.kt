@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,25 +45,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Test() {
-    Box(modifier = Modifier.fillMaxSize().background(color = Color.Yellow), contentAlignment = Alignment.Center) {
-        Text("It's me!")
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
-            Text("It's me~~~~~~~~~~~~~~")
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TestPreview() {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Test()
-    }
-}
-
-@Composable
-fun MainScreen2() {
+fun TestScreen() {
     Scaffold(modifier = Modifier.fillMaxSize().padding(32.dp)) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize()) {
             Text("My App started!!", modifier = Modifier.padding(16.dp))
@@ -76,8 +60,8 @@ fun MainScreen2() {
 
 @Preview(showBackground = true)
 @Composable
-fun MainScreenPreview2() {
-    MainScreen2()
+fun TestScreenPreview() {
+    TestScreen()
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,9 +78,11 @@ fun MainScreen() {
             Column(
                 modifier = Modifier
                     .padding(innerPadding) // 1. 상단바와 겹치지 않도록 패딩 적용
+                    .padding(16.dp)
                     .fillMaxSize()         // 2. 남은 모든 공간을 채움
             ) {
                 Text("Hello, Compose!")
+                Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = { /* 클릭 액션 */ }) {
                     Text("Click Me")
                 }
@@ -141,3 +127,21 @@ fun CenteredContentPreview() {
     }
 }
 
+
+@Composable
+fun BoxTest() {
+    Box(modifier = Modifier.fillMaxSize().background(color = Color.Green), contentAlignment = Alignment.Center) {
+        Text("It's me!")
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
+            Text("It's me~~~~~~~~~~~~~~")
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BoxTestPreview() {
+    Surface(modifier = Modifier.fillMaxSize()) {
+        BoxTest()
+    }
+}

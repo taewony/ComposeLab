@@ -1,6 +1,5 @@
 package com.example.app_04_keypad
 
-import android.graphics.ColorFilter
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,18 +17,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app_04_keypad.ui.theme.ComposeLabTheme
-import androidx.compose.ui.graphics.Color // Color.Green을 사용하기 위해 이것도 필요할 수 있습니다.
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +63,7 @@ fun MainScreen() {
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = "연락처 추가",
-                color = Color.Green,
+                color = Color.Green, // MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -91,9 +89,13 @@ fun MainScreen() {
             }
         }
 
+        /* Column은 수직 방향으로 자식 요소들을 위에서 아래로 쌓는 레이아웃입니다.
+        그런데 Modifier.weight(1f)는: “할당 가능한 남은 공간을 나에게 줘” 라는 의미입니다.
+        중간에 공기 풍선(Spacer)을 넣어서 공간을 꽉 채워서 아래 요소를 눌러 내리는 효과가 발생.
+         */
         Spacer(modifier = Modifier.weight(1f)) // 하단 아이콘들을 화면 아래에 가깝게 배치하기 위한 공간
 
-        // 하단 아이콘 (RelativeLayout)
+        // 하단 아이콘들을 왼쪽에서 오른쪽으로 순차적으로 배치
         Row(
             modifier = Modifier.padding(bottom = 20.dp), // 하단 여백 추가
             verticalAlignment = Alignment.CenterVertically,
@@ -122,6 +124,7 @@ fun MainScreen() {
 
 @Composable
 fun DialPadKey(text: String) {
+    // 만약 Box 없이 그냥 Text만 쓰면? 가운데 정렬되지 않아서 DialPad 키패드처럼 버튼이 정돈되어 보이지 않게 됩니다.
     Box(
         modifier = Modifier
             .padding(horizontal = 40.dp, vertical = 10.dp), // padding

@@ -1,4 +1,4 @@
-package com.example.app_10 // 패키지 이름은 실제 프로젝트에 맞게 조정하세요.
+package com.example.app_11_dropdown
 
 import android.os.Bundle
 import android.widget.Toast

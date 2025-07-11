@@ -6,7 +6,7 @@
       <GradleProjectSettings>
         <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
+        <option name="gradleJvm" value="#JAVA_HOME" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -17,14 +17,14 @@
             <option value="$PROJECT_DIR$/app_04_keypad" />
             <option value="$PROJECT_DIR$/app_05_count" />
             <option value="$PROJECT_DIR$/app_06_stopwatch" />
-            <option value="$PROJECT_DIR$/app_11" />
+            <option value="$PROJECT_DIR$/app_10_bubble_game" />
+            <option value="$PROJECT_DIR$/app_11_dropdown" />
             <option value="$PROJECT_DIR$/app_11_jetpack" />
             <option value="$PROJECT_DIR$/app_13_todotask" />
             <option value="$PROJECT_DIR$/app_22_box" />
             <option value="$PROJECT_DIR$/app_22_newsapp" />
             <option value="$PROJECT_DIR$/app_22_state" />
             <option value="$PROJECT_DIR$/app_22_wellness" />
-            <option value="$PROJECT_DIR$/app_98_bubble_game" />
           </set>
         </option>
       </GradleProjectSettings>

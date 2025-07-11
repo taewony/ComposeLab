@@ -23,7 +23,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.app_03_profile.ui.theme.ComposeLabTheme
-import com.example.app_03_profile.R
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +31,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeLabTheme {
                 // 앱 실행 시 표시할 기본 화면을 설정합니다.
-                // 여기서는 ProfileCard를 기본으로 보여줍니다.
                 ProfileCard()
             }
         }
@@ -142,7 +140,7 @@ fun ProfileCard() {
                 style = MaterialTheme.typography.titleMedium
             )
             // 저자와 메시지 내용 사이에 수직 간격을 추가합니다.
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = msg.body,
                 color = MaterialTheme.colorScheme.onBackground,

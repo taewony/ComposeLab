@@ -23,12 +23,6 @@
       <SelectionState runConfigName="app_03">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="app_98_bubble_game">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="app_10">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="TopAppBarWithDropdownPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -63,6 +57,9 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="app_01_compose_coffee">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="app_10_bubble_game">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

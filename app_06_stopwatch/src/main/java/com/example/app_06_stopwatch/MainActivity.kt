@@ -195,14 +195,6 @@ fun StopwatchScreen() {
 @Composable
 fun StopwatchDisplayPreview() {
     ComposeLabTheme {
-        StopwatchDisplay(
-            timeDisplay = "01:23", // 예시 시간
-            onStartClick = { },
-            onStopClick = { },
-            onResetClick = { },
-            isStartEnabled = true,
-            isStopEnabled = false,
-            isResetEnabled = true
-        )
+        StopwatchScreen()
     }
 }
