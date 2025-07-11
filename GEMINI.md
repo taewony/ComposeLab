@@ -16,7 +16,7 @@
 
 ### 4. 코드 생성 규칙 (Code Generation Rules)
 점진적 코드 작성:
-- 하나의 랩(Lab) 모듈 내에서, 모든 코드는 MainActivity.kt 파일 하나에 작성합니다.
+- 하나의 모듈 내에서, 모든 코드는 MainActivity.kt 파일 하나에 작성합니다.
 - 개념을 설명하는 각 단계를 별도의 Composable 함수로 분리하여 작성합니다. (예: GreetingStep1, GreetingStep2)
 - 코드가 중복되더라도, 이전 단계의 코드를 복사하여 수정하는 방식으로 점진적인 변화를 명확히 보여줍니다.
 
