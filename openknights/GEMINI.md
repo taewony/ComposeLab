@@ -1,0 +1,95 @@
+## Gemini 프로젝트 설정: OpenKnights 앱 (우송대 오픈소스 경진대회)
+
+### 1. 프로젝트 개요 (Project Overview)
+이 프로젝트는 'ComposeLab' 코드베이스 내에서 'DroidKnights' 앱을 기반으로 우송대 오픈소스 경진대회를 위한 'OpenKnights' 앱을 개발하는 것을 목표로 합니다. 기존 'DroidKnights'의 핵심 기능과 디자인 시스템을 활용하여, Jetpack Compose 기반의 현대적인 안드로이드 애플리케이션을 구현합니다.
+
+### 2. 기술 스택 및 개발 환경 (Tech Stack & Environment)
+- IDE: Android Studio 2025.1.1
+- Android API: targetSDK 35, minSDK 32
+- UI Toolkit: Jetpack Compose (Material 3, Navigation 3)
+- Language: Kotlin
+
+### 3. 모듈 구조 (Module Structure)
+- **`ComposeLab` 프로젝트**: 전체 프로젝트의 루트 역할
+- **`OpenKnights` OpenKnights 프로젝트**: OpenKnights app 루트 디렉토리
+- **`core-designsystem` 모듈**: 'DroidKnights'의 디자인 시스템을 기반으로 'OpenKnights' 앱의 공통 UI 컴포넌트, 테마, 타이포그래피 등을 정의하는 공통 라이브러리 모듈
+- **`openknights` 모듈**: 실제 'OpenKnights' 앱의 메인 애플리케이션 모듈입니다. `core-design-system` 모듈을 의존하여 일관된 디자인과 기능을 구현합니다.
+
+### 4. 개발 목표
+- 'DroidKnights' 앱의 핵심 UI 및 기능을 'OpenKnights' 앱으로 포팅 및 재구현
+- Jetpack Compose를 활용한 선언형 UI 개발 (기존 View 시스템은 사용하지 않음)
+- 안드로이드 'https://developer.android.com/topic/architecture'에서 제시하는 가이드를 최대한 충족함
+- `appcompat` 의존이 필요한 시나리오는 사유를 명시하고 사용해야 함.
+- 앱 개발 작업 순서:
+  - `openknights` root directory 밑에 멀티 모듈로 구성
+  - `core-designsystem` library 모듈을 통한 `KnightsTheme` 공통 디자인 시스템 정의 및 재사용
+  - `app` application 모듈에서 `KnightsTheme` 사용한 `Hello OpenKnights` 앱 개발
+
+### 5. 우송대 오픈소스 경진대회 data 요구사항:
+- contests: 모든 정보의 중심 허브. 각 문서는 하나의 독립된 대회 인스턴스입니다.
+  - schedules: 대회 일정을 정의한 정보
+  - teams: 대회 참가한 팀 정보 (팀은 1명 에서 5명까지 구성, 작품을 제출합니다.)
+- users: 모든 사용자의 마스터 정보.
+- projects: 특정 팀이 특정 대회(contest)에 참가 신청한 작품들.
+  - PRD 문서(작품의 의도/필요성)
+  - 화면 예시 이미지
+  - 발표자료, demo 영상 등 부가자료
+- participants: 특정 contest에 어떤 user가 어떤 팀에 어떤 역할로 참여하는지 연결하는 중간 다리 역할.
+- likes: 특정 submission에 대한 '좋아요' 정보를 담는 하위 컬렉션.
+- roles: user의 예선/본선 심사위원 , staff , 지도 교수, 담당 교수
+- 평가항목 4개지표: 창의성(독창성, 완성도), 실용성(시장성, 기술성)
+
+### 6. Flat Module 구조
+Project Root/
+├── app (deault app)
+├── app_01 (Compose 기초 앱)
+├── designs (설계 사양서)
+├── settings.gradle.kts
+├── build.gradle.kts (루트용)
+└── OpenKnights/          ← Sub-project root 디렉토리
+    ├── app/              ← 최상위 앱 모듈
+    ├── core/
+    │   ├── model/
+    │   ├── designsystem/
+    │   └── util/
+    ├── domain/
+    │   ├── contest/
+    │   ├── user/
+    │   └── project/
+    ├── data/
+    │   ├── contest/
+    │   └── user/
+    └── feature/
+        ├── home/
+        ├── team/
+        └── submission/
+
+
+### 7. UI 디자인 명세 (UI Design Specification)
+각 `app_xx` 모듈과 유사하게, `openknights` 모듈의 루트 디렉토리에는 `openknights_design.md` 파일을 생성하여 UI 구조를 명세할 예정입니다.
+
+### 8. 기본 코드 템플릿 (Default Code Template)
+`openknights` 모듈의 `MainActivity.kt`는 `core-designsystem`의 `KnightsTheme`을 기본 골격으로 사용합니다.
+
+### 9. 프롬프트 파일 사용법 (prompt.txt)
+프로젝트 루트 디렉토리의 `prompt.txt` 파일을 활용하여 작업 지시 및 진행 상황을 기록합니다.
+
+### 10. OpenKnights sub-project만 집중하여 개발
+아래와 같이 특정 모듈만 빌드하여 개발 시간 단축.
+특정 모듈만 빌드	./gradlew :openknights:core:designsystem:build
+특정 모듈 클린 후 빌드	./gradlew :openknights:core:designsystem:clean :openknights:core:designsystem:build
+
+### 10. OpenKnights 앱의 첫 화면 구성하기.
+시작 추천 Navigation 구조 단계
+Main App (DroidKnightsApp.kt)
+NavHost
+BottomNavigation
+Navigation Graph 구조
+
+각 feature module
+화면 UI 정의
+navigation 엔트리 등록 함수 정의 (ex: fun NavGraphBuilder.sessionScreen(...))
+
+
+Model / Fake Data
+core/model 값 다음에 core/testing 에게 가상값 제공

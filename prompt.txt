@@ -1,18 +1,61 @@
-Demo.kt 수정해서 Scaffold 안에 아래 내용을 Row() 안에 넣어 가로로 표시되게 수정 부탁합니다.
+### 10. OpenKnights 앱의 첫 화면 구성하기.
+시작 추천 Navigation 구조 단계
+Main App (DroidKnightsApp.kt)
+NavHost
+BottomNavigation
+Navigation Graph 구조
 
-            TextChip(
-                "카테고리",
-                containerColor = Color.Transparent,
-                labelColor = KnightsColor.LightGray,
-                border = BorderStroke(1.dp, KnightsColor.LightGray),
-            )
-            TextChip(
-                "Track 01",
-                containerColor = KnightsColor.Blue01,
-                labelColor = KnightsColor.White,
-            )
-            TextChip(
-                "16:45 발표",
-                containerColor = KnightsColor.Blue02A30,
-                labelColor = KnightsColor.Blue01,
-            )
+1. 주요 스크린 (명지적 구문)
+Home (feature/home)
+Session (feature/session)
+Contributor (feature/contributor)
+Setting (feature/setting)
+
+2. Bottom Navigation 사용 여부
+가상 플레이 결과 및 Navigation 구조를 보면 DroidKnightsApp.kt 파일에서 Scaffold + NavigationBar + NavHost 구조를 가지고 있으며, 하단 Navigation 탭으로 스크린간의 이동을 관리한다.
+
+3. Navigation 3 (typed-navigation) 구조
+navigation-typed 버전을 사용하고 있고, 다음과 같은 Navigation 구조 형식을 가지는 파티솘이 해당합니다:
+반복 구조
+sealed interface MainNavigationRoute {
+    val route: String
+    data object Home : MainNavigationRoute {
+        override val route = "home"
+    }
+    data object Session : MainNavigationRoute {
+        override val route = "session"
+    }
+    data object Contributor : MainNavigationRoute {
+        override val route = "contributor"
+    }
+    data object Setting : MainNavigationRoute {
+        override val route = "setting"
+    }
+}
+
+4. 인자 전달 구조 (Session Detail 등)
+object SessionDetailRoute {
+    private const val sessionIdArg = "sessionId"
+    val route = "session/detail/{sessionId}"
+
+    fun createRoute(sessionId: String): String = "session/detail/$sessionId"
+}
+NavHost 내의 composable(...) 방식에서 SessionDetailRoute.route 을 참조해 이동을 설정합니다.
+
+데이터 구조 및 값 제공 (Static Object 구조)
+core/model 포맷을 분석하면, 가상 데이터가 core/model 보다 core/data 및 core/testing 포맷에 추적되어 관리됩니다.
+가상 데이터 제공
+core/testing/src/main/java/model/ 가상 데이터 저장:
+FakeSessions.kt
+FakeContributors.kt
+object FakeSessions {
+    val sessions: List<Session> = listOf(
+        Session(
+            id = "1",
+            title = "Jetpack Compose Best Practice",
+            speakers = listOf("John Doe"),
+            ...
+        ),
+        ...
+    )
+}
