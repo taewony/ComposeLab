@@ -1,0 +1,18 @@
+Demo.kt 수정해서 Scaffold 안에 아래 내용을 Row() 안에 넣어 가로로 표시되게 수정 부탁합니다.
+
+            TextChip(
+                "카테고리",
+                containerColor = Color.Transparent,
+                labelColor = KnightsColor.LightGray,
+                border = BorderStroke(1.dp, KnightsColor.LightGray),
+            )
+            TextChip(
+                "Track 01",
+                containerColor = KnightsColor.Blue01,
+                labelColor = KnightsColor.White,
+            )
+            TextChip(
+                "16:45 발표",
+                containerColor = KnightsColor.Blue02A30,
+                labelColor = KnightsColor.Blue01,
+            )

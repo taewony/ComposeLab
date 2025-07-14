@@ -25,7 +25,9 @@
             <option value="$PROJECT_DIR$/app_22_newsapp" />
             <option value="$PROJECT_DIR$/app_22_state" />
             <option value="$PROJECT_DIR$/app_22_wellness" />
-            <option value="$PROJECT_DIR$/core-design-system" />
+            <option value="$PROJECT_DIR$/openknights" />
+            <option value="$PROJECT_DIR$/openknights/core" />
+            <option value="$PROJECT_DIR$/openknights/core/designsystem" />
           </set>
         </option>
       </GradleProjectSettings>
