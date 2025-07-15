@@ -25,6 +25,7 @@ fun NavGraphBuilder.projectNavGraph(
             scrollToProjectId = if (scrollToEventConsumed) null else null, // TODO: scrollToProjectId 구현
             onProjectClick = { project ->
                 scrollToEventConsumed = true
+                navController.navigate(RouteProjectDetail(project.id))
             },
             onShowErrorSnackBar = onShowErrorSnackBar,
         )
