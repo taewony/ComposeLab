@@ -1,61 +1,11 @@
-### 10. OpenKnights 앱의 첫 화면 구성하기.
-시작 추천 Navigation 구조 단계
-Main App (DroidKnightsApp.kt)
-NavHost
-BottomNavigation
-Navigation Graph 구조
-
-1. 주요 스크린 (명지적 구문)
-Home (feature/home)
-Session (feature/session)
-Contributor (feature/contributor)
-Setting (feature/setting)
-
-2. Bottom Navigation 사용 여부
-가상 플레이 결과 및 Navigation 구조를 보면 DroidKnightsApp.kt 파일에서 Scaffold + NavigationBar + NavHost 구조를 가지고 있으며, 하단 Navigation 탭으로 스크린간의 이동을 관리한다.
-
-3. Navigation 3 (typed-navigation) 구조
-navigation-typed 버전을 사용하고 있고, 다음과 같은 Navigation 구조 형식을 가지는 파티솘이 해당합니다:
-반복 구조
-sealed interface MainNavigationRoute {
-    val route: String
-    data object Home : MainNavigationRoute {
-        override val route = "home"
-    }
-    data object Session : MainNavigationRoute {
-        override val route = "session"
-    }
-    data object Contributor : MainNavigationRoute {
-        override val route = "contributor"
-    }
-    data object Setting : MainNavigationRoute {
-        override val route = "setting"
-    }
-}
-
-4. 인자 전달 구조 (Session Detail 등)
-object SessionDetailRoute {
-    private const val sessionIdArg = "sessionId"
-    val route = "session/detail/{sessionId}"
-
-    fun createRoute(sessionId: String): String = "session/detail/$sessionId"
-}
-NavHost 내의 composable(...) 방식에서 SessionDetailRoute.route 을 참조해 이동을 설정합니다.
-
-데이터 구조 및 값 제공 (Static Object 구조)
-core/model 포맷을 분석하면, 가상 데이터가 core/model 보다 core/data 및 core/testing 포맷에 추적되어 관리됩니다.
-가상 데이터 제공
-core/testing/src/main/java/model/ 가상 데이터 저장:
-FakeSessions.kt
-FakeContributors.kt
-object FakeSessions {
-    val sessions: List<Session> = listOf(
-        Session(
-            id = "1",
-            title = "Jetpack Compose Best Practice",
-            speakers = listOf("John Doe"),
-            ...
-        ),
-        ...
-    )
-}
+2025-07-14 18:38:06.222  5769-5769  AndroidRuntime          com.openknights.app                  E  FATAL EXCEPTION: main (Ask Gemini)
+                                                                                                    Process: com.openknights.app, PID: 5769
+                                                                                                    java.lang.RuntimeException: Unable to instantiate application com.openknights.app.OpenKnightsApplication package com.openknights.app: java.lang.ClassNotFoundException: Didn't find class "com.openknights.app.OpenKnightsApplication" on path: DexPathList[[zip file "/data/app/~~3rdtnCd0RpfI8Lj0vzrSjw==/com.openknights.app-VQX9UsGrc8qUnVClJLI1ng==/base.apk"],nativeLibraryDirectories=[/data/app/~~3rdtnCd0RpfI8Lj0vzrSjw==/com.openknights.app-VQX9UsGrc8qUnVClJLI1ng==/lib/x86_64, /data/app/~~3rdtnCd0RpfI8Lj0vzrSjw==/com.openknights.app-VQX9UsGrc8qUnVClJLI1ng==/base.apk!/lib/x86_64, /system/lib64, /system_ext/lib64]]
+                                                                                                    	at android.app.LoadedApk.makeApplicationInner(LoadedApk.java:1486)
+                                                                                                    	at android.app.LoadedApk.makeApplicationInner(LoadedApk.java:1411)
+                                                                                                    	at android.app.ActivityThread.handleBindApplication(ActivityThread.java:7790)
+                                                                                                    	at android.app.ActivityThread.-$$Nest$mhandleBindApplication(Unknown Source:0)
+                                                                                                    	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2546)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:110)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:248)
+                                                                                                    	at android.os.Looper.loop(Looper.java:338)

@@ -3,6 +3,13 @@
 ### 1. 프로젝트 개요 (Project Overview)
 이 프로젝트는 'ComposeLab' 코드베이스 내에서 'DroidKnights' 앱을 기반으로 우송대 오픈소스 경진대회를 위한 'OpenKnights' 앱을 개발하는 것을 목표로 합니다. 기존 'DroidKnights'의 핵심 기능과 디자인 시스템을 활용하여, Jetpack Compose 기반의 현대적인 안드로이드 애플리케이션을 구현합니다.
 
+### 파트 2: 컴포넌트 중심 개발, 기능 확장, Firebase 연동 (12장~21장)
+
+- 머티리얼 디자인, 액티비티/서비스/브로드캐스트/프로바이더
+- DB/파일/SharedPreferences 저장소 활용
+- HTTP/지도/위치 기반 서비스, Firebase 인증과 스토리지, FCM
+
+
 ### 2. 기술 스택 및 개발 환경 (Tech Stack & Environment)
 - IDE: Android Studio 2025.1.1
 - Android API: targetSDK 35, minSDK 32

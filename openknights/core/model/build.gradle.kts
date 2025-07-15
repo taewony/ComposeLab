@@ -4,8 +4,8 @@ plugins {
 }
 
 android {
-    namespace = "com.openknights.core.model"
-    compileSdk = 35
+    namespace = "com.openknights.app.core.model"
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 32

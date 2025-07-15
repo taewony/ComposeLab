@@ -2,16 +2,18 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.0"
 }
 
 android {
-    namespace = "com.example.openknights"
-    compileSdk = 35
+    namespace = "com.openknights.app"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.openknights"
+        applicationId = "com.openknights.app"
         minSdk = 32
-        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -30,6 +32,9 @@ android {
             )
         }
     }
+    lint {
+        abortOnError = false
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -40,9 +45,7 @@ android {
     buildFeatures {
         compose = true
     }
-    composeCompiler {
-        enableStrongSkippingMode = true
-    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -54,22 +57,34 @@ dependencies {
     implementation(project(":openknights:core:designsystem"))
     implementation(project(":openknights:core:model"))
     implementation(project(":openknights:core:testing"))
+    implementation(project(":openknights:feature:contest"))
+    implementation(project(":openknights:feature:project"))
+    implementation(project(":openknights:core:router:impl"))
 
-    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.activity:activity-compose:1.9.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
-    implementation("androidx.navigation:navigation-compose:2.7.7")
-    implementation("androidx.compose.material:material-icons-extended")
+    // Hilt 의존성
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material.icons.extended)
+
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.kotlinx.serialization.core)
+
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }

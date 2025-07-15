@@ -5,8 +5,8 @@ plugins {
 }
 
 android {
-    namespace = "com.openknights.core.designsystem"
-    compileSdk = 35
+    namespace = "com.openknights.app.core.designsystem"
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 32
