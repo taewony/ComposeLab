@@ -1,33 +1,34 @@
 
 package com.openknights.app.core.testing
 
-import com.openknights.app.core.model.*
+import com.openknights.app.core.model.Contest
+import com.openknights.app.core.model.ContestSchedule
+import com.openknights.app.core.model.ContestStatus
+import com.openknights.app.core.model.Contributor
+import com.openknights.app.core.model.Participant
+import com.openknights.app.core.model.Project
+import com.openknights.app.core.model.ProjectPhase
+import com.openknights.app.core.model.ProjectRole
 import java.time.LocalDateTime
 
 object FakeOpenKnightsData {
 
-    // Users
-    val fakeUsers = listOf(
-        User(id = "user-1", name = "김오픈", introduction = "팀장입니다. AI와 안드로이드에 관심이 많습니다.", imageUrl = ""),
-        User(id = "user-2", name = "이나이츠", introduction = "UI/UX 디자인을 담당했습니다.", imageUrl = ""),
-        User(id = "user-3", name = "박컨트리", introduction = "데이터 모델 설계에 참여했습니다.", imageUrl = ""),
-        User(id = "user-4", name = "뷰터", introduction = "백엔드 개발을 맡았습니다.", imageUrl = "")
-    )
+    
 
     // Contests
     val fakeContests = listOf(
         Contest(
             id = "contest-1",
-            term = "2024-1st",
-            name = "2024년 1학기 OpenKnights",
+            term = "2025-1st",
+            name = "2025년 1학기 OpenKnights",
             topic = "AI를 활용한 교내 문제 해결",
             description = "인공지능 기술을 사용하여 우리 학교의 다양한 문제들을 해결하는 혁신적인 소프트웨어를 개발합니다.",
             schedule = ContestSchedule(
-                registrationStart = LocalDateTime.parse("2024-03-01T09:00:00"),
-                registrationEnd = LocalDateTime.parse("2024-04-01T18:00:00"),
-                preliminarySubmissionEnd = LocalDateTime.parse("2024-05-01T18:00:00"),
-                finalSubmissionEnd = LocalDateTime.parse("2024-06-01T18:00:00"),
-                presentationDate = LocalDateTime.parse("2024-06-15T13:00:00")
+                registrationStart = LocalDateTime.parse("2025-03-01T09:00:00"),
+                registrationEnd = LocalDateTime.parse("2025-04-01T18:00:00"),
+                preliminarySubmissionEnd = LocalDateTime.parse("2025-05-01T18:00:00"),
+                finalSubmissionEnd = LocalDateTime.parse("2025-06-01T18:00:00"),
+                presentationDate = LocalDateTime.parse("2025-06-15T13:00:00")
             ),
             status = ContestStatus.COMPLETED
         ),
@@ -52,21 +53,35 @@ object FakeOpenKnightsData {
     val fakeProjects = listOf(
         Project(
             id = "project-1",
-            contestTerm = "2024-1st",
+            contestTerm = "2025-1st",
             title = "AI 기반 도서관 좌석 추천 시스템",
             teamName = "AI 라이브러리안",
             content = "사용자의 학과, 학년, 과거 이용 패턴을 분석하여 도서관 내 최적의 학습 공간을 추천해주는 안드로이드 앱입니다.",
-            phase = ProjectPhase.AWARDED_GRAND,
-            tags = listOf(Tag("AI"), Tag("Android"))
+            phase = ProjectPhase.AWARDED_GRAND
         ),
         Project(
             id = "project-2",
-            contestTerm = "2024-1st",
+            contestTerm = "2025-1st",
             title = "캠퍼스 내 분실물 실시간 추적 서비스",
             teamName = "찾아드림",
             content = "블루투스 비콘을 활용하여 분실물의 위치를 실시간으로 추적하고, 습득자와 분실자를 연결해주는 플랫폼입니다.",
-            phase = ProjectPhase.AWARDED_EXCELLENCE,
-            tags = listOf(Tag("IoT"), Tag("Android"), Tag("Firebase"))
+            phase = ProjectPhase.AWARDED_EXCELLENCE
+        ),
+        Project(
+            id = "project-3",
+            contestTerm = "2025-1st",
+            title = "스마트 캠퍼스 에너지 관리 시스템",
+            teamName = "에코 캠퍼스",
+            content = "IoT 센서를 활용하여 캠퍼스 내 에너지 사용량을 최적화하는 시스템입니다.",
+            phase = ProjectPhase.FINALIST
+        ),
+        Project(
+            id = "project-4",
+            contestTerm = "2025-1st",
+            title = "AI 기반 학사 정보 챗봇",
+            teamName = "캠퍼스 도우미",
+            content = "학생들의 학사 관련 질문에 실시간으로 답변해주는 AI 챗봇입니다.",
+            phase = ProjectPhase.PRELIMINARY_SUBMITTED
         )
     )
 
@@ -81,6 +96,6 @@ object FakeOpenKnightsData {
 
     // Contributors
     val fakeContributors = listOf(
-        Contributor(userId = "user-3", contestTerm = "2024-1st")
+        Contributor(userId = "user-3", contestTerm = "2025-1st")
     )
 }

@@ -5,12 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavController
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.openknights.app.feature.project.projectdetail.ProjectDetailScreen
 import com.openknights.app.feature.project.projectlist.ProjectListScreen
 
 fun NavGraphBuilder.projectNavGraph(
+    navController: NavController,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     composable<RouteProjectList> {
@@ -30,6 +32,6 @@ fun NavGraphBuilder.projectNavGraph(
 
     composable<RouteProjectDetail> { navBackStackEntry ->
         val projectId = navBackStackEntry.toRoute<RouteProjectDetail>().projectId
-        ProjectDetailScreen(projectId = projectId)
+        ProjectDetailScreen(projectId = projectId, navController = navController)
     }
 }

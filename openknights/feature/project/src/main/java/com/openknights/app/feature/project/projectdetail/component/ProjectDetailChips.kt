@@ -24,11 +24,7 @@ internal fun ProjectDetailChips(project: Project) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        OutlineChip(text = project.phase.displayName, borderColor = MaterialTheme.colorScheme.primary, textColor = MaterialTheme.colorScheme.onSurface)
-
-        project.tags.forEach { tag ->
-            OutlineChip(text = tag.name, borderColor = MaterialTheme.colorScheme.primary, textColor = MaterialTheme.colorScheme.onSurface)
-        }
+        OutlineChip(text = project.phase.label, borderColor = MaterialTheme.colorScheme.primary, textColor = MaterialTheme.colorScheme.onSurface)
     }
 }
 

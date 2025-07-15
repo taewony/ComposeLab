@@ -19,6 +19,7 @@ import com.openknights.app.core.model.User
 import com.openknights.app.core.model.ProjectRole
 import com.openknights.app.feature.project.R
 import com.openknights.app.core.testing.FakeOpenKnightsData
+import com.openknights.app.core.testing.FakeUsers
 
 @Composable
 internal fun ProjectDetailSpeaker(
@@ -63,7 +64,7 @@ internal fun ProjectDetailSpeaker(
 private fun ProjectDetailSpeakerPreview() {
     KnightsTheme {
         ProjectDetailSpeaker(
-            user = FakeOpenKnightsData.fakeUsers.first(),
+            user = FakeUsers.users.first(),
             role = ProjectRole.TEAM_LEADER
         )
     }

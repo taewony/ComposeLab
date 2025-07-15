@@ -59,6 +59,7 @@ dependencies {
     implementation(project(":openknights:core:testing"))
     implementation(project(":openknights:feature:contest"))
     implementation(project(":openknights:feature:project"))
+    implementation(project(":openknights:feature:user"))
     implementation(project(":openknights:core:router:impl"))
 
     // Hilt 의존성

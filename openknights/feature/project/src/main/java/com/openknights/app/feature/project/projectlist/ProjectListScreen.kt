@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -53,7 +53,7 @@ internal fun ProjectListScreen(
         rememberProjectState(projects = projects.groups.flatMap { it.projects }.toPersistentList())
     } ?: rememberProjectState(projects = persistentListOf())
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(contestTerm) {
         projectListViewModel.fetchProjects(contestTerm)
         projectListViewModel.errorFlow.collectLatest { throwable -> onShowErrorSnackBar(throwable) }
     }
@@ -79,6 +79,7 @@ internal fun ProjectListScreen(
         ProjectListTopAppBar(
             projectState = projectState,
             onBackClick = projectListViewModel::navigateBack,
+            contestTerm = contestTerm,
         )
         ProjectList(
             projectUiState = projectUiState,
@@ -108,24 +109,26 @@ private fun ProjectList(
         }
         is ProjectUiState.Projects -> {
             val projectState = rememberProjectState(projects = projectUiState.groups.flatMap { it.projects }.toPersistentList())
-            LazyColumn(
-                modifier = modifier,
-                state = projectState.listState,
-                contentPadding = PaddingValues(horizontal = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                projectState.groups.forEach { group ->
-                    item {
-                        ProjectPhaseTitle(
-                            projectPhase = group.projectPhase,
-                            topPadding = if (group == projectState.groups.first()) ProjectTopSpace else ProjectGroupSpace,
-                        )
-                    }
-                    items(items = group.projects) { project ->
+            val totalProjectCount = projectUiState.groups.sumOf { it.projects.size }
+
+            Column(modifier = modifier) {
+                Text(
+                    text = "총 ${totalProjectCount}개 프로젝트",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                LazyColumn(
+                    state = projectState.listState,
+                    contentPadding = PaddingValues(horizontal = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    val allProjects = projectUiState.groups.flatMap { it.projects }
+                    itemsIndexed(items = allProjects) { index, project ->
                         ProjectCard(
                             project = project,
                             isHighlighted = project.id == highlightProjectId,
                             onProjectClick = onProjectClick,
+                            index = index
                         )
                     }
                 }
@@ -144,7 +147,7 @@ private fun ProjectPhaseTitle(
             .padding(start = 20.dp, top = topPadding, end = 20.dp)
     ) {
         Text(
-            text = projectPhase.displayName,
+            text = projectPhase.label,
             style = KnightsTheme.typography.titleLargeB,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )

@@ -56,6 +56,7 @@ import androidx.compose.ui.res.stringResource
 internal fun ProjectListTopAppBar(
     projectState: ProjectState,
     onBackClick: () -> Unit,
+    contestTerm: String, // contestTerm 파라미터 추가
 ) {
     val projectPhases = projectState.projectPhases
     val coroutineScope = rememberCoroutineScope()
@@ -85,7 +86,7 @@ internal fun ProjectListTopAppBar(
             exit = fadeOut(),
         ) {
             KnightsTopAppBar(
-                title = stringResource(id = R.string.project_list_screen_title),
+                title = "프로젝트 목록(${contestTerm})", // 제목 변경
                 navigationType = TopAppBarNavigationType.Close,
                 navigationIconContentDescription = null,
                 modifier = Modifier.statusBarsPadding(),
@@ -162,7 +163,7 @@ private fun ProjectPhaseTab(
         onClick = onClick,
         text = {
             Text(
-                text = projectPhase.displayName,
+                text = projectPhase.label,
                 style = KnightsTheme.typography.titleSmallM,
                 onTextLayout = { textLayoutResult -> onTextLayout(textLayoutResult) }
             )
@@ -200,7 +201,8 @@ private fun ProjectListTopAppBarPreview() {
                 projects = persistentListOf(),
                 listState = rememberLazyListState()
             ),
-            onBackClick = { }
+            onBackClick = { },
+            contestTerm = "2024-1st" // Preview용 contestTerm 추가
         )
     }
 }

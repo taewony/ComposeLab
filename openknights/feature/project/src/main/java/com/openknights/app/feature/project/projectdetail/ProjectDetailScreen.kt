@@ -37,11 +37,16 @@ import com.openknights.app.feature.project.projectdetail.component.ProjectDetail
 import com.openknights.app.feature.project.projectdetail.component.ProjectDetailTopAppBar
 import com.openknights.app.feature.project.projectdetail.model.ProjectDetailUiState
 import com.openknights.app.core.testing.FakeOpenKnightsData
+import com.openknights.app.core.testing.FakeUsers
+
+
+import androidx.navigation.NavController
 
 
 @Composable
 internal fun ProjectDetailScreen(
     projectId: String,
+    navController: NavController,
     viewModel: ProjectDetailViewModel = hiltViewModel(),
 ) {
     val scrollState = rememberScrollState()
@@ -55,7 +60,7 @@ internal fun ProjectDetailScreen(
             .verticalScroll(scrollState),
     ) {
         ProjectDetailTopAppBar(
-            onBackClick = viewModel::navigateBack,
+            onBackClick = { navController.navigateUp() },
         )
         Box {
             when (val uiState = projectUiState) {
@@ -106,7 +111,7 @@ private fun ProjectDetailContent(project: Project) {
 
         val participants = FakeOpenKnightsData.fakeParticipants.filter { it.projectId == project.id }
         participants.forEach { participant ->
-            val user = FakeOpenKnightsData.fakeUsers.first { it.id == participant.userId }
+            val user = FakeUsers.users.first { it.id == participant.userId }
             ProjectDetailSpeaker(user = user, role = participant.role)
             if (participant != participants.last()) {
                 Spacer(modifier = Modifier.height(40.dp))
@@ -162,7 +167,7 @@ private fun ProjectDetailContentPreview(
 @Composable
 private fun ProjectDetailSpeakerPreview() {
     KnightsTheme {
-        val user = FakeOpenKnightsData.fakeUsers.first()
+        val user = FakeUsers.users.first()
         ProjectDetailSpeaker(user = user, role = ProjectRole.TEAM_LEADER)
     }
 }

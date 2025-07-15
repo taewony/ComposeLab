@@ -29,10 +29,12 @@ import androidx.compose.ui.unit.dp
 import com.openknights.app.core.designsystem.theme.KnightsColor
 import com.openknights.app.core.designsystem.theme.KnightsTheme
 import com.openknights.app.core.model.Project
+import com.openknights.app.core.model.ProjectPhase
 import com.openknights.app.core.testing.FakeOpenKnightsData
 import com.openknights.app.core.ui.KnightsCard
 import com.openknights.app.core.ui.NetworkImage
 import com.openknights.app.core.ui.OutlineChip
+import androidx.compose.foundation.layout.Arrangement
 
 @Composable
 internal fun ProjectCard(
@@ -40,12 +42,15 @@ internal fun ProjectCard(
     modifier: Modifier = Modifier,
     isHighlighted: Boolean = false,
     onProjectClick: (Project) -> Unit = {},
+    index: Int = 0 // index 파라미터 추가
 ) {
     val backgroundColor by animateColorAsState(
         targetValue = if (isHighlighted) {
-            KnightsColor.Blue03 // White
-        } else {
+            KnightsColor.Blue03
+        } else if (index % 2 == 0) { // 짝수 인덱스는 흰색
             MaterialTheme.colorScheme.surface
+        } else { // 홀수 인덱스는 흐린 회색
+            KnightsColor.PaleGray
         },
         animationSpec = tween(
             durationMillis = 300,
@@ -67,46 +72,15 @@ private fun ProjectCardContent(
     project: Project,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
+    Column(
+        modifier = modifier.padding(CardContentPadding)
     ) {
-        Column(
-            modifier = Modifier.padding(CardContentPadding)
-        ) {
-            ProjectHeader(project)
-            Spacer(modifier = Modifier.height(8.dp))
-            ProjectTitle(project.title)
-            Spacer(modifier = Modifier.height(12.dp))
-            ProjectPhaseInfo(project)
-            Spacer(modifier = Modifier.height(12.dp))
-            ProjectTeamMembers(project.id) // Pass projectId to fetch participants
-        }
-    }
-}
-
-@Composable
-private fun ProjectHeader(
-    project: Project,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        OutlineChip(
-            text = project.teamName,
-            borderColor = MaterialTheme.colorScheme.primary,
-            textColor = MaterialTheme.colorScheme.onSurface
-        )
-
-        project.tags.forEach { tag ->
-            Text(
-                text = tag.name,
-                style = KnightsTheme.typography.labelLargeM,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                modifier = Modifier
-                    .padding(start = 8.dp)
-            )
+        ProjectTitle(project.title)
+        Spacer(modifier = Modifier.height(4.dp))
+        ProjectTeamName(project.teamName)
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            ProjectPhaseChip(project.phase)
         }
     }
 }
@@ -121,72 +95,37 @@ private fun ProjectTitle(
         style = KnightsTheme.typography.titleLargeB,
         color = MaterialTheme.colorScheme.onSecondaryContainer,
         modifier = modifier
-            .padding(end = 50.dp)
     )
 }
 
 @Composable
-private fun ProjectPhaseInfo(
-    project: Project,
+private fun ProjectTeamName(
+    teamName: String,
     modifier: Modifier = Modifier,
 ) {
-    Row(
+    Text(
+        text = teamName,
+        style = KnightsTheme.typography.labelLargeM,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
         modifier = modifier
-    ) {
-        OutlineChip(
-            text = project.phase.displayName,
-            borderColor = MaterialTheme.colorScheme.primary,
-            textColor = MaterialTheme.colorScheme.onSurface
-        )
-    }
+    )
 }
 
 @Composable
-private fun ProjectTeamMembers(
-    projectId: String,
+private fun ProjectPhaseChip(
+    projectPhase: ProjectPhase,
     modifier: Modifier = Modifier,
 ) {
-    val participants = FakeOpenKnightsData.fakeParticipants.filter { it.projectId == projectId }
-    val users = participants.map { participant ->
-        FakeOpenKnightsData.fakeUsers.first { it.id == participant.userId }
-    }
-
-    Box(
+    OutlineChip(
+        text = projectPhase.label,
+        borderColor = MaterialTheme.colorScheme.primary,
+        textColor = MaterialTheme.colorScheme.onSurface,
         modifier = modifier
-            .fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-        ) {
-            users.forEach { user ->
-                Text(
-                    text = user.name,
-                    style = KnightsTheme.typography.titleLargeB,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                )
-            }
-        }
-
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-        ) {
-            users.forEach { user ->
-                NetworkImage(
-                    imageUrl = user.imageUrl,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape)
-                )
-            }
-        }
-    }
+    )
 }
 
 private val CardContentPadding =
-    PaddingValues(start = 24.dp, top = 16.dp, end = 24.dp, bottom = 24.dp)
+    PaddingValues(start = 24.dp, top = 16.dp, end = 24.dp, bottom = 16.dp)
 
 class ProjectPreviewParameterProvider : PreviewParameterProvider<Project> {
     override val values: Sequence<Project> = sequenceOf(

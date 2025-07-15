@@ -65,7 +65,7 @@ private fun ContestListContent(
     ) {
         item {
             Text(
-                text = "OpenKnights 대회 목록",
+                text = "우송대 오픈소스 경진대회",
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )

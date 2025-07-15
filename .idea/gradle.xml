@@ -40,6 +40,7 @@
             <option value="$PROJECT_DIR$/openknights/feature" />
             <option value="$PROJECT_DIR$/openknights/feature/contest" />
             <option value="$PROJECT_DIR$/openknights/feature/project" />
+            <option value="$PROJECT_DIR$/openknights/feature/user" />
           </set>
         </option>
       </GradleProjectSettings>

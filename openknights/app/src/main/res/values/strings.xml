@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OpenKnights</string>
-    <string name="contest_list_screen_title">대회 목록</string>
+    <string name="contest_list_screen_title">오픈소스 경진대회 목록</string>
     <string name="project_list_screen_title">프로젝트 목록</string>
     <string name="project_detail_screen_title">프로젝트 상세</string>
     <string name="contributor_screen_title">기여자</string>

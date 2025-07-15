@@ -1,14 +1,15 @@
 package com.openknights.app.feature.project.component.chip
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.openknights.app.core.ui.TextChip
+import androidx.compose.ui.unit.dp
 import com.openknights.app.core.designsystem.theme.KnightsColor
-import com.openknights.app.core.model.Room
-import com.openknights.app.core.common.textRes
+import com.openknights.app.core.designsystem.theme.KnightsTheme
+import com.openknights.app.core.ui.TextChip
 
 @Composable
 internal fun TrackChip(text: String) {
@@ -28,14 +29,12 @@ internal fun TrackChip(stringRes: Int) {
 
 @Preview
 @Composable
-private fun PreviewTrackChip(@PreviewParameter(TrackChipPreviewParameterProvider::class) room: Room) {
-    TrackChip(room.textRes)
-}
-
-private class TrackChipPreviewParameterProvider : PreviewParameterProvider<Room> {
-    override val values = sequenceOf(
-        Room("TRACK1"),
-        Room("TRACK2"),
-        Room("ETC"),
-    )
+private fun PreviewTrackChip() {
+    KnightsTheme {
+        Column(modifier = Modifier.padding(8.dp)) {
+            TrackChip(text = "본선")
+            TrackChip(text = "예선")
+            TrackChip(text = "ETC")
+        }
+    }
 }
