@@ -24,6 +24,9 @@ import com.openknights.app.core.testing.FakeOpenKnightsData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
+/**
+ * Module: feature/contest - 대회 목록 화면을 정의합니다.
+ */
 @Composable
 internal fun ContestListScreen(
     padding: PaddingValues,

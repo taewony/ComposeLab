@@ -25,7 +25,7 @@
 ### 4. 개발 목표
 - 'DroidKnights' 앱의 핵심 UI 및 기능을 'OpenKnights' 앱으로 포팅 및 재구현
 - Jetpack Compose를 활용한 선언형 UI 개발 (기존 View 시스템은 사용하지 않음)
-- 안드로이드 'https://developer.android.com/topic/architecture'에서 제시하는 가이드를 최대한 충족함
+- 'https://developer.android.com/topic/architecture'에서 제시하는 안드로이드 아키텍쳐 가이드라인을 최대한 충족함
 - `appcompat` 의존이 필요한 시나리오는 사유를 명시하고 사용해야 함.
 - 앱 개발 작업 순서:
   - `openknights` root directory 밑에 멀티 모듈로 구성

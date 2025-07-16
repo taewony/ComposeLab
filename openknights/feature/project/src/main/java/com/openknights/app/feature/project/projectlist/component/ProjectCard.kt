@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.openknights.app.core.designsystem.theme.KnightsColor
 import com.openknights.app.core.designsystem.theme.KnightsTheme
+import com.openknights.app.core.designsystem.theme.knightsTypography
 import com.openknights.app.core.model.Project
 import com.openknights.app.core.model.ProjectPhase
 import com.openknights.app.core.testing.FakeOpenKnightsData
@@ -92,7 +93,7 @@ private fun ProjectTitle(
 ) {
     Text(
         text = projectTitle,
-        style = KnightsTheme.typography.titleLargeB,
+        style = MaterialTheme.knightsTypography.titleLargeB,
         color = MaterialTheme.colorScheme.onSecondaryContainer,
         modifier = modifier
     )
@@ -105,7 +106,7 @@ private fun ProjectTeamName(
 ) {
     Text(
         text = teamName,
-        style = KnightsTheme.typography.labelLargeM,
+        style = MaterialTheme.knightsTypography.labelLargeM,
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
         modifier = modifier
     )

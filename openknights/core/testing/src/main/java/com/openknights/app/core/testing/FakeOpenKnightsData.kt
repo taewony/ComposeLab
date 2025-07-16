@@ -11,9 +11,10 @@ import com.openknights.app.core.model.ProjectPhase
 import com.openknights.app.core.model.ProjectRole
 import java.time.LocalDateTime
 
+/**
+ * Module: core/testing - 테스트 및 개발 목적으로 사용되는 가짜 데이터를 제공합니다.
+ */
 object FakeOpenKnightsData {
-
-    
 
     // Contests
     val fakeContests = listOf(

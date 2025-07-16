@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.openknights.app.core.model.Project
 import com.openknights.app.core.testing.FakeOpenKnightsData
 import com.openknights.app.feature.project.projectdetail.model.ProjectDetailUiState
-import com.openknights.app.core.router.api.Navigator
+import com.openknights.app.core.navigator.api.Navigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

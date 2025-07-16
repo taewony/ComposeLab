@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.openknights.app.core.designsystem.theme.KnightsTheme
+import com.openknights.app.core.designsystem.theme.knightsTypography
 import com.openknights.app.core.model.Project
 import com.openknights.app.core.model.User
 import com.openknights.app.core.model.Participant
@@ -82,6 +83,11 @@ private fun ProjectDetailLoading() {
     }
 }
 
+/**
+ * `ProjectDetailContent`는 프로젝트 상세 정보를 표시하는 Composable입니다.
+ * `MaterialTheme.knightsTypography`를 사용하여 커스텀 정의된 텍스트 스타일을 적용합니다.
+ * 이는 Material Design 시스템의 일관성을 유지하면서도 앱의 고유한 디자인 요구사항을 충족하는 방법입니다.
+ */
 @Composable
 private fun ProjectDetailContent(project: Project) {
     Column(
@@ -94,7 +100,7 @@ private fun ProjectDetailContent(project: Project) {
                 .padding(top = 8.dp)
                 .padding(end = 58.dp),
             text = project.title,
-            style = KnightsTheme.typography.headlineMediumB,
+            style = MaterialTheme.knightsTypography.headlineMediumB,
             color = MaterialTheme.colorScheme.onSecondaryContainer,
         )
         Spacer(modifier = Modifier.height(12.dp))
@@ -120,18 +126,22 @@ private fun ProjectDetailContent(project: Project) {
     }
 }
 
+/**
+ * `ProjectOverview`는 프로젝트 개요를 표시하는 Composable입니다.
+ * `MaterialTheme.knightsTypography`를 사용하여 커스텀 정의된 텍스트 스타일을 적용합니다.
+ */
 @Composable
 private fun ProjectOverview(content: String) {
     Column {
         Text(
             text = stringResource(id = R.string.project_overview_title),
-            style = KnightsTheme.typography.titleSmallB,
+            style = MaterialTheme.knightsTypography.titleSmallB,
             color = MaterialTheme.colorScheme.onSecondaryContainer
         )
         Spacer(Modifier.height(4.dp))
         Text(
             text = content,
-            style = KnightsTheme.typography.titleSmallR140,
+            style = MaterialTheme.knightsTypography.titleSmallR140,
             color = MaterialTheme.colorScheme.onSecondaryContainer
         )
     }

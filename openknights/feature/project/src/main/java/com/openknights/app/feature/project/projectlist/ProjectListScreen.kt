@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.openknights.app.core.designsystem.theme.KnightsTheme
+import com.openknights.app.core.designsystem.theme.knightsTypography
 import com.openknights.app.core.model.Project
 import com.openknights.app.core.model.ProjectPhase
 import com.openknights.app.feature.project.projectlist.component.ProjectCard
@@ -39,16 +40,27 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
+/**
+ * Module: feature/project - 프로젝트 목록 화면을 정의합니다.
+ */
 @Composable
 internal fun ProjectListScreen(
-    contestTerm: String,
-    onProjectClick: (Project) -> Unit,
-    onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
-    scrollToProjectId: String? = null,
-    projectListViewModel: ProjectListViewModel = hiltViewModel(),
+    contestTerm: String,   // 프로젝트 목록을 가져올 기준 (예: "2024-1st")
+    onProjectClick: (Project) -> Unit,  // 유저가 프로젝트 카드를 클릭했을 때 호출되는 콜백
+    onShowErrorSnackBar: (throwable: Throwable?) -> Unit, // 에러 발생 시 스낵바를 보여주기 위한 콜백
+    scrollToProjectId: String? = null,   // 특정 프로젝트로 스크롤하기 위한 ID, null이면 스크롤하지 않음
+    projectListViewModel: ProjectListViewModel = hiltViewModel(), // Hilt를 통해 주입되는 ViewModel (기본값 있음)
 ) {
     val density = LocalDensity.current
+
+    // StateFlow로 관리되는 ViewModel의 상태(uiState)를 Compose에서 관찰
+    // collectAsStateWithLifecycle을 사용하여 ViewModel의 상태를 관찰하고, 상태가 변경될 때 UI가 자동으로 recomposition
     val projectUiState by projectListViewModel.uiState.collectAsStateWithLifecycle()
+
+    // projectUiState가 ProjectUiState.Projects 타입이면 내부 프로젝트 리스트를 꺼냄
+    // .groups.flatMap { it.projects }: 여러 그룹에 속한 모든 프로젝트들을 한 리스트로 변환
+    // rememberProjectState(...): Compose에서 재구성을 방지하기 위해 프로젝트 상태를 메모리에 저장
+    // 없을 경우에는 빈 리스트로 상태 생성
     val projectState = (projectUiState as? ProjectUiState.Projects)?.let { projects ->
         rememberProjectState(projects = projects.groups.flatMap { it.projects }.toPersistentList())
     } ?: rememberProjectState(projects = persistentListOf())
@@ -148,7 +160,7 @@ private fun ProjectPhaseTitle(
     ) {
         Text(
             text = projectPhase.label,
-            style = KnightsTheme.typography.titleLargeB,
+            style = MaterialTheme.knightsTypography.titleLargeB,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )
 

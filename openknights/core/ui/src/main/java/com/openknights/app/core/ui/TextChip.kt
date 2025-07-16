@@ -11,6 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+/**
+ * Module: core/ui - 재사용 가능한 UI 컴포넌트(TextChip)를 정의합니다.
+ */
 @Composable
 fun TextChip(
     text: String,

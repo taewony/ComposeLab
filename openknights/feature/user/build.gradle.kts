@@ -41,7 +41,7 @@ dependencies {
     implementation(project(":openknights:core:model"))
     implementation(project(":openknights:core:designsystem"))
     implementation(project(":openknights:core:testing"))
-    implementation(project(":openknights:core:router:api"))
+    implementation(project(":openknights:core:navigator:api"))
     implementation(project(":openknights:core:common"))
     implementation(project(":openknights:core:ui"))
     implementation(project(":openknights:core:data"))

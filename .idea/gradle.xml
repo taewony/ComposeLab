@@ -32,9 +32,9 @@
             <option value="$PROJECT_DIR$/openknights/core/data" />
             <option value="$PROJECT_DIR$/openknights/core/designsystem" />
             <option value="$PROJECT_DIR$/openknights/core/model" />
-            <option value="$PROJECT_DIR$/openknights/core/router" />
-            <option value="$PROJECT_DIR$/openknights/core/router/api" />
-            <option value="$PROJECT_DIR$/openknights/core/router/impl" />
+            <option value="$PROJECT_DIR$/openknights/core/navigator" />
+            <option value="$PROJECT_DIR$/openknights/core/navigator/api" />
+            <option value="$PROJECT_DIR$/openknights/core/navigator/impl" />
             <option value="$PROJECT_DIR$/openknights/core/testing" />
             <option value="$PROJECT_DIR$/openknights/core/ui" />
             <option value="$PROJECT_DIR$/openknights/feature" />

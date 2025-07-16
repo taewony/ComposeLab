@@ -40,6 +40,9 @@ import com.openknights.app.feature.user.navigation.USER_ROUTE
 import com.openknights.app.feature.user.navigation.userScreen
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Module: app - 앱의 메인 진입점 및 최상위 UI 구조를 정의합니다.
+ */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

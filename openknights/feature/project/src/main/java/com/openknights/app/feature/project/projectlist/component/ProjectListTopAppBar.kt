@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.openknights.app.core.ui.KnightsTopAppBar
 import com.openknights.app.core.ui.TopAppBarNavigationType
 import com.openknights.app.core.designsystem.theme.KnightsTheme
+import com.openknights.app.core.designsystem.theme.knightsTypography
 import com.openknights.app.core.model.ProjectPhase
 import com.openknights.app.feature.project.projectlist.model.ProjectState
 import com.openknights.app.feature.project.R
@@ -164,7 +165,7 @@ private fun ProjectPhaseTab(
         text = {
             Text(
                 text = projectPhase.label,
-                style = KnightsTheme.typography.titleSmallM,
+                style = MaterialTheme.knightsTypography.titleSmallM,
                 onTextLayout = { textLayoutResult -> onTextLayout(textLayoutResult) }
             )
         }
