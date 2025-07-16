@@ -42,6 +42,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 /**
  * Module: feature/project - 프로젝트 목록 화면을 정의합니다.
+ * Screen: Project List 
  */
 @Composable
 internal fun ProjectListScreen(

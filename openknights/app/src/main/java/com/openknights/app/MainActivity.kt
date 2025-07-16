@@ -55,6 +55,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// Screen: TopBar, BottomBar 및 Content를 보여주는 첫 화면
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OpenKnightsApp() {
@@ -135,6 +136,9 @@ fun OpenKnightsApp() {
             }
         }
     ) { innerPadding ->
+        // NavHost(...)는 앱의 화면 전환을 담당하는 그래프의 중심.
+        // navController를 통해 현재 어디에 있는지 추적하고,
+        // startDestination은 앱을 시작할 때 어떤 화면부터 보여줄지 지정합니다.
         NavHost(navController, startDestination = CONTEST_LIST_ROUTE, Modifier.padding(innerPadding)) {
             contestListScreen(
                 onContestClick = { contest ->

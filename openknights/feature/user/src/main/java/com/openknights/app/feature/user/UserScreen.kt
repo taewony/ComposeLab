@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.FlowRow
  * Module: feature/user - 사용자 목록 화면을 정의합니다.
  * Hilt가 알아서 UserViewModel 인스턴스를 주입해 줍니다.
  * 별도 초기화 코드 없이 ViewModel을 얻을 수 있어, 테스트와 유연성 확보됩니다.
+ * Screen: User List
  */
 @Composable
 fun UserScreen(viewModel: UserViewModel = hiltViewModel()) {

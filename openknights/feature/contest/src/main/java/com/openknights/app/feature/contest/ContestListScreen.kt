@@ -26,6 +26,7 @@ import kotlinx.collections.immutable.toImmutableList
 
 /**
  * Module: feature/contest - 대회 목록 화면을 정의합니다.
+ * Screen: ContestListScreen - 대회 목록을 보여주는 화면입니다.
  */
 @Composable
 internal fun ContestListScreen(

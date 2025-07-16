@@ -43,7 +43,7 @@ import com.openknights.app.core.testing.FakeUsers
 
 import androidx.navigation.NavController
 
-
+// Screen: Project Detail
 @Composable
 internal fun ProjectDetailScreen(
     projectId: String,
