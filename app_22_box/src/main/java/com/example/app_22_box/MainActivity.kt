@@ -29,7 +29,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeLabTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ProfileCardStep2()
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        ProfileCardStep2()
+                    }
                 }
             }
         }

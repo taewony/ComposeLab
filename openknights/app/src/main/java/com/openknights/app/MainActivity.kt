@@ -1,5 +1,7 @@
 package com.openknights.app
 
+// Navigation 3 전용 (예: androidx.navigation:navigation-compose:3.x.x)
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,19 +27,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.NavEntry
+import androidx.navigation3.NavDisplay
+import androidx.navigation3.Scene
+import androidx.navigation3.backStack
+import androidx.navigation3.rememberNavController
 import com.openknights.app.core.designsystem.theme.KnightsTheme
 import com.openknights.app.core.testing.FakeOpenKnightsData
-import com.openknights.app.feature.contest.navigation.CONTEST_LIST_ROUTE
-import com.openknights.app.feature.contest.navigation.contestListScreen
-import com.openknights.app.feature.project.projectnavigation.RouteProjectList
-import com.openknights.app.feature.project.projectnavigation.projectNavGraph
-import com.openknights.app.feature.user.navigation.USER_ROUTE
-import com.openknights.app.feature.user.navigation.userScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -55,28 +51,41 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// ✅ Navigation 3 Entry Definitions
+sealed interface ScreenEntry : NavEntry
+
+data object ContestListScreen : ScreenEntry
+data class ProjectListScreen(val term: String) : ScreenEntry
+data object UserScreen : ScreenEntry
+
 // Screen: TopBar, BottomBar 및 Content를 보여주는 첫 화면
+// ✅ Main Composable
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OpenKnightsApp() {
-    val navController = rememberNavController()
+    val navController = rememberNavController<ScreenEntry>()
+    val backStack by navController.backStack.collectAsState()
+    val currentEntry = backStack.lastOrNull()
 
     val latestContestTerm = FakeOpenKnightsData.fakeContests.firstOrNull()?.term ?: ""
 
     Scaffold(
         topBar = {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry?.destination?.route
-
             TopAppBar(
-                title = { Text("OpenNights", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
+                title = {
+                    Text(
+                        "OpenKnights",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 navigationIcon = {
-                    if (navController.previousBackStackEntry != null) {
-                        IconButton(onClick = { navController.navigateUp() }) {
+                    if (backStack.size > 1) {
+                        IconButton(onClick = { navController.pop() }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Back"
@@ -86,49 +95,32 @@ fun OpenKnightsApp() {
                 }
             )
         },
-        bottomBar = {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentDestination = navBackStackEntry?.destination
 
+        bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    selected = currentDestination?.hierarchy?.any { it.route == CONTEST_LIST_ROUTE } == true,
+                    selected = currentEntry is ContestListScreen,
                     onClick = {
-                        navController.navigate(CONTEST_LIST_ROUTE) {
-                            popUpTo(CONTEST_LIST_ROUTE) {
-                                inclusive = true
-                            }
-                            launchSingleTop = true
-                            restoreState = false
-                        }
+                        navController.popUpToRoot()
+                        navController.push(ContestListScreen)
                     },
                     icon = { Icon(Icons.Default.Home, contentDescription = null) },
                     label = { Text("HOME") }
                 )
                 NavigationBarItem(
-                    selected = currentDestination?.hierarchy?.any { it.route?.startsWith("com.openknights.app.feature.project.projectnavigation.RouteProjectList") == true } == true,
+                    selected = currentEntry is ProjectListScreen,
                     onClick = {
-                        navController.navigate(RouteProjectList(latestContestTerm)) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = false
-                        }
+                        navController.popUpToRoot()
+                        navController.push(ProjectListScreen(latestContestTerm))
                     },
                     icon = { Icon(Icons.Default.List, contentDescription = null) },
                     label = { Text("프로젝트") }
                 )
                 NavigationBarItem(
-                    selected = currentDestination?.hierarchy?.any { it.route == USER_ROUTE } == true,
+                    selected = currentEntry is UserScreen,
                     onClick = {
-                        navController.navigate(USER_ROUTE) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
+                        navController.popUpToRoot()
+                        navController.push(UserScreen)
                     },
                     icon = { Icon(Icons.Default.Person, contentDescription = null) },
                     label = { Text("사용자") }
@@ -136,20 +128,25 @@ fun OpenKnightsApp() {
             }
         }
     ) { innerPadding ->
-        // NavHost(...)는 앱의 화면 전환을 담당하는 그래프의 중심.
-        // navController를 통해 현재 어디에 있는지 추적하고,
-        // startDestination은 앱을 시작할 때 어떤 화면부터 보여줄지 지정합니다.
-        NavHost(navController, startDestination = CONTEST_LIST_ROUTE, Modifier.padding(innerPadding)) {
-            contestListScreen(
-                onContestClick = { contest ->
-                    navController.navigate(RouteProjectList(contest.term))
-                }
-            )
-            projectNavGraph(
-                navController = navController,
-                onShowErrorSnackBar = { throwable -> /* TODO: Show snackbar */ }
-            )
-            userScreen()
+        NavDisplay(
+            controller = navController,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            Scene<ContestListScreen> {
+                ContestListScreenView(
+                    onContestClick = { contest ->
+                        navController.push(ProjectListScreen(contest.term))
+                    }
+                )
+            }
+
+            Scene<ProjectListScreen> { entry ->
+                ProjectListScreenView(term = entry.term)
+            }
+
+            Scene<UserScreen> {
+                UserScreenView()
+            }
         }
     }
 }

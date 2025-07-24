@@ -1,8 +1,9 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
     id("dagger.hilt.android.plugin")
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -12,14 +13,12 @@ android {
     defaultConfig {
         minSdk = 32
     }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+    kotlin {
+        jvmToolchain(21)
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
+    buildFeatures {
+        compose = true
     }
 }
 

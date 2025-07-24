@@ -1,15 +1,12 @@
 pluginManagement {
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com.android.*")
-                includeGroupByRegex("com.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
+}
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -17,6 +14,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url = uri("https://jitpack.io") }
+        maven { url = uri("https://androidx.dev/snapshots/builds/latest/artifacts/repository") }
     }
 }
 
@@ -49,3 +47,4 @@ include(":openknights:core:common")
 include(":openknights:core:ui")
 include(":openknights:core:data")
 include(":app_12_material_design")
+include(":app_14_triple")

@@ -1,6 +1,7 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -11,19 +12,12 @@ android {
         minSdk = 32
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+    kotlin {
+        jvmToolchain(21)
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
     buildFeatures {
-        buildConfig = true
-    }
-    androidResources {
-        enable = true
+        compose = true
     }
 }
 

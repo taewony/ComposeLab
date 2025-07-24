@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.dagger.hilt.android")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
     id("org.jetbrains.kotlin.plugin.serialization") version "2.2.0"
 }
 
@@ -35,9 +35,9 @@ android {
     lint {
         abortOnError = false
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+
+    kotlin {
+        jvmToolchain(21)
     }
 
     buildFeatures {
@@ -58,7 +58,7 @@ dependencies {
     implementation(project(":openknights:feature:contest"))
     implementation(project(":openknights:feature:project"))
     implementation(project(":openknights:feature:user"))
-    implementation(project(":openknights:core:navigator:impl"))
+
 
     // Hilt 의존성
     implementation(libs.hilt.android)
@@ -72,10 +72,9 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.material.icons.extended)
 
-    implementation(libs.androidx.navigation3.ui)
-    implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.kotlinx.serialization.core)
 

@@ -14,21 +14,17 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.composeBom.get()
     }
-    composeCompiler {
-        enableStrongSkippingMode = true
-    }
 
     defaultConfig {
         minSdk = 32
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+    kotlin {
+        jvmToolchain(21)
     }
 
-    kotlinOptions {
-        jvmTarget = "21"
+    buildFeatures {
+        compose = true
     }
 }
 

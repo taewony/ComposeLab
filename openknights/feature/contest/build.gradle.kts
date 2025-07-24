@@ -3,7 +3,9 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("dagger.hilt.android.plugin")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
+    // Optional, provides the @Serialize annotation for autogeneration of Serializers.
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -16,9 +18,6 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.composeBom.get()
     }
-    composeCompiler {
-        enableStrongSkippingMode = true
-    }
 
     packaging {
         resources {
@@ -29,12 +28,12 @@ android {
         minSdk = 32
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+    kotlin {
+        jvmToolchain(21)
     }
-    kotlinOptions {
-        jvmTarget = "21"
+
+    buildFeatures {
+        compose = true
     }
 }
 
@@ -55,13 +54,10 @@ dependencies {
     kspAndroidTest(libs.hilt.compiler)
     kspTest(libs.hilt.compiler)
 
-    // Navigation Compose 의존성
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.hilt.navigation.compose)
-
-    // Lifecycle Compose 의존성
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.kotlinx.serialization.core)
 
     // Compose UI 의존성
     implementation(platform(libs.androidx.compose.bom))

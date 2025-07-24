@@ -1,69 +1,100 @@
 package com.example.app_13_todotask
 
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Button
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.TopAppBarState
-import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.ui.platform.LocalContext
-
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
+import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.app_13_todotask.ui.theme.ComposeLabTheme
-import com.example.app_13_todotask.R
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            ComposeLabTheme {
+                AppContent()
+            }
+        }
+    }
+}
 
 @Composable
 fun AppContent() {
     val navController = rememberNavController()
-    val datas = remember { mutableStateListOf<String>() }
+    val todos = remember { mutableStateListOf<String>() }
 
     NavHost(navController = navController, startDestination = "main") {
         composable("main") {
-            MainScreenContent(navController = navController, datas = datas)
+            MainScreenContent(
+                onAddClick = { navController.navigate("add") },
+                datas = todos
+            )
         }
         composable("add") {
-            AddScreenContent(navController = navController, onSave = { newTodo ->
-                datas.add(newTodo)
-            })
+            AddScreenContent(
+                onBack = { navController.popBackStack() },
+                onSave = { todo ->
+                    todos.add(todo)
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreenContent(navController: NavController, datas: MutableList<String>) {
+fun MainScreenContent(
+    onAddClick: () -> Unit,
+    datas: List<String>
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -75,7 +106,7 @@ fun MainScreenContent(navController: NavController, datas: MutableList<String>) 
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate("add") }) {
+            FloatingActionButton(onClick = onAddClick) {
                 Icon(Icons.Filled.Add, "Add new todo")
             }
         }
@@ -91,7 +122,7 @@ fun MainScreenContent(navController: NavController, datas: MutableList<String>) 
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    textAlign = TextAlign.Center
                 )
             } else {
                 LazyColumn(
@@ -131,7 +162,7 @@ fun TodoItem(todo: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddScreenContent(navController: NavController, onSave: (String) -> Unit) {
+fun AddScreenContent(onSave: (String) -> Unit, onBack: () -> Unit) {
     var todoText by remember { mutableStateOf("") }
 
     Scaffold(
@@ -139,8 +170,8 @@ fun AddScreenContent(navController: NavController, onSave: (String) -> Unit) {
             TopAppBar(
                 title = { Text("Add Todo") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -167,13 +198,14 @@ fun AddScreenContent(navController: NavController, onSave: (String) -> Unit) {
                 value = todoText,
                 onValueChange = { todoText = it },
                 label = { Text("할 일을 입력하세요") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = false,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
             )
             Button(
                 onClick = {
                     if (todoText.isNotBlank()) {
                         onSave(todoText)
-                        navController.popBackStack()
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -186,25 +218,17 @@ fun AddScreenContent(navController: NavController, onSave: (String) -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun MainScreenPreview() {
-    ComposeLabTheme {
-        MainScreenContent(navController = rememberNavController(), datas = remember { mutableStateListOf("Sample Todo 1", "Sample Todo 2") })
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
 fun AddScreenPreview() {
     ComposeLabTheme {
-        AddScreenContent(navController = rememberNavController(), onSave = {})
+        AddScreenContent({}, onBack = {})
     }
 }
 
 
 @Preview(showBackground = true)
 @Composable
-fun AppContentPreview() {
+fun MainScreenPreview() {
     ComposeLabTheme {
-        AppContent()
+        MainScreenContent({ }, datas = remember { mutableStateListOf("Sample Todo 1", "Sample Todo 2") })
     }
 }
