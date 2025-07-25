@@ -6,12 +6,11 @@ plugins {
 
 android {
     namespace = "com.example.app_22_wellness"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.app_22_wellness"
         minSdk = 32
-        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 

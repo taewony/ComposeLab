@@ -44,13 +44,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.ui.NavDisplay
 import com.example.app_13_todotask.ui.theme.ComposeLabTheme
 
 class MainActivity : ComponentActivity() {
@@ -65,28 +63,42 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// --- Navigation3 화면 Entry Key 정의 ---
+private data object MainScreen
+private data object AddScreen
+
 @Composable
 fun AppContent() {
-    val navController = rememberNavController()
+    // 상태 관리: 할 일 목록
     val todos = remember { mutableStateListOf<String>() }
 
-    NavHost(navController = navController, startDestination = "main") {
-        composable("main") {
-            MainScreenContent(
-                onAddClick = { navController.navigate("add") },
-                datas = todos
-            )
-        }
-        composable("add") {
-            AddScreenContent(
-                onBack = { navController.popBackStack() },
-                onSave = { todo ->
-                    todos.add(todo)
-                    navController.popBackStack()
+    // Navigation3 Backstack
+    val backStack = remember { mutableStateListOf<Any>(MainScreen) }
+
+    NavDisplay(
+        backStack = backStack,
+        onBack = { backStack.removeLastOrNull() },
+        entryProvider = { key ->
+            when (key) {
+                is MainScreen -> NavEntry(key) {
+                    MainScreenContent(
+                        onAddClick = { backStack += AddScreen },
+                        datas = todos
+                    )
                 }
-            )
+                is AddScreen -> NavEntry(key) {
+                    AddScreenContent(
+                        onBack = { backStack.removeLastOrNull() },
+                        onSave = { todo ->
+                            todos.add(todo)
+                            backStack.removeLastOrNull()
+                        }
+                    )
+                }
+                else -> error("Unknown key: $key")
+            }
         }
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -122,7 +134,7 @@ fun MainScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    textAlign = TextAlign.Center
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
             } else {
                 LazyColumn(
@@ -146,6 +158,10 @@ fun TodoItem(todo: String) {
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        /* Icon(
+            Icons.Default.CheckCircle,
+            contentDescription = "Todo Icon"
+        ) */
         Image(
             painter = painterResource(id = R.drawable.todo),
             contentDescription = "Todo Icon",
@@ -196,10 +212,10 @@ fun AddScreenContent(onSave: (String) -> Unit, onBack: () -> Unit) {
             )
             OutlinedTextField(
                 value = todoText,
-                onValueChange = { todoText = it },
+                onValueChange = { todoText = it },  // 입력값 필터링 없이 그대로 저장
                 label = { Text("할 일을 입력하세요") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = false,
+                singleLine = false, // 한글 조합 입력 깨짐 방지
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
             )
             Button(
@@ -215,6 +231,7 @@ fun AddScreenContent(onSave: (String) -> Unit, onBack: () -> Unit) {
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

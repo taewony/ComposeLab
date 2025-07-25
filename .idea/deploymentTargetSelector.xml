@@ -20,9 +20,6 @@
       <SelectionState runConfigName="app_03">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="MainActivity">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="app_11_jetpack">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -49,12 +46,6 @@
       <SelectionState runConfigName="app_11_dropdown">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="MainActivity (1)">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="MainActivity (2)">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="app_22_wellness">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -70,9 +61,6 @@
       <SelectionState runConfigName="openknights">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="MainActivity (3)">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="core.designsystem">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -86,9 +74,6 @@
           </Target>
         </DropdownSelection>
         <DialogSelection />
-      </SelectionState>
-      <SelectionState runConfigName="OpenKnightsAppPreview">
-        <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="app_12_material_design">
         <option name="selectionMode" value="DROPDOWN" />
