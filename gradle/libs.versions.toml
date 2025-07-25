@@ -1,14 +1,15 @@
+# Gradle 버전 카탈로그 (Version Catalog)
+# 프로젝트 전체에서 의존성 버전을 한 곳에서 관리하도록 도와줌
+# build.gradle 개별 모듈마다 버전을 따로 적는 대신 하나의 중앙 정의 파일을 사용
+
 [versions]
 agp = "8.11.1"
-# Kotlin 및 Compose
-kotlin = "2.2.0"
-composeCompiler = "2.0.0" # Kotlin 2.2.0과 호환
-kotlinSerialization = "2.2.0"
-kotlinxSerializationCore = "1.6.3"
-navigation = "2.8.0-beta01"
+kotlin = "2.0.21"
+kotlinxSerializationCore = "1.7.1"
+navigation = "2.8.9"  # stable 타입 세이프 기능 포함
 
 # KSP
-ksp = "2.2.0-RC2-2.0.1"
+ksp = "2.0.21-1.0.28"
 
 # Jetpack Navigation 3
 nav3Core = "2.0.0-alpha01"
@@ -19,9 +20,9 @@ coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.9.1"
+lifecycleRuntimeKtx = "2.9.2"
 activityCompose = "1.10.1"
-composeBom = "2025.06.00"
+composeBom = "2024.09.00"
 material = "1.12.0"
 appcompat = "1.6.1"
 
@@ -67,6 +68,7 @@ androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runt
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version = "1.0.0-alpha05" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigation" }
+androidx-navigation-compose-compiler = { group = "androidx.navigation", name = "navigation-compose-compiler", version.ref = "navigation" }
 
 
 # Optional add-on libraries
@@ -75,12 +77,11 @@ androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecy
 # Kotlin Serialization
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 
-
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

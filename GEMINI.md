@@ -14,7 +14,10 @@
 - IDE: Android Studio 2025.1.1
 - Android API: targetSDK 35, minSDK 32
 - UI Toolkit: Jetpack Compose (Material 3)
-- Language: Kotlin
+- Language and [versions]
+  - agp = "8.11.1"
+  - kotlin = "2.0.21"
+  - composeBom = "2024.09.00"
 
 ### 3. 모듈 구조 (Module Structure)
 - **프로젝트 원칙**: 각 `app_xx` 모듈은 학생들이 개별 예제를 직접 빌드하고 실행하며 학습할 수 있도록, 독립적으로 실행 가능한 애플리케이션(Application)으로 구성하는 것을 원칙으로 합니다.
