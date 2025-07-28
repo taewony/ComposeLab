@@ -10,5 +10,6 @@ plugins {
     
 
     alias(libs.plugins.hilt) apply false
-    alias(libs.plugins.ksp) apply false  // KSP (Kotlin Symbol Processing)  Room, Hilt, Moshi 등 annotation processing 최적화
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.kotlin.compose) apply false  // KSP (Kotlin Symbol Processing)  Room, Hilt, Moshi 등 annotation processing 최적화
 }

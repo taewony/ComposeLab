@@ -1,11 +1,10 @@
 plugins {
-    id("com.android.library")
+    id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
-    id("dagger.hilt.android.plugin")
+    id("com.google.dagger.hilt.android")
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.0"
     alias(libs.plugins.ksp)
-    // Optional, provides the @Serialize annotation for autogeneration of Serializers.
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -53,10 +52,12 @@ dependencies {
     ksp(libs.hilt.compiler)
     kspAndroidTest(libs.hilt.compiler)
     kspTest(libs.hilt.compiler)
+    ksp(libs.androidx.navigation3.ksp)
 
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.navigation.runtime.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    // Navigation Compose와 함께 ViewModel을 사용하기 위한 올바른 라이브러리
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
     implementation(libs.kotlinx.serialization.core)
 
     // Compose UI 의존성
@@ -67,5 +68,5 @@ dependencies {
     implementation(libs.androidx.material3)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    androidTestImplementation(libs.androidx.ui.test.junit4)
+    // androidTestImplementation(libs.androidx.ui.test.junit4)
 }

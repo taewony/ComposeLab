@@ -1,10 +1,10 @@
 plugins {
-    id("com.android.library")
+    id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.dagger.hilt.android")
-    alias(libs.plugins.ksp)
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.2.0"
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -53,11 +53,11 @@ dependencies {
     // Hilt 의존성
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    ksp(libs.androidx.navigation3.ksp)
 
-    // Navigation Compose 의존성
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.navigation.runtime.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    // Navigation3 의존성
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
     implementation(libs.kotlinx.serialization.core)
 
     // Lifecycle Compose 의존성
@@ -72,5 +72,5 @@ dependencies {
     implementation(libs.androidx.material3)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    androidTestImplementation(libs.androidx.ui.test.junit4)
+    // androidTestImplementation(libs.androidx.ui.test.junit4)
 }

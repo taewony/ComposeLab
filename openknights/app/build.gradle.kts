@@ -1,10 +1,10 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.dagger.hilt.android")
-    alias(libs.plugins.ksp)
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.2.0"
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -63,6 +63,7 @@ dependencies {
     // Hilt 의존성
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    ksp(libs.androidx.navigation3.ksp)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
@@ -71,11 +72,12 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
 
-    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    // Navigation Compose와 함께 ViewModel을 사용하기 위한 올바른 라이브러리
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
     implementation(libs.kotlinx.serialization.core)
 
     testImplementation(libs.junit)

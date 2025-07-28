@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     alias(libs.plugins.ksp)
     id("dagger.hilt.android.plugin")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {

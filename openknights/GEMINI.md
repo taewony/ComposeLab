@@ -81,6 +81,36 @@ Project Root/
 ### 9. 프롬프트 파일 사용법 (prompt.txt)
 프로젝트 루트 디렉토리의 `prompt.txt` 파일을 활용하여 작업 지시 및 진행 상황을 기록합니다.
 
+### 11. 내비게이션 처리 방식 비교: `app_13_todotask` vs `OpenKnights`
+
+이 프로젝트는 `Jetpack Navigation 3` 라이브러리를 활용한 **타입 세이프(Type-Safe) 내비게이션**을 목표로 합니다. 이는 `app_13_todotask` 모듈에서 사용된 내비게이션 방식과 중요한 차이가 있습니다.
+
+*   **`app_13_todotask` 내비게이션 방식 (기본 런타임 기능)**:
+    *   `NavDisplay` 및 `NavEntry`를 사용하여 백스택을 수동으로 관리하고, 각 화면을 `data object` 또는 `data class`로 정의하여 내비게이션 키로 사용합니다.
+    *   화면 전환 시 `backStack.add()` 또는 `backStack.removeLastOrNull()`과 같은 메서드를 직접 호출합니다.
+    *   **장점**: 내비게이션 로직에 대한 완전한 제어권을 가지며, 코드 생성(KSP)이 필요 없어 빌드 설정이 간단합니다.
+    *   **단점**: 내비게이션 경로(키)나 인자 전달 시 오타나 타입 불일치가 발생하면 런타임 오류로 이어질 수 있으며, 보일러플레이트 코드가 증가하고 리팩토링이 어려울 수 있습니다.
+
+*   **`OpenKnights` 내비게이션 방식 (타입 세이프 Navigation with KSP)**:
+    *   `KSP(Kotlin Symbol Processing)`를 활용하여 컴파일 타임에 내비게이션 인자의 타입 불일치나 누락을 감지하고 런타임 오류를 방지합니다.
+    *   `@Destination`과 같은 어노테이션을 사용하여 내비게이션 경로와 인자를 정의하면, KSP가 필요한 내비게이션 코드를 자동으로 생성해줍니다.
+    *   **장점**: 컴파일 타임 안전성, 보일러플레이트 코드 감소, 향상된 개발자 경험(자동 완성, 타입 힌트, 안전한 리팩토링)을 제공합니다.
+    *   **단점**: KSP 설정 및 플러그인 추가가 필요하며, 알파 버전 라이브러리 사용 시 안정성 문제가 있을 수 있습니다.
+
+`OpenKnights` 프로젝트는 장기적인 유지보수성과 개발 편의성을 위해 타입 세이프 내비게이션 방식을 채택합니다.
+
+### 12. 타입 세이프 Navigation을 위한 KSP 의존성 추가
+
+타입 세이프 Navigation 기능을 사용하려면 `gradle/libs.versions.toml` 파일에 `androidx-navigation3-ksp` 의존성을 추가해야 합니다.
+
+**`gradle/libs.versions.toml` 파일 수정**:
+
+`[libraries]` 섹션에 다음 라인을 추가합니다:
+
+```toml
+androidx-navigation3-ksp = { module = "androidx.navigation3:navigation3-ksp", version.ref = "navigation3" }
+```
+
 ### 10. OpenKnights sub-project만 집중하여 개발
 아래와 같이 특정 모듈만 빌드하여 개발 시간 단축.
 특정 모듈만 빌드	./gradlew :openknights:core:designsystem:build
