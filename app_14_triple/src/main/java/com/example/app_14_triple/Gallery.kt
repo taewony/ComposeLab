@@ -13,6 +13,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -21,9 +24,49 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app_14_triple.ui.theme.ComposeLabTheme
+import androidx.compose.runtime.setValue
 
 @Composable
 fun GalleryScreen() {
+    // 이미지 선택 여부를 기억하는 상태 변수. 초기값은 false.
+    var isImageSelected by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Gallery",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = {
+            // 버튼을 클릭하면 상태를 true로 변경합니다.
+            isImageSelected = true
+        }) {
+            Text("Select Image")
+        }
+
+        // isImageSelected가 true일 때만 아래의 이미지 UI를 화면에 표시합니다.
+        if (isImageSelected) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Image(
+                painter = painterResource(id = R.drawable.image),
+                contentDescription = "Sample Image",
+                modifier = Modifier.size(200.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun GalleryUIScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -54,6 +97,6 @@ fun GalleryScreen() {
 @Composable
 fun GalleryScreenPreview() {
     ComposeLabTheme {
-        GalleryScreen()
+        GalleryUIScreen()
     }
 }

@@ -70,6 +70,7 @@ import com.example.app_14_triple.ui.theme.ComposeLabTheme
 import kotlinx.coroutines.launch
 import com.example.app_14_triple.BatteryStatusRoute // import문 추가
 import com.example.app_14_triple.Mp3PlayerScreen
+import com.example.app_14_triple.GalleryScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
