@@ -53,7 +53,6 @@ dependencies {
     // Hilt 의존성
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    ksp(libs.androidx.navigation3.ksp)
 
     // Navigation3 의존성
     implementation(libs.androidx.navigation3.runtime)
