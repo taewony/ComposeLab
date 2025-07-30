@@ -68,6 +68,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.app_14_triple.ui.theme.ComposeLabTheme
 import kotlinx.coroutines.launch
+import com.example.app_14_triple.BatteryStatusRoute // import문 추가
+import com.example.app_14_triple.Mp3PlayerScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,7 +112,9 @@ fun AppContent() {
             )
         }
         composable(ROUTE_BATTERY_STATUS) {
-            BatteryStatusScreen(batteryLevel = 80, isCharging = true) // Placeholder values
+            // BatteryStatusScreen(batteryLevel = 80, isCharging = true) // Placeholder values
+            // 기존의 하드코딩된 값을 사용하는 대신, BatteryStatusRoute()를 호출하여 모든 로직을 위임합니다.
+            BatteryStatusRoute()
         }
         composable(ROUTE_MP3_PLAYER) {
             Mp3PlayerScreen()
@@ -310,119 +314,6 @@ fun AddScreenContent(onSave: (String) -> Unit, onBack: () -> Unit) {
     }
 }
 
-@Composable
-fun BatteryStatusScreen(batteryLevel: Int, isCharging: Boolean) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background) // 배경색 명시적 설정
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Battery Level: $batteryLevel%",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = if (isCharging) "Charging" else "Not Charging",
-            fontSize = 20.sp,
-            color = if (isCharging) Color.Blue else Color.Red
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun BatteryStatusScreenPreview() {
-    ComposeLabTheme {
-        BatteryStatusScreen(batteryLevel = 75, isCharging = true)
-    }
-}
-
-@Composable
-fun Mp3PlayerScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background) // 전체 화면 배경
-            .padding(16.dp),
-        contentAlignment = Alignment.Center // Box 내용을 중앙에 배치
-    ) {
-        Column(
-            modifier = Modifier
-                .background(Color.Black) // MP3 플레이어 영역 배경을 검은색으로 설정
-                .padding(24.dp), // 내부 여백 추가
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "     MP3 Player    ",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White // 텍스트 색상을 흰색으로 변경
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Image(painter = painterResource(id = R.drawable.ic_play),
-                    contentDescription = "Play",
-                    modifier = Modifier.size(48.dp))
-                Image(painter = painterResource(id = R.drawable.ic_stop),
-                    contentDescription = "Stop",
-                    modifier = Modifier.size(48.dp))
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun Mp3PlayerScreenPreview() {
-    ComposeLabTheme {
-        Mp3PlayerScreen()
-    }
-}
-
-@Composable
-fun GalleryScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background) // 배경색 명시적 설정
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Gallery",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { /* Handle image selection */ }) {
-            Text("Select Image")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Image(
-            painter = painterResource(id = R.drawable.image), // Using a placeholder image
-            contentDescription = "Sample Image",
-            modifier = Modifier.size(200.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GalleryScreenPreview() {
-    ComposeLabTheme {
-        GalleryScreen()
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
@@ -430,7 +321,6 @@ fun MainScreenPreview() {
         MainScreenContent({ }, datas = remember { mutableStateListOf("Sample Todo 1", "Sample Todo 2") }, navController = rememberNavController())
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
