@@ -3,9 +3,9 @@ package com.example.app_17_todo_revised
 // "navigation3" 라이브러리의 핵심 import
 //import androidx.navigation3.runtime.NavEntry
 //import androidx.navigation3.ui.NavDisplay
-import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
@@ -33,7 +33,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
@@ -74,8 +73,8 @@ fun AppContent() {
     val backStack = remember { mutableStateListOf<Route>(MainScreen) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    // ✅ 1. 현재 Activity를 가져옵니다.
-    val activity = (LocalContext.current as? Activity)
+    // ✅ 1. 현재 Activity를 가져옵니다. LocalContext 캐스팅 대신 LocalActivity.current 사용하세요.
+    val activity = LocalActivity.current
 
     ModalNavigationDrawer(
         drawerState = drawerState,
