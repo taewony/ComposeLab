@@ -27,13 +27,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.app_17_todo_revised.data.settings.SortOrder
-import com.example.app_17_todo_revised.viewmodel.PreferenceViewModel
+import com.example.app_17_todo_revised.viewmodel.TodoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreferenceScreen(
     // 실제 앱에서는 ViewModelProvider.Factory를 통해 주입하는 것이 좋음
-    viewModel: PreferenceViewModel = viewModel(),
+    viewModel: TodoViewModel = viewModel(),
     onNavigateBack: () -> Unit // 1. 뒤로 가기 액션을 위한 콜백 함수 추가
 ) {
     // ViewModel의 StateFlow를 구독하여 현재 정렬 순서를 가져옴

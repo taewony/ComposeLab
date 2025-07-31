@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
-import com.example.app_17_todo_revised.data.local.TodoItem
 import com.example.app_17_todo_revised.screen.AddScreenContent
 import com.example.app_17_todo_revised.screen.BatteryStatusScreen
 import com.example.app_17_todo_revised.screen.GalleryScreen
@@ -48,7 +47,7 @@ import com.example.app_17_todo_revised.screen.MainScreenContent
 import com.example.app_17_todo_revised.screen.Mp3PlayerScreen
 import com.example.app_17_todo_revised.screen.PreferenceScreen
 import com.example.app_17_todo_revised.ui.theme.ComposeLabTheme
-import com.example.app_17_todo_revised.viewmodel.PreferenceViewModel
+import com.example.app_17_todo_revised.viewmodel.TodoViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -75,22 +74,23 @@ data object PreferenceScreen : Route
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppContent() {
-    val todoItems = remember { mutableStateListOf<TodoItem>() } // 화면 나가면 지워짐
+    // val todoItems = remember { mutableStateListOf<TodoItem>() } // 화면 나가면 지워짐
     val backStack = remember { mutableStateListOf<Route>(MainScreen) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     // ✅ 1. 현재 Activity를 가져옵니다. LocalContext 캐스팅 대신 LocalActivity.current 사용하세요.
     val activity = LocalActivity.current
-    // 1. ViewModel 인스턴스를 가져옵니다. val viewModel: TodoViewModel = viewModel()
 
-    // --- State ---
+    // --- State ---TodoViewModel에서 모두 관리하도록 통합
+    // 1. ViewModel 인스턴스를 가져옵니다. val viewModel: TodoViewModel = viewModel()
     // 2. ViewModel의 StateFlow를 구독하여 Compose State로 변환합니다.
     //    값이 변경되면 UI가 자동으로 업데이트됩니다.
-    // val todoItems by viewModel.todoItems.collectAsState()
-	
-    // ViewModel 가져오기 (AndroidViewModel이므로 기본 팩토리 사용 가능)
-    val preferenceViewModel: PreferenceViewModel = viewModel()
-	val sortOrder by preferenceViewModel.sortOrder.collectAsState()
+
+    // 통합 이유: 화면에 필요한 모든 데이터와 로직을 하나의 ViewModel에서 관리하여
+    //      데이터 흐름을 단순화하고 일관성을 유지합니다.
+    val todoViewModel: TodoViewModel = viewModel()
+    val todoItems by todoViewModel.todoItems.collectAsState()
+    val sortOrder by todoViewModel.sortOrder.collectAsState()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -192,8 +192,11 @@ fun AppContent() {
                             is AddScreen -> NavEntry(route) {
                                 AddScreenContent(
                                     onBack = { backStack.removeLastOrNull() },
-                                    onSave = { item ->
-                                        todoItems.add(item)
+                                    // 이유: UI는 "저장해줘" 라는 요청만 보내고, 실제 DB에 저장하는 복잡한 로직은
+                                    //      ViewModel과 Repository가 담당하도록 역할을 분리합니다.
+                                    onSave = {  item, ->
+                                        // 이제 task 문자열만 ViewModel에 전달합니다.
+                                        todoViewModel.addTodo(item.task)
                                         backStack.removeLastOrNull()
                                     }
                                 )

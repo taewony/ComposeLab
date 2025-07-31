@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("org.jetbrains.kotlin.plugin.compose") version "2.2.0" // 중요
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0" // 중요
 }
 
 android {
