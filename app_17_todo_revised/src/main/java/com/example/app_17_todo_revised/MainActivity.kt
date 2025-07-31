@@ -1,8 +1,5 @@
 package com.example.app_17_todo_revised
 
-// "navigation3" 라이브러리의 핵심 import
-//import androidx.navigation3.runtime.NavEntry
-//import androidx.navigation3.ui.NavDisplay
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
@@ -13,29 +10,37 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
+import com.example.app_17_todo_revised.data.local.TodoItem
 import com.example.app_17_todo_revised.screen.AddScreenContent
 import com.example.app_17_todo_revised.screen.BatteryStatusScreen
 import com.example.app_17_todo_revised.screen.GalleryScreen
@@ -43,6 +48,7 @@ import com.example.app_17_todo_revised.screen.MainScreenContent
 import com.example.app_17_todo_revised.screen.Mp3PlayerScreen
 import com.example.app_17_todo_revised.screen.PreferenceScreen
 import com.example.app_17_todo_revised.ui.theme.ComposeLabTheme
+import com.example.app_17_todo_revised.viewmodel.PreferenceViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -69,12 +75,22 @@ data object PreferenceScreen : Route
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppContent() {
-    val todos = remember { mutableStateListOf<String>() }
+    val todoItems = remember { mutableStateListOf<TodoItem>() } // 화면 나가면 지워짐
     val backStack = remember { mutableStateListOf<Route>(MainScreen) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     // ✅ 1. 현재 Activity를 가져옵니다. LocalContext 캐스팅 대신 LocalActivity.current 사용하세요.
     val activity = LocalActivity.current
+    // 1. ViewModel 인스턴스를 가져옵니다. val viewModel: TodoViewModel = viewModel()
+
+    // --- State ---
+    // 2. ViewModel의 StateFlow를 구독하여 Compose State로 변환합니다.
+    //    값이 변경되면 UI가 자동으로 업데이트됩니다.
+    // val todoItems by viewModel.todoItems.collectAsState()
+	
+    // ViewModel 가져오기 (AndroidViewModel이므로 기본 팩토리 사용 가능)
+    val preferenceViewModel: PreferenceViewModel = viewModel()
+	val sortOrder by preferenceViewModel.sortOrder.collectAsState()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -129,6 +145,10 @@ fun AppContent() {
             topBar = {
                 TopAppBar(
                     title = { Text("Todo Revised") },
+					colors = TopAppBarDefaults.topAppBarColors(
+						containerColor = MaterialTheme.colorScheme.primary,
+						titleContentColor = MaterialTheme.colorScheme.onPrimary
+					),
                     navigationIcon = { // 왼쪽 메뉴 아이콘
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(Icons.Default.Menu, "Menu")
@@ -140,6 +160,11 @@ fun AppContent() {
                         }
                     }
                 )
+            },
+            floatingActionButton = {
+                FloatingActionButton(onClick = { backStack.add(AddScreen) }) {
+                    Icon(Icons.Filled.Add, "Add new todo")
+                }
             }
         ) { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
@@ -160,15 +185,15 @@ fun AppContent() {
                         when (route) {
                             is MainScreen -> NavEntry(route) {
                                 MainScreenContent(
-                                    onAddClick = { backStack.add(AddScreen) },
-                                    datas = todos
+                                    items = todoItems,
+                                    sortOrder = sortOrder
                                 )
                             }
                             is AddScreen -> NavEntry(route) {
                                 AddScreenContent(
                                     onBack = { backStack.removeLastOrNull() },
-                                    onSave = { todo ->
-                                        todos.add(todo)
+                                    onSave = { item ->
+                                        todoItems.add(item)
                                         backStack.removeLastOrNull()
                                     }
                                 )
@@ -176,7 +201,11 @@ fun AppContent() {
                             is BatteryStatusScreen -> NavEntry(route) { BatteryStatusScreen() }
                             is GalleryScreen -> NavEntry(route) { GalleryScreen() }
                             is Mp3PlayerScreen -> NavEntry(route) { Mp3PlayerScreen() }
-                            is PreferenceScreen -> NavEntry(route) { PreferenceScreen() }
+                            is PreferenceScreen -> NavEntry(route) {
+                                PreferenceScreen(
+                                    onNavigateBack = { backStack.removeLastOrNull() }
+                                )
+                            }
                         }
                     }
                 )

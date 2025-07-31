@@ -19,10 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,12 +30,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.app_17_todo_revised.data.local.TodoItem
 import com.example.app_17_todo_revised.ui.theme.ComposeLabTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddScreenContent(onSave: (String) -> Unit, onBack: () -> Unit) {
+fun AddScreenContent(onSave: (item: TodoItem) -> Unit, onBack: () -> Unit) {
     var todoText by remember { mutableStateOf("") }
 
     Scaffold(
@@ -78,7 +79,7 @@ fun AddScreenContent(onSave: (String) -> Unit, onBack: () -> Unit) {
             Button(
                 onClick = {
                     if (todoText.isNotBlank()) {
-                        onSave(todoText)
+                        onSave(TodoItem(task=todoText))
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
