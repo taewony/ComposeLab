@@ -1,33 +1,80 @@
-제목:
-app_14_triple 앱모듈 개발: TODO 앱 → Drawer 메뉴 +, 3개 앱 UI 추가 → 앱컴포넌트 연결
+작업 제목 - 단순한 backStack 기반 Navigation 3:
+- 타입 세이프 navigate 3는 적용하지 않는다.
+- libs.versions.toml 파일은 변경하지 않고, 오직 openknights 디렉토리만 작업을 한다.
+- 
 
-step1. 
-기존 TODO 앱 app_13_todotask  메인 화면 + 할 일 추가 화면에 대한 2개의 preview를 가지고 있음
-app_13_todotask의 MainActivity.kt 및 res\drawable 디렉토리 전체를 app_14_triple 쪽으로 copy
-app_14 동작을 확인한다.
+1. route 정의
+지금처럼 sealed interface 또는 sealed class를 정의해서 각 화면을 구분:
+sealed interface Route
+data object HomeScreen : Route
+data object ProfileScreen : Route
+data class DetailScreen(val id: String) : Route
 
-step2. Drawer 메뉴 추가 (Preview 중심)
-app_14 Main 화면에 햄버거 버튼 클릭 시 Drawer 메뉴 표시
-햅버거 버튼을 누르면 Drawer 메뉴 3개 아이템이 보여진다. → 나중에 3개의 새로운 앱 화면과 연결 예정
-Scaffold의 TopAppBar에 햄버거 아이콘 버튼 추가 → drawerState.open() 트리거.
-ModalNavigationDrawer 적용 → Drawer 메뉴 아이템 구성.
-Preview 추가 
-기존 TODO 앱에서 햄버거 버튼 누르면 Drawer 열림.
-메뉴 선택 이벤트는 아직 실제 화면 연결되지 않음.
+2. BackStack 관리
+기존 Navigator 대신 간단히 상태 리스트:
+val backStack = remember { mutableStateListOf<Route>(HomeScreen) }
+3. NavDisplay + entryProvider
+NavDisplay(
+    backStack = backStack,
+    onBack = { backStack.removeLastOrNull() },
+    entryProvider = { route ->
+        when (route) {
+            is HomeScreen -> entry(route) { HomeScreenContent { backStack.add(ProfileScreen) } }
+            is ProfileScreen -> entry(route) { ProfileScreenContent() }
+            is DetailScreen -> entry(route) { DetailScreenContent(id = route.id) }
+        }
+    }
+)
+4. 화면 전환
+기존 타입 세이프 navigate 호출 대신, backStack.add(DetailScreen(id = "42")) 정도로 간단히 처리
 
-step3. 3개의 개별 앱 UI Preview 추가
-3.1 Battery Status 앱 UI Preview
-ComposeLab\designs\app_14_triple\14_MainActivity.kt 참조하여, 
-Compose UI로 Text 1개 (배터리 상태 값 표시)
-Compose Preview 추가
-3.2 MP3 Player 앱 UI Preview
-ComposeLab\designs\app_14_triple\15_MainActivity.kt 참조하여, 
-Row 안에 2개의 버튼 (재생, 정지)
-Preview 추가
-3.3 Gallery 앱 UI Preview
-ComposeLab\designs\app_14_triple\16_MainActivity.kt 참조하여, 
-Button 1개 (갤러리에서 이미지 선택), Image(샘플 이미지 표시)
-Preview 추가
-3.4 TODO 앱의 Drawer 메뉴에 3개 화면 연결
-Drawer 메뉴 선택 → 각 앱 화면으로 이동.
-각 앱 UI는 Preview 중심(실제 동작 없음).
+5. 무엇이 없어지는가?
+- toRoute() 같은 KSP 기반 route 변환 코드
+- NavController.navigate(routeSpec) 형태의 복잡한 타입 매핑
+- 별도의 navigation graph 빌더
+효과
+장점:
+KSP 필요 없음 → 빌드 문제 해결
+코드 단순, 디버깅 쉬움
+단점:
+route를 문자열로 직렬화하지 않으므로(예: Deep Link) → 외부 인텐트 연동은 별도 처리 필요
+backStack에서 복잡한 파라미터 관리(예: JSON 직렬화)는 직접 처리해야 함
+
+6. 정리
+openknights도 app_17_todo_revised처럼 단순한 BackStack+NavDisplay 구조로 가능
+타입 세이프 라우팅 필요 없고, Navigation3의 핵심 기능(BackStack 관리)은 그대로 사용 가능
+빌드 문제(KSP, toRoute)도 해결됨
+
+[기타]
+https://github.com/droidknights/DroidKnightsApp/tree/2025/app 레포를 살펴본 결과, 이 프로젝트는 Navigation3를 사용하되, 타입 세이프 라우팅(type-safe routing) 대신에 단순 문자열 기반 route와 backStack 관리 방식을 혼용하거나, 조금 더 단순화된 backStack 기반 navigation 방식을 사용하는 것으로 보입니다.
+구체적으로 관찰된 점
+NavController 생성 및 사용법
+ rememberNavController()를 쓰는 대신, 직접 MutableStateList<NavEntry> 또는 backStack을 상태로 관리합니다.
+
+Navigation 이벤트 처리
+화면 전환은 backStack.add() 또는 backStack.removeLastOrNull()와 같은 직접 리스트 조작으로 처리합니다.
+타입 세이프한 toRoute() 같은 자동 생성된 코드 호출은 사용하지 않습니다.
+
+NavDisplay와 entryProvider
+ NavDisplay를 사용하지만, 각 화면 전환을 위한 구체적인 Scene<T> 호출보다는 entryProvider에서 when 구문으로 각 entry 타입별로 분기 처리하는 구조입니다.
+
+route 문자열보다는 sealed interface 또는 data class 기반 entry 사용
+ScreenEntry 같은 sealed interface를 선언해 타입으로 화면을 구분하고,
+backStack에는 이 sealed 타입 인스턴스들이 저장됩니다.
+따라서 엄밀한 의미에서 “문자열 route”보다는 타입 기반 navigation이라 할 수 있지만,
+자동 타입 세이프 라우팅(컴파일 타임 코드 생성)은 사용하지 않는 편입니다.
+요약
+타입 세이프 Navigation3 (자동 코드 생성)
+DroidKnightsApp 방식 (해당 레포)
+rememberNavController<Screen>() 사용
+직접 mutableStateListOf<ScreenEntry> 등 상태로 관리
+toRoute() 등 타입 세이프 route 함수 사용
+backStack.add(ScreenEntry) 등 직접 backStack 조작
+Scene<T>로 각 화면 등록 및 네비게이션 처리
+entryProvider에서 when 구문으로 화면 분기
+KSP 코드 생성 및 자동 라우트 매핑 필요
+KSP/자동 라우팅 없이 단순 타입 또는 문자열 기반 직접 관리
+
+[결론]
+DroidKnightsApp 프로젝트는 Navigation3를 완전한 타입 세이프 자동 라우팅 기능을 쓰지 않고, 대신 단순 backStack 및 sealed 타입 기반의 명시적 네비게이션 관리 방식을 채택하고 있습니다.
+ 이는 복잡한 KSP 설정 없이도 네비게이션을 쉽게 구현할 수 있다는 장점이 있으며, 유지보수 측면에서도 직관적인 편입니다.

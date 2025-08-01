@@ -6,7 +6,7 @@ import com.openknights.app.core.model.Project
 import com.openknights.app.core.model.ProjectPhase
 import com.openknights.app.core.testing.FakeOpenKnightsData
 import com.openknights.app.feature.project.projectlist.model.ProjectUiState
-import com.openknights.app.feature.project.projectnavigation.RouteProjectDetail
+import com.openknights.app.feature.project.projectnavigation.PROJECT_DETAIL_ROUTE
 import com.openknights.app.core.navigator.api.Navigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toPersistentList
@@ -57,7 +57,7 @@ class ProjectListViewModel @Inject constructor(
     }
 
     fun navigateProjectDetail(projectId: String) = viewModelScope.launch {
-        navigator.navigate(RouteProjectDetail(projectId).toRoute())
+        navigator.navigate("$PROJECT_DETAIL_ROUTE/$projectId")
     }
 
     fun navigateBack() = viewModelScope.launch {

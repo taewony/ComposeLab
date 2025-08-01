@@ -1,7 +1,5 @@
 package com.openknights.app
 
-// Navigation 3 전용 (예: androidx.navigation:navigation-compose:3.x.x)
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,22 +21,21 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation3.NavEntry
-import androidx.navigation3.NavDisplay
-import androidx.navigation3.Scene
-import androidx.navigation3.backStack
-import androidx.navigation3.rememberNavController
+import androidx.navigation3.ui.NavDisplay
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.entry
 import com.openknights.app.core.designsystem.theme.KnightsTheme
 import com.openknights.app.core.testing.FakeOpenKnightsData
+import com.openknights.app.feature.contest.ContestListScreenView
+import com.openknights.app.feature.project.ProjectListScreenView
+import com.openknights.app.feature.user.UserScreenView
 import dagger.hilt.android.AndroidEntryPoint
 
-/**
- * Module: app - 앱의 메인 진입점 및 최상위 UI 구조를 정의합니다.
- */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,22 +48,17 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// ✅ Navigation 3 Entry Definitions
-sealed interface ScreenEntry : NavEntry
-
+// --- Navigation 대상 정의
+sealed interface ScreenEntry
 data object ContestListScreen : ScreenEntry
 data class ProjectListScreen(val term: String) : ScreenEntry
 data object UserScreen : ScreenEntry
 
-// Screen: TopBar, BottomBar 및 Content를 보여주는 첫 화면
-// ✅ Main Composable
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OpenKnightsApp() {
-    val navController = rememberNavController<ScreenEntry>()
-    val backStack by navController.backStack.collectAsState()
+    val backStack = remember { mutableStateListOf<ScreenEntry>(ContestListScreen) }
     val currentEntry = backStack.lastOrNull()
-
     val latestContestTerm = FakeOpenKnightsData.fakeContests.firstOrNull()?.term ?: ""
 
     Scaffold(
@@ -85,7 +77,7 @@ fun OpenKnightsApp() {
                 ),
                 navigationIcon = {
                     if (backStack.size > 1) {
-                        IconButton(onClick = { navController.pop() }) {
+                        IconButton(onClick = { backStack.removeLastOrNull() }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Back"
@@ -95,14 +87,13 @@ fun OpenKnightsApp() {
                 }
             )
         },
-
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
                     selected = currentEntry is ContestListScreen,
                     onClick = {
-                        navController.popUpToRoot()
-                        navController.push(ContestListScreen)
+                        backStack.clear()
+                        backStack.add(ContestListScreen)
                     },
                     icon = { Icon(Icons.Default.Home, contentDescription = null) },
                     label = { Text("HOME") }
@@ -110,8 +101,8 @@ fun OpenKnightsApp() {
                 NavigationBarItem(
                     selected = currentEntry is ProjectListScreen,
                     onClick = {
-                        navController.popUpToRoot()
-                        navController.push(ProjectListScreen(latestContestTerm))
+                        backStack.clear()
+                        backStack.add(ProjectListScreen(latestContestTerm))
                     },
                     icon = { Icon(Icons.Default.List, contentDescription = null) },
                     label = { Text("프로젝트") }
@@ -119,8 +110,8 @@ fun OpenKnightsApp() {
                 NavigationBarItem(
                     selected = currentEntry is UserScreen,
                     onClick = {
-                        navController.popUpToRoot()
-                        navController.push(UserScreen)
+                        backStack.clear()
+                        backStack.add(UserScreen)
                     },
                     icon = { Icon(Icons.Default.Person, contentDescription = null) },
                     label = { Text("사용자") }
@@ -129,25 +120,27 @@ fun OpenKnightsApp() {
         }
     ) { innerPadding ->
         NavDisplay(
-            controller = navController,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            Scene<ContestListScreen> {
-                ContestListScreenView(
-                    onContestClick = { contest ->
-                        navController.push(ProjectListScreen(contest.term))
+            backStack = backStack,
+            onBack = { backStack.removeLastOrNull() },
+            entryProvider = { entry ->
+                when (entry) {
+                    is ContestListScreen -> entry(entry) {
+                        ContestListScreen(
+                            onContestClick = { contest ->
+                                backStack.add(ProjectListScreen(contest.term))
+                            }
+                        )
                     }
-                )
-            }
-
-            Scene<ProjectListScreen> { entry ->
-                ProjectListScreenView(term = entry.term)
-            }
-
-            Scene<UserScreen> {
-                UserScreenView()
-            }
-        }
+                    is ProjectListScreen -> entry(entry) {
+                        ProjectListScreenView(term = entry.term)
+                    }
+                    is UserScreen -> entry(entry) {
+                        UserScreenView()
+                    }
+                }
+            },
+            modifier = Modifier.padding(innerPadding)
+        )
     }
 }
 

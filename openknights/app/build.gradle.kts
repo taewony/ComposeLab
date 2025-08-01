@@ -1,9 +1,9 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.dagger.hilt.android")
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose) // ✅ toml 별칭 사용으로 변경
+    alias(libs.plugins.hilt)
+    
     alias(libs.plugins.ksp)
 }
 
@@ -63,6 +63,8 @@ dependencies {
     // Hilt 의존성
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
+    
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

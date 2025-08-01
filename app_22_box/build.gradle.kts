@@ -1,9 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+    alias(libs.plugins.kotlin.compose) // ✅ toml 별칭 사용으로 변경
+    alias(libs.plugins.ksp)
 }
-
 android {
     namespace = "com.example.app_22_box"
     compileSdk = 36

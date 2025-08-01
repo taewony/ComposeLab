@@ -1,9 +1,9 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose) // ✅ toml 별칭 사용으로 변경
+    //alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
-    id("dagger.hilt.android.plugin")
-    alias(libs.plugins.kotlin.compose)
 }
 
 android {

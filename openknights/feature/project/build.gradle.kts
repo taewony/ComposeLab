@@ -1,12 +1,11 @@
 plugins {
-    id("com.android.application")
+    id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
     alias(libs.plugins.ksp)
 }
-
 android {
     namespace = "com.openknights.app.feature.project"
     compileSdk = 36
@@ -53,13 +52,11 @@ dependencies {
     // Hilt 의존성
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    //ksp(libs.androidx.navigation3.ksp)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     // Navigation3 의존성
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
-    // Navigation Compose와 함께 ViewModel을 사용하기 위한 올바른 라이브러리
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
     implementation(libs.kotlinx.serialization.core)
 
     // Lifecycle Compose 의존성

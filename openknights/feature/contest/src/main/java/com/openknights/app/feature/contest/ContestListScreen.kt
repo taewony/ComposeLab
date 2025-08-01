@@ -82,8 +82,6 @@ private fun ContestListContent(
 
 @Composable
 private fun ContestCard(contest: Contest, onContestClick: (Contest) -> Unit) {
-    // TODO: ContestCard UI 구현
-    // 현재는 간단한 Text로 대체
     Column(modifier = Modifier.clickable { onContestClick(contest) }) {
         Text(text = contest.name, style = MaterialTheme.typography.titleLarge)
         Text(text = contest.term, style = MaterialTheme.typography.bodyMedium)
