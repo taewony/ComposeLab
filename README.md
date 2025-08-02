@@ -182,4 +182,4 @@
 * app_22_newsapp
 * app_22_state
 * app_22_wellness
-* openknights (우송대 오픈소스 경진대회 앱)
+* openknights (우송대 오픈소스 경진대회 모바일 앱)
