@@ -29,7 +29,7 @@ import kotlinx.collections.immutable.toImmutableList
  * Screen: ContestListScreen - 대회 목록을 보여주는 화면입니다.
  */
 @Composable
-internal fun ContestListScreen(
+fun ContestListScreen(
     padding: PaddingValues,
     onContestClick: (Contest) -> Unit,
     viewModel: ContestListViewModel = hiltViewModel(),

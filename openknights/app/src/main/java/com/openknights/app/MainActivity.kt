@@ -4,11 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,14 +25,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation3.ui.NavDisplay
-import androidx.navigation3.runtime.NavEntry
-import androidx.navigation3.entry
 import com.openknights.app.core.designsystem.theme.KnightsTheme
 import com.openknights.app.core.testing.FakeOpenKnightsData
-import com.openknights.app.feature.contest.ContestListScreenView
-import com.openknights.app.feature.project.ProjectListScreenView
-import com.openknights.app.feature.user.UserScreenView
+import com.openknights.app.feature.contest.ContestListScreen
+import com.openknights.app.feature.project.projectlist.ProjectListScreen
+import com.openknights.app.feature.user.UserScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -50,14 +46,14 @@ class MainActivity : ComponentActivity() {
 
 // --- Navigation 대상 정의
 sealed interface ScreenEntry
-data object ContestListScreen : ScreenEntry
-data class ProjectListScreen(val term: String) : ScreenEntry
-data object UserScreen : ScreenEntry
+data object ContestListScreenEntry : ScreenEntry
+data class ProjectListScreenEntry(val term: String) : ScreenEntry
+data object UserScreenEntry : ScreenEntry
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OpenKnightsApp() {
-    val backStack = remember { mutableStateListOf<ScreenEntry>(ContestListScreen) }
+    val backStack = remember { mutableStateListOf<ScreenEntry>(ContestListScreenEntry) }
     val currentEntry = backStack.lastOrNull()
     val latestContestTerm = FakeOpenKnightsData.fakeContests.firstOrNull()?.term ?: ""
 
@@ -90,28 +86,28 @@ fun OpenKnightsApp() {
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    selected = currentEntry is ContestListScreen,
+                    selected = currentEntry is ContestListScreenEntry,
                     onClick = {
                         backStack.clear()
-                        backStack.add(ContestListScreen)
+                        backStack.add(ContestListScreenEntry)
                     },
                     icon = { Icon(Icons.Default.Home, contentDescription = null) },
                     label = { Text("HOME") }
                 )
                 NavigationBarItem(
-                    selected = currentEntry is ProjectListScreen,
+                    selected = currentEntry is ProjectListScreenEntry,
                     onClick = {
                         backStack.clear()
-                        backStack.add(ProjectListScreen(latestContestTerm))
+                        backStack.add(ProjectListScreenEntry(latestContestTerm))
                     },
-                    icon = { Icon(Icons.Default.List, contentDescription = null) },
+                    icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
                     label = { Text("프로젝트") }
                 )
                 NavigationBarItem(
-                    selected = currentEntry is UserScreen,
+                    selected = currentEntry is UserScreenEntry,
                     onClick = {
                         backStack.clear()
-                        backStack.add(UserScreen)
+                        backStack.add(UserScreenEntry)
                     },
                     icon = { Icon(Icons.Default.Person, contentDescription = null) },
                     label = { Text("사용자") }
@@ -119,28 +115,26 @@ fun OpenKnightsApp() {
             }
         }
     ) { innerPadding ->
-        NavDisplay(
-            backStack = backStack,
-            onBack = { backStack.removeLastOrNull() },
-            entryProvider = { entry ->
-                when (entry) {
-                    is ContestListScreen -> entry(entry) {
-                        ContestListScreen(
-                            onContestClick = { contest ->
-                                backStack.add(ProjectListScreen(contest.term))
-                            }
-                        )
-                    }
-                    is ProjectListScreen -> entry(entry) {
-                        ProjectListScreenView(term = entry.term)
-                    }
-                    is UserScreen -> entry(entry) {
-                        UserScreenView()
-                    }
-                }
-            },
-            modifier = Modifier.padding(innerPadding)
-        )
+        when (val entry = currentEntry) {
+            is ContestListScreenEntry ->
+                ContestListScreen(
+                    onContestClick = { contest ->
+                        backStack.add(ProjectListScreenEntry(contest.term))
+                    },
+                    padding = innerPadding
+                )
+            is ProjectListScreenEntry ->
+                ProjectListScreen(
+                    contestTerm = entry.term,
+                    onProjectClick = {},
+                    onShowErrorSnackBar = {},
+                )
+            is UserScreenEntry ->
+                UserScreen()
+            null -> {
+                // do nothing
+            }
+        }
     }
 }
 

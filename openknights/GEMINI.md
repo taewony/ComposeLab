@@ -12,15 +12,15 @@
 
 ### 2. 기술 스택 및 개발 환경 (Tech Stack & Environment)
 - IDE: Android Studio 2025.1.1
-- Android API: targetSDK 35, minSDK 32
+- Android API: targetSDK 36, minSDK 32
 - UI Toolkit: Jetpack Compose (Material 3, Navigation 3)
-- Language: Kotlin
+- Language: Kotlin 2.0.0
 
 ### 3. 모듈 구조 (Module Structure)
 - **`ComposeLab` 프로젝트**: 전체 프로젝트의 루트 역할
-- **`OpenKnights` OpenKnights 프로젝트**: OpenKnights app 루트 디렉토리
+- **`OpenKnights` OpenKnights 모바일앱 프로젝트**: OpenKnights app 루트 디렉토리
 - **`core-designsystem` 모듈**: 'DroidKnights'의 디자인 시스템을 기반으로 'OpenKnights' 앱의 공통 UI 컴포넌트, 테마, 타이포그래피 등을 정의하는 공통 라이브러리 모듈
-- **`openknights` 모듈**: 실제 'OpenKnights' 앱의 메인 애플리케이션 모듈입니다. `core-design-system` 모듈을 의존하여 일관된 디자인과 기능을 구현합니다.
+- **`openknights` 모듈**: 실제 'OpenKnights' 모바일 앱의 메인 애플리케이션 모듈입니다. `core-design-system` 모듈을 의존하여 일관된 디자인과 기능을 구현합니다.
 
 ### 4. 개발 목표
 - 'DroidKnights' 앱의 핵심 UI 및 기능을 'OpenKnights' 앱으로 포팅 및 재구현
@@ -58,6 +58,7 @@ Project Root/
     ├── core/
     │   ├── model/
     │   ├── designsystem/
+	
     │   └── util/
     ├── domain/
     │   ├── contest/
@@ -81,42 +82,68 @@ Project Root/
 ### 9. 프롬프트 파일 사용법 (prompt.txt)
 프로젝트 루트 디렉토리의 `prompt.txt` 파일을 활용하여 작업 지시 및 진행 상황을 기록합니다.
 
-### 11. 내비게이션 처리 방식 비교: `app_13_todotask` vs `OpenKnights`
+### 11. 내비게이션 처리 방식
+단순한 backStack 기반 Navigation 3: 타입 세이프 navigate 3는 적용하지 않는다.
 
-이 프로젝트는 `Jetpack Navigation 3` 라이브러리를 활용한 **타입 세이프(Type-Safe) 내비게이션**을 목표로 합니다. 이는 `app_13_todotask` 모듈에서 사용된 내비게이션 방식과 중요한 차이가 있습니다.
+**1) route 정의**
+지금처럼 sealed interface 또는 sealed class를 정의해서 각 화면을 구분:
+sealed interface Route
+data object HomeScreen : Route
+data object ProfileScreen : Route
+data class DetailScreen(val id: String) : Route
 
-*   **`app_13_todotask` 내비게이션 방식 (기본 런타임 기능)**:
-    *   `NavDisplay` 및 `NavEntry`를 사용하여 백스택을 수동으로 관리하고, 각 화면을 `data object` 또는 `data class`로 정의하여 내비게이션 키로 사용합니다.
-    *   화면 전환 시 `backStack.add()` 또는 `backStack.removeLastOrNull()`과 같은 메서드를 직접 호출합니다.
-    *   **장점**: 내비게이션 로직에 대한 완전한 제어권을 가지며, 코드 생성(KSP)이 필요 없어 빌드 설정이 간단합니다.
-    *   **단점**: 내비게이션 경로(키)나 인자 전달 시 오타나 타입 불일치가 발생하면 런타임 오류로 이어질 수 있으며, 보일러플레이트 코드가 증가하고 리팩토링이 어려울 수 있습니다.
+**2) BackStack 관리**
+기존 Navigator 대신 간단히 상태 리스트:
+val backStack = remember { mutableStateListOf<Route>(HomeScreen) }
 
-*   **`OpenKnights` 내비게이션 방식 (타입 세이프 Navigation with KSP)**:
-    *   `KSP(Kotlin Symbol Processing)`를 활용하여 컴파일 타임에 내비게이션 인자의 타입 불일치나 누락을 감지하고 런타임 오류를 방지합니다.
-    *   `@Destination`과 같은 어노테이션을 사용하여 내비게이션 경로와 인자를 정의하면, KSP가 필요한 내비게이션 코드를 자동으로 생성해줍니다.
-    *   **장점**: 컴파일 타임 안전성, 보일러플레이트 코드 감소, 향상된 개발자 경험(자동 완성, 타입 힌트, 안전한 리팩토링)을 제공합니다.
-    *   **단점**: KSP 설정 및 플러그인 추가가 필요하며, 알파 버전 라이브러리 사용 시 안정성 문제가 있을 수 있습니다.
+**3) NavDisplay + entryProvider**
+NavDisplay(
+    backStack = backStack,
+    onBack = { backStack.removeLastOrNull() },
+    entryProvider = { route ->
+        when (route) {
+            is HomeScreen -> entry(route) { HomeScreenContent { backStack.add(ProfileScreen) } }
+            is ProfileScreen -> entry(route) { ProfileScreenContent() }
+            is DetailScreen -> entry(route) { DetailScreenContent(id = route.id) }
+        }
+    }
+)
+**4) 화면 전환**
+기존 타입 세이프 navigate 호출 대신, backStack.add(DetailScreen(id = "42")) 정도로 간단히 처리
 
-`OpenKnights` 프로젝트는 장기적인 유지보수성과 개발 편의성을 위해 타입 세이프 내비게이션 방식을 채택합니다.
+무엇이 없어지는가?
+toRoute() 같은 KSP 기반 route 변환 코드
+NavController.navigate(routeSpec) 형태의 복잡한 타입 매핑
+별도의 navigation graph 빌더
+효과
+장점:
+KSP 필요 없음 → 빌드 문제 해결
+코드 단순, 디버깅 쉬움
+단점:
+route를 문자열로 직렬화하지 않으므로(예: Deep Link) → 외부 인텐트 연동은 별도 처리 필요
+backStack에서 복잡한 파라미터 관리(예: JSON 직렬화)는 직접 처리해야 함
 
-### 12. 타입 세이프 Navigation을 위한 KSP 의존성 추가
+**5) 정리**
+openknights도 app_17_todo_revised처럼 단순한 BackStack+NavDisplay 구조로 가능
+타입 세이프 라우팅 필요 없고, Navigation3의 핵심 기능(BackStack 관리)은 그대로 사용 가능
+빌드 문제(KSP, toRoute)도 해결됨
 
-타입 세이프 Navigation 기능을 사용하려면 `gradle/libs.versions.toml` 파일에 `androidx-navigation3-ksp` 의존성을 추가해야 합니다.
+NavDisplay와 entryProvider
+ NavDisplay를 사용하지만, 각 화면 전환을 위한 구체적인 Scene<T> 호출보다는 entryProvider에서 when 구문으로 각 entry 타입별로 분기 처리하는 구조입니다.
 
-**`gradle/libs.versions.toml` 파일 수정**:
+route 문자열보다는 sealed interface 또는 data class 기반 entry 사용
+ScreenEntry 같은 sealed interface를 선언해 타입으로 화면을 구분하고,
+backStack에는 이 sealed 타입 인스턴스들이 저장됩니다.
+따라서 엄밀한 의미에서 “문자열 route”보다는 타입 기반 navigation이라 할 수 있지만,
+자동 타입 세이프 라우팅(컴파일 타임 코드 생성)은 사용하지 않는 편입니다.
 
-`[libraries]` 섹션에 다음 라인을 추가합니다:
-
-```toml
-androidx-navigation3-ksp = { module = "androidx.navigation3:navigation3-ksp", version.ref = "navigation3" }
-```
 
 ### 10. OpenKnights sub-project만 집중하여 개발
 아래와 같이 특정 모듈만 빌드하여 개발 시간 단축.
 특정 모듈만 빌드	./gradlew :openknights:core:designsystem:build
 특정 모듈 클린 후 빌드	./gradlew :openknights:core:designsystem:clean :openknights:core:designsystem:build
 
-### 10. OpenKnights 앱의 첫 화면 구성하기.
+### 12. OpenKnights 앱의 첫 화면 구성하기.
 시작 추천 Navigation 구조 단계
 Main App (DroidKnightsApp.kt)
 NavHost

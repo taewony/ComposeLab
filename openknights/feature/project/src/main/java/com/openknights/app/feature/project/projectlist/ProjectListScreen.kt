@@ -45,7 +45,7 @@ import kotlinx.coroutines.flow.collectLatest
  * Screen: Project List 
  */
 @Composable
-internal fun ProjectListScreen(
+fun ProjectListScreen(
     contestTerm: String,   // 프로젝트 목록을 가져올 기준 (예: "2024-1st")
     onProjectClick: (Project) -> Unit,  // 유저가 프로젝트 카드를 클릭했을 때 호출되는 콜백
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit, // 에러 발생 시 스낵바를 보여주기 위한 콜백
