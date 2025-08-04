@@ -1,80 +1,138 @@
-작업 제목 - 단순한 backStack 기반 Navigation 3:
-- 타입 세이프 navigate 3는 적용하지 않는다.
-- libs.versions.toml 파일은 변경하지 않고, 오직 openknights 디렉토리만 작업을 한다.
-- 
+## 최종 목표 openknights 프로젝트 구조
+의존성 방향: :app과 신규 생성될 :desktop 모듈은 모두 중앙의 :core:data 모듈에 의존하게 됩니다.
+openknights/
+├── app/ (Android UI)
+│   ├── build.gradle.kts  (core:data 모듈에 의존, google-services 플러그인 포함)
+│   └── src/
+│
+├── desktop/ (Desktop UI, 신규 생성)
+│   ├── build.gradle.kts  (core:data 모듈에 의존)
+│   └── src/
+│
+└── core/
+    └── data/ (KMP 공통 모듈로 전환)
+        ├── build.gradle.kts  (multiplatform 플러그인, KMP용 firebase 라이브러리 포함)
+        └── src/
+            ├── commonMain/   (데이터 모델, Repository 인터페이스)
+            ├── androidMain/  (Android용 Repository 실제 구현)
+            └── desktopMain/  (Desktop용 Repository 실제 구현)
 
-1. route 정의
-지금처럼 sealed interface 또는 sealed class를 정의해서 각 화면을 구분:
-sealed interface Route
-data object HomeScreen : Route
-data object ProfileScreen : Route
-data class DetailScreen(val id: String) : Route
+## 1단계: 현재 구조에 안전하게 Firebase 연동하기 (Android 전용)
+이미 존재하는 :openknights:core:data 모듈에 모든 Firebase 데이터 로직을 구현합니다.
 
-2. BackStack 관리
-기존 Navigator 대신 간단히 상태 리스트:
-val backStack = remember { mutableStateListOf<Route>(HomeScreen) }
-3. NavDisplay + entryProvider
-NavDisplay(
-    backStack = backStack,
-    onBack = { backStack.removeLastOrNull() },
-    entryProvider = { route ->
-        when (route) {
-            is HomeScreen -> entry(route) { HomeScreenContent { backStack.add(ProfileScreen) } }
-            is ProfileScreen -> entry(route) { ProfileScreenContent() }
-            is DetailScreen -> entry(route) { DetailScreenContent(id = route.id) }
-        }
-    }
+1.1. Firebase 로직 구현 위치
+CompetitionRepository, 데이터 모델(Competition) 등 모든 Firebase 관련 클래스들은 기존의 :openknights:core:data 모듈 내에 작성합니다.
+
+1.2. 의존성 설정
+:openknights:core:data 모듈의 build.gradle.kts 파일에 Firebase SDK 종속성을 추가합니다.
+Kotlin
+// openknights/core/data/build.gradle.kts
+dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
+    // ...
+}
+:openknights:app 모듈이 :openknights:core:data 모듈을 사용하도록 의존성이 설정되어 있는지 확인
+
+1.3. Firebase 설정 및 구현
+google-services.json 파일과 com.google.gms.google-services 플러그인은 이전 답변에서 안내드린 대로 오직 :openknights:app 모듈에만 추가합니다. :openknights:core:data 모듈에는 추가하지 않습니다.
+
+Firebase 로직은 :openknights:data 모듈에 구현합니다.
+오픈소스 경진대회 데이터를 위한 모델 클래스를 정의합니다.
+Kotlin
+// openknights/data/src/main/java/.../model/Competition.kt
+data class Competition(
+    val id: String = "",
+    val name: String = "",
+    val participants: List<String> = emptyList()
 )
-4. 화면 전환
-기존 타입 세이프 navigate 호출 대신, backStack.add(DetailScreen(id = "42")) 정도로 간단히 처리
+Firestore와 통신하는 Repository 클래스를 구현합니다.Kotlin
+// openknights/data/src/main/java/.../repository/CompetitionRepository.kt
+class CompetitionRepository {
+    private val db = Firebase.firestore
+    suspend fun getAllCompetitions(): List<Competition> {
+        // Firestore에서 대회 목록을 가져오는 로직
+    }
+    // ... 데이터 추가, 수정, 삭제 로직
+}
+1.4. :app 모듈에서 데이터 사용
+:openknights:app 모듈의 ViewModel 등에서 CompetitionRepository를 주입받아 사용합니다. 이제 :app 모듈은 Firebase를 직접 알지 못하고, 오직 :data 모듈하고만 통신합니다.
+Firebase 연동이 완료된 안드로이드 앱이 정상적으로 동작합니다.
+데이터 로직이 :app 모듈과 완벽하게 분리되어 있어, 향후 리팩토링이 매우 쉬워집니다.
 
-5. 무엇이 없어지는가?
-- toRoute() 같은 KSP 기반 route 변환 코드
-- NavController.navigate(routeSpec) 형태의 복잡한 타입 매핑
-- 별도의 navigation graph 빌더
-효과
-장점:
-KSP 필요 없음 → 빌드 문제 해결
-코드 단순, 디버깅 쉬움
-단점:
-route를 문자열로 직렬화하지 않으므로(예: Deep Link) → 외부 인텐트 연동은 별도 처리 필요
-backStack에서 복잡한 파라미터 관리(예: JSON 직렬화)는 직접 처리해야 함
+## 2단계: KMP 공통 모듈 도입 및 리팩토링 (Desktop 확장 준비)
+목표: 1단계에서 만든 :openknights:core:data 모듈 자체를 "Android Library"에서 "Kotlin Multiplatform Library"로 직접 전환
+전환 과정:
+:openknights:core:data 모듈의 build.gradle.kts 파일을 수정하여 id("com.android.library") 대신 kotlin("multiplatform") 플러그인을 사용하도록 변경합니다.
+모듈 내의 소스 코드 폴더 구조를 src/main 에서 src/commonMain, src/androidMain 등으로 변경합니다.
+기존에 작성했던 Firebase 구현 코드를 androidMain으로 옮기고, commonMain에는 expect 선언을 추가합니다.
 
-6. 정리
-openknights도 app_17_todo_revised처럼 단순한 BackStack+NavDisplay 구조로 가능
-타입 세이프 라우팅 필요 없고, Navigation3의 핵심 기능(BackStack 관리)은 그대로 사용 가능
-빌드 문제(KSP, toRoute)도 해결됨
+desktopMain을 새로 만들어 데스크톱용 actual 구현을 추가합니다.
+데스크톱을 위한 새로운 actual 구현을 :shared/src/desktopMain/kotlin에 작성합니다.
+여기서는 Firebase-Kotlin-SDK 같은 KMP 호환 라이브러리를 사용합니다.
+Kotlin
+// openknights/shared/src/desktopMain/kotlin/.../repository/CompetitionRepository.kt
+actual class CompetitionRepository {
+    private val db = Firebase.firestore // KMP 라이브러리의 Firestore
+    actual suspend fun getAllCompetitions(): List<Competition> { ... }
+}
+2.3. 최종 의존성 정리
+:openknights:app은 이제 :openknights:core:data를 바라보도록 의존성을 수정합니다. 
+새로 만들 :desktop 앱 모듈도 :openknights:core:data에 대한 의존성을 갖게 됩니다.
 
-[기타]
-https://github.com/droidknights/DroidKnightsApp/tree/2025/app 레포를 살펴본 결과, 이 프로젝트는 Navigation3를 사용하되, 타입 세이프 라우팅(type-safe routing) 대신에 단순 문자열 기반 route와 backStack 관리 방식을 혼용하거나, 조금 더 단순화된 backStack 기반 navigation 방식을 사용하는 것으로 보입니다.
-구체적으로 관찰된 점
-NavController 생성 및 사용법
- rememberNavController()를 쓰는 대신, 직접 MutableStateList<NavEntry> 또는 backStack을 상태로 관리합니다.
+## Android Studio 2025.1.2 버전 사용법
+데스크톱 앱을 개발하고 실행하기 위해 'Kotlin Multiplatform Mobile' 플러그인만 설치하면 됩니다.
+Kotlin Multiplatform Mobile (KMP) 플러그인 설치
+이름에 'Mobile'이 포함되어 있지만, 이 플러그인은 Android Studio에서 데스크톱(Desktop) 앱을 포함한 모든 KMP 타겟을 인식하고 실행 및 디버깅할 수 있게 해주는 필수 플러그인입니다.
 
-Navigation 이벤트 처리
-화면 전환은 backStack.add() 또는 backStack.removeLastOrNull()와 같은 직접 리스트 조작으로 처리합니다.
-타입 세이프한 toRoute() 같은 자동 생성된 코드 호출은 사용하지 않습니다.
+설치 경로:
+File > Settings... (macOS에서는 Android Studio > Preferences...) 로 이동합니다.
 
-NavDisplay와 entryProvider
- NavDisplay를 사용하지만, 각 화면 전환을 위한 구체적인 Scene<T> 호출보다는 entryProvider에서 when 구문으로 각 entry 타입별로 분기 처리하는 구조입니다.
+왼쪽 메뉴에서 Plugins를 선택합니다.
+Marketplace 탭에서 Kotlin Multiplatform Mobile을 검색합니다.
+Install 버튼을 누르고 설치가 완료되면 Android Studio를 재시작합니다.
 
-route 문자열보다는 sealed interface 또는 data class 기반 entry 사용
-ScreenEntry 같은 sealed interface를 선언해 타입으로 화면을 구분하고,
-backStack에는 이 sealed 타입 인스턴스들이 저장됩니다.
-따라서 엄밀한 의미에서 “문자열 route”보다는 타입 기반 navigation이라 할 수 있지만,
-자동 타입 세이프 라우팅(컴파일 타임 코드 생성)은 사용하지 않는 편입니다.
-요약
-타입 세이프 Navigation3 (자동 코드 생성)
-DroidKnightsApp 방식 (해당 레포)
-rememberNavController<Screen>() 사용
-직접 mutableStateListOf<ScreenEntry> 등 상태로 관리
-toRoute() 등 타입 세이프 route 함수 사용
-backStack.add(ScreenEntry) 등 직접 backStack 조작
-Scene<T>로 각 화면 등록 및 네비게이션 처리
-entryProvider에서 when 구문으로 화면 분기
-KSP 코드 생성 및 자동 라우트 매핑 필요
-KSP/자동 라우팅 없이 단순 타입 또는 문자열 기반 직접 관리
+- 플러그인 설치 후 할 일:
+플러그인을 설치하고 IDE를 재시작하면, 데스크톱 모듈 작업을 위한 모든 준비가 끝납니다.
 
-[결론]
-DroidKnightsApp 프로젝트는 Navigation3를 완전한 타입 세이프 자동 라우팅 기능을 쓰지 않고, 대신 단순 backStack 및 sealed 타입 기반의 명시적 네비게이션 관리 방식을 채택하고 있습니다.
- 이는 복잡한 KSP 설정 없이도 네비게이션을 쉽게 구현할 수 있다는 장점이 있으며, 유지보수 측면에서도 직관적인 편입니다.
+데스크톱 앱 실행: 플러그인이 설치되면, Android Studio 상단의 실행/디버그 설정 드롭다운 메뉴에 기존의 :app 모듈 외에 새로 만든 :desktop 모듈이 실행 가능한 옵션으로 나타납니다.
+
+:openknights:core:data 모듈을 KMP 라이브러리로 전환해도, :openknights:app 모듈의 입장에서는 아무것도 변하지 않습니다.
+
+변경 없음: :openknights:app은 여전히 순수한 "Android Application" 모듈로 남아있습니다. KMP 앱으로 바꿀 필요가 전혀 없습니다.
+
+원리: KMP로 전환된 :openknights:core:data 모듈은 내부에 androidMain이라는 소스셋(폴더)을 갖게 됩니다. :openknights:app 모듈은 이 androidMain에 있는 코드만을 바라보고 의존성을 가져오므로, 마치 기존의 안드로이드 라이브러리를 사용하던 것과 완벽하게 동일하게 동작합니다.
+
+즉, 데이터 모듈의 내부 구조가 KMP로 바뀌더라도, 안드로이드 앱은 그 변화를 전혀 인지하지 못하고 예전처럼 똑같이 사용할 수 있습니다.
+
+수업용 Android 앱을 그대로 남겨두는 방법
+수업을 위한 현재 버전과 KMP 개발 버전을 분리하여 안전하게 관리하는 가장 좋은 방법은 Git의 브랜치(Branch) 기능을 활용하는 것입니다.
+
+이것이 가장 표준적이고 안전한 프로젝트 관리 방식입니다.
+
+추천 작업 순서
+현재 상태 커밋: 먼저, 현재까지 작업한 모든 내용을 main 또는 develop 브랜치에 커밋하여 안정적인 버전을 저장합니다.
+
+KMP 전환용 새 브랜치 생성: 이제 KMP로 전환하는 작업을 시작하기 전에, 새로운 브랜치를 만듭니다.
+
+Bash
+
+# 'kmp-migration'이라는 이름의 새 브랜치를 만들고 그 브랜치로 이동합니다.
+git checkout -b feature/kmp-migration
+KMP 작업 진행: 새로 만든 feature/kmp-migration 브랜치 안에서 다음과 같은 모든 KMP 전환 작업을 진행합니다.
+
+:openknights:core:data 모듈을 KMP 라이브러리로 전환
+
+:desktop 모듈 신규 추가
+
+관련 코드 리팩토링
+
+✅ 이렇게 하면 어떤 장점이 있나요?
+
+완벽한 분리: main 브랜치에는 수업용 순수 안드로이드 앱이 그대로 보존됩니다. 언제든지 git checkout main 명령어로 돌아가서 수업용 버전을 확인하거나 빌드할 수 있습니다.
+
+안전한 개발: feature/kmp-migration 브랜치에서는 KMP와 데스크톱 개발을 자유롭게 진행할 수 있습니다. 이 브랜치에서의 작업은 main 브랜치에 전혀 영향을 주지 않습니다.
+
+체계적인 관리: 두 버전의 앱이 하나의 Git 저장소 안에서 체계적으로 관리됩니다.
