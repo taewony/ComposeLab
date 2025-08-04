@@ -40,8 +40,6 @@ dependencies {
     implementation(project(":openknights:core:model"))
     implementation(project(":openknights:core:designsystem"))
     implementation(project(":openknights:core:testing"))
-    implementation(project(":openknights:core:navigator:api"))
-    implementation(project(":openknights:core:common"))
     implementation(project(":openknights:core:ui"))
     implementation(project(":openknights:core:data"))
 
@@ -52,7 +50,6 @@ dependencies {
     // Hilt 의존성
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
 
     // Navigation3 의존성
     implementation(libs.androidx.navigation3.runtime)

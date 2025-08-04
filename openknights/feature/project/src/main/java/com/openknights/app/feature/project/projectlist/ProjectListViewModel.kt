@@ -2,13 +2,8 @@ package com.openknights.app.feature.project.projectlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.openknights.app.core.model.Project
-import com.openknights.app.core.model.ProjectPhase
 import com.openknights.app.core.testing.FakeOpenKnightsData
 import com.openknights.app.feature.project.projectlist.model.ProjectUiState
-import com.openknights.app.feature.project.projectnavigation.PROJECT_DETAIL_ROUTE
-import com.openknights.app.core.navigator.api.Navigator
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,12 +14,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class ProjectListViewModel @Inject constructor(
-    private val navigator: Navigator,
-) : ViewModel() {
+class ProjectListViewModel : ViewModel() {
 
     private val _errorFlow = MutableSharedFlow<Throwable>()
     val errorFlow = _errorFlow.asSharedFlow()
@@ -54,13 +45,5 @@ class ProjectListViewModel @Inject constructor(
                 }
                 .launchIn(viewModelScope)
         }
-    }
-
-    fun navigateProjectDetail(projectId: String) = viewModelScope.launch {
-        navigator.navigate("$PROJECT_DETAIL_ROUTE/$projectId")
-    }
-
-    fun navigateBack() = viewModelScope.launch {
-        navigator.navigateBack()
     }
 }

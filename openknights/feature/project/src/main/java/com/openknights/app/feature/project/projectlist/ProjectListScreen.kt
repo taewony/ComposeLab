@@ -25,9 +25,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.openknights.app.core.designsystem.theme.KnightsTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.openknights.app.core.designsystem.theme.knightsTypography
 import com.openknights.app.core.model.Project
 import com.openknights.app.core.model.ProjectPhase
@@ -50,13 +49,13 @@ fun ProjectListScreen(
     onProjectClick: (Project) -> Unit,  // 유저가 프로젝트 카드를 클릭했을 때 호출되는 콜백
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit, // 에러 발생 시 스낵바를 보여주기 위한 콜백
     scrollToProjectId: String? = null,   // 특정 프로젝트로 스크롤하기 위한 ID, null이면 스크롤하지 않음
-    projectListViewModel: ProjectListViewModel = hiltViewModel(), // Hilt를 통해 주입되는 ViewModel (기본값 있음)
 ) {
+    val viewModel: ProjectListViewModel = viewModel()
     val density = LocalDensity.current
 
     // StateFlow로 관리되는 ViewModel의 상태(uiState)를 Compose에서 관찰
     // collectAsStateWithLifecycle을 사용하여 ViewModel의 상태를 관찰하고, 상태가 변경될 때 UI가 자동으로 recomposition
-    val projectUiState by projectListViewModel.uiState.collectAsStateWithLifecycle()
+    val projectUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     // projectUiState가 ProjectUiState.Projects 타입이면 내부 프로젝트 리스트를 꺼냄
     // .groups.flatMap { it.projects }: 여러 그룹에 속한 모든 프로젝트들을 한 리스트로 변환
@@ -67,8 +66,8 @@ fun ProjectListScreen(
     } ?: rememberProjectState(projects = persistentListOf())
 
     LaunchedEffect(contestTerm) {
-        projectListViewModel.fetchProjects(contestTerm)
-        projectListViewModel.errorFlow.collectLatest { throwable -> onShowErrorSnackBar(throwable) }
+        viewModel.fetchProjects(contestTerm)
+        viewModel.errorFlow.collectLatest { throwable -> onShowErrorSnackBar(throwable) }
     }
 
     var highlighted by remember { mutableStateOf(false) }
@@ -91,15 +90,12 @@ fun ProjectListScreen(
     ) {
         ProjectListTopAppBar(
             projectState = projectState,
-            onBackClick = projectListViewModel::navigateBack,
+            onBackClick = {}, //backStack.removeLastOrNull()
             contestTerm = contestTerm,
         )
         ProjectList(
             projectUiState = projectUiState,
-            onProjectClick = { project ->
-                onProjectClick(project)
-                projectListViewModel.navigateProjectDetail(project.id)
-            },
+            onProjectClick = onProjectClick,
             modifier = Modifier
                 .systemBarsPadding()
                 .padding(top = 48.dp)

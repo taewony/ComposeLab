@@ -1,9 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose) // ✅ toml 별칭 사용으로 변경
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
 }
 
 android {
@@ -43,12 +41,6 @@ dependencies {
     implementation(project(":openknights:feature:contest"))
     implementation(project(":openknights:feature:project"))
     implementation(project(":openknights:feature:user"))
-    implementation(project(":openknights:core:navigator:impl")) 
-
-    // --- Hilt 의존성 ---
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    ksp(project(":openknights:core:navigator:impl"))
 
     // --- Compose & UI 의존성 ---
     implementation(platform(libs.androidx.compose.bom))
@@ -59,13 +51,12 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.material.icons.extended)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
 
     // --- Navigation 의존성 ---
-    // 'navigation3'가 표준 라이브러리가 아니라면, 표준 라이브러리 사용을 고려해보세요.
-    // 예: implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation3.runtime) 
-    implementation(libs.androidx.navigation3.ui)    
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.kotlinx.serialization.core)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // --- 기타 라이브러리 ---
     implementation(libs.kotlinx.serialization.core)

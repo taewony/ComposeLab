@@ -12,4 +12,5 @@ sealed interface ProjectDetailUiState {
 
     @Immutable
     data class Success(val project: Project) : ProjectDetailUiState
+    data class Error(val message: String) : ProjectDetailUiState
 }

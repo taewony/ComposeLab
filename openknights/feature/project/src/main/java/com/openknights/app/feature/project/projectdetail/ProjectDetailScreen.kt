@@ -24,32 +24,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.openknights.app.core.designsystem.theme.KnightsTheme
 import com.openknights.app.core.designsystem.theme.knightsTypography
 import com.openknights.app.core.model.Project
-import com.openknights.app.core.model.User
-import com.openknights.app.core.model.Participant
 import com.openknights.app.core.model.ProjectRole
+import com.openknights.app.core.testing.FakeOpenKnightsData
+import com.openknights.app.core.testing.FakeUsers
 import com.openknights.app.feature.project.R
 import com.openknights.app.feature.project.projectdetail.component.ProjectDetailChips
 import com.openknights.app.feature.project.projectdetail.component.ProjectDetailSpeaker
 import com.openknights.app.feature.project.projectdetail.component.ProjectDetailTopAppBar
 import com.openknights.app.feature.project.projectdetail.model.ProjectDetailUiState
-import com.openknights.app.core.testing.FakeOpenKnightsData
-import com.openknights.app.core.testing.FakeUsers
-
-
-import androidx.navigation.NavController
 
 // Screen: Project Detail
 @Composable
-internal fun ProjectDetailScreen(
+fun ProjectDetailScreen(
     projectId: String,
-    navController: NavController,
-    viewModel: ProjectDetailViewModel = hiltViewModel(),
-) {
+    onBack: () -> Unit
+){
+    val viewModel: ProjectDetailViewModel = viewModel()
     val scrollState = rememberScrollState()
     val projectUiState by viewModel.projectUiState.collectAsStateWithLifecycle()
 
@@ -61,12 +56,13 @@ internal fun ProjectDetailScreen(
             .verticalScroll(scrollState),
     ) {
         ProjectDetailTopAppBar(
-            onBackClick = { navController.navigateUp() },
+            onBackClick = { onBack() },
         )
         Box {
             when (val uiState = projectUiState) {
                 is ProjectDetailUiState.Loading -> ProjectDetailLoading()
                 is ProjectDetailUiState.Success -> ProjectDetailContent(uiState.project)
+                is ProjectDetailUiState.Error -> Text("Error: ${uiState.message}")
             }
         }
     }

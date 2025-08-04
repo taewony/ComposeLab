@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.openknights.app.core.model.User
 import com.openknights.app.core.ui.TextChip
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +19,7 @@ import androidx.compose.foundation.layout.Row
 import com.openknights.app.core.designsystem.theme.KnightsColor
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 /**
  * Module: feature/user - 사용자 목록 화면을 정의합니다.
@@ -28,7 +28,7 @@ import androidx.compose.foundation.layout.FlowRow
  * Screen: User List
  */
 @Composable
-fun UserScreen(viewModel: UserViewModel = hiltViewModel()) {
+fun UserScreen(viewModel: UserViewModel = viewModel()) {
     val users = viewModel.users
 
     LazyColumn(

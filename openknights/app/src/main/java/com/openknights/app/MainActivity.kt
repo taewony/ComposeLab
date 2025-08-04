@@ -25,14 +25,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.ui.NavDisplay
 import com.openknights.app.core.designsystem.theme.KnightsTheme
 import com.openknights.app.core.testing.FakeOpenKnightsData
 import com.openknights.app.feature.contest.ContestListScreen
+import com.openknights.app.feature.project.projectdetail.ProjectDetailScreen
 import com.openknights.app.feature.project.projectlist.ProjectListScreen
 import com.openknights.app.feature.user.UserScreen
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +49,7 @@ class MainActivity : ComponentActivity() {
 sealed interface ScreenEntry
 data object ContestListScreenEntry : ScreenEntry
 data class ProjectListScreenEntry(val term: String) : ScreenEntry
+data class ProjectDetailScreenEntry(val projectId: String) : ScreenEntry
 data object UserScreenEntry : ScreenEntry
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -115,26 +117,42 @@ fun OpenKnightsApp() {
             }
         }
     ) { innerPadding ->
-        when (val entry = currentEntry) {
-            is ContestListScreenEntry ->
-                ContestListScreen(
-                    onContestClick = { contest ->
-                        backStack.add(ProjectListScreenEntry(contest.term))
-                    },
-                    padding = innerPadding
-                )
-            is ProjectListScreenEntry ->
-                ProjectListScreen(
-                    contestTerm = entry.term,
-                    onProjectClick = {},
-                    onShowErrorSnackBar = {},
-                )
-            is UserScreenEntry ->
-                UserScreen()
-            null -> {
-                // do nothing
+        // NavDisplay로 화면 전환 처리
+        NavDisplay(
+            backStack = backStack,
+            onBack = { backStack.removeLastOrNull() },
+            entryProvider = { entry ->
+                when (entry) {
+                    is ContestListScreenEntry -> NavEntry(entry) {
+                        ContestListScreen(
+                            onContestClick = { contest ->
+                                backStack.add(ProjectListScreenEntry(contest.term))
+                            },
+                            padding = innerPadding
+                        )
+                    }
+
+                    is ProjectListScreenEntry -> NavEntry(entry) {
+                        ProjectListScreen(
+                            contestTerm = entry.term,
+                            onProjectClick = {},
+                            onShowErrorSnackBar = {}
+                        )
+                    }
+
+                    is UserScreenEntry -> NavEntry(entry) {
+                        UserScreen()
+                    }
+
+                    is ProjectDetailScreenEntry -> NavEntry(entry) {
+                        ProjectDetailScreen(
+                            projectId = entry.projectId,
+                            onBack = { backStack.removeLastOrNull() }
+                        )
+                    }
+                }
             }
-        }
+        )
     }
 }
 
