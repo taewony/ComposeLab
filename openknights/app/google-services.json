@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "248845874248",
+    "project_id": "openknights",
+    "storage_bucket": "openknights.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:248845874248:android:050de843319d8eb61b547d",
+        "android_client_info": {
+          "package_name": "com.openknights.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVTE9WdVG-cgtJnOQ2GL-D5iJs9iZQCug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

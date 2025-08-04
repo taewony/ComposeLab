@@ -130,6 +130,7 @@ openknights도 app_17_todo_revised처럼 단순한 BackStack+NavDisplay 구조�
 
 **6) DI(Hilt, Dagger) 프레임워크 불필요**
 - 현재의 단순한 `backStack` 기반 내비게이션은 의존성 주입(DI) 프레임워크를 사용할 필요가 없습니다.
+- 특히 `hilt-navigation-compose`와 같은 Hilt 관련 내비게이션 라이브러리는 사용하지 않습니다.
 - `@Inject` 어노테이션과 KSP(Kotlin Symbol Processing)는 DI를 위해 필요한 도구이므로, 코드에서 제거하여 빌드 복잡성을 줄입니다.
 - `Navigator`와 같은 클래스의 인스턴스는 DI 컨테이너가 주입하는 대신, 필요한 곳에서 직접 생성하여 사용합니다. (예: `val navigator = NavigatorImpl()`)
 - 이를 통해 Hilt, Dagger와 같은 외부 라이브러리 의존성을 제거하고, 순수한 코틀린 코드로 내비게이션 로직을 관리하여 프로젝트를 더 가볍고 이해하기 쉽게 유지합니다.
