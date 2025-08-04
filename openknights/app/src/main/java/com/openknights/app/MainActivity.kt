@@ -135,7 +135,8 @@ fun OpenKnightsApp() {
                     is ProjectListScreenEntry -> NavEntry(entry) {
                         ProjectListScreen(
                             contestTerm = entry.term,
-                            onProjectClick = {},
+                            onProjectClick = {project ->
+                                backStack.add(ProjectDetailScreenEntry(project.id))},
                             onShowErrorSnackBar = {}
                         )
                     }
