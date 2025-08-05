@@ -49,6 +49,7 @@ fun ProjectListScreen(
     onProjectClick: (Project) -> Unit,  // 유저가 프로젝트 카드를 클릭했을 때 호출되는 콜백
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit, // 에러 발생 시 스낵바를 보여주기 위한 콜백
     scrollToProjectId: String? = null,   // 특정 프로젝트로 스크롤하기 위한 ID, null이면 스크롤하지 않음
+    padding: PaddingValues,
 ) {
     val viewModel: ProjectListViewModel = viewModel()
     val density = LocalDensity.current
@@ -86,6 +87,7 @@ fun ProjectListScreen(
 
     Box(
         modifier = Modifier
+            .padding(padding)
             .fillMaxSize()
     ) {
         ProjectListTopAppBar(
@@ -182,8 +184,9 @@ private val ProjectGroupSpace = 100.dp
 @Composable
 private fun ProjectListScreenPreview() {
     ProjectListScreen(
-        contestTerm = "",
+        contestTerm = "2024-1st",
         onProjectClick = {},
         onShowErrorSnackBar = {},
+        padding = PaddingValues(all = 16.dp)
     )
 }

@@ -44,6 +44,7 @@ dependencies {
     implementation(project(":openknights:feature:contest"))
     implementation(project(":openknights:feature:project"))
     implementation(project(":openknights:feature:user"))
+    implementation(project(":openknights:feature:notice"))
 
     // --- Compose & UI 의존성 ---
     implementation(platform(libs.androidx.compose.bom))

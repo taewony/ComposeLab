@@ -66,4 +66,7 @@ dependencies {
     // Dagger Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler) // hilt-compiler는 ksp로 설정해야 합니다.
+
+    // ★ hiltViewModel() 지원 추가
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 }
