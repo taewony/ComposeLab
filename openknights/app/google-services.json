@@ -12,7 +12,20 @@
           "package_name": "com.openknights.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "248845874248-fg26vic3fb7ti40tn1nv7uapbmkul3i1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.openknights.app",
+            "certificate_hash": "4ed5d6f71194ba83cf772401aa7f0bcd97429b5b"
+          }
+        },
+        {
+          "client_id": "248845874248-46ll2gle09elhbd7kb4snf68pvupeui0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCVTE9WdVG-cgtJnOQ2GL-D5iJs9iZQCug"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "248845874248-46ll2gle09elhbd7kb4snf68pvupeui0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

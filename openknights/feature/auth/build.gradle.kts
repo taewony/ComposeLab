@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.openknights.feature.notice"
+    namespace = "com.openknights.feature.auth"
     compileSdk = 36
 
     defaultConfig {
@@ -30,6 +30,9 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.material.icons.extended)
-    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Firebase BoM 및 개별 라이브러리 종속성 추가,  Import the Firebase BoM
+    implementation(libs.firebase.auth)
+    implementation(platform(libs.firebase.bom))
 }

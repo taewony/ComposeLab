@@ -1,5 +1,6 @@
 package com.openknights.feature.notice
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +25,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoticeScreen(onBack: () -> Unit) {
+fun NoticeScreen(userEmail: String?, onLogoutClick: () -> Unit, onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -51,6 +52,21 @@ fun NoticeScreen(onBack: () -> Unit) {
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            item {
+                // 1. userEmail에서 ID 부분만 추출 (null일 경우 "Guest" 사용)
+                val displayId = userEmail?.substringBefore('@') ?: "Guest"
+                // 로그아웃 버튼/텍스트
+                Text(
+                    text = "로그아웃 (${displayId})",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                        .clickable { onLogoutClick() },
+                    textAlign = TextAlign.Right,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth()

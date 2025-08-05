@@ -45,6 +45,7 @@ dependencies {
     implementation(project(":openknights:feature:project"))
     implementation(project(":openknights:feature:user"))
     implementation(project(":openknights:feature:notice"))
+    implementation(project(":openknights:feature:auth"))
 
     // --- Compose & UI 의존성 ---
     implementation(platform(libs.androidx.compose.bom))
@@ -75,7 +76,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Firebase BoM 및 개별 라이브러리 종속성 추가,  Import the Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:34.0.0"))
+    implementation(platform(libs.firebase.bom))
 
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
