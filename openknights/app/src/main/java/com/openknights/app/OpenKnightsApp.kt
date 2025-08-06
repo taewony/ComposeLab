@@ -53,7 +53,7 @@ data object ContestListScreenEntry : ScreenEntry
 data class ProjectListScreenEntry(val term: String) : ScreenEntry
 data class ProjectDetailScreenEntry(val projectId: String) : ScreenEntry
 data object UserScreenEntry : ScreenEntry
-data object NoticeScreenEntry : ScreenEntry
+data class NoticeScreenEntry(val isLoggedIn: Boolean) : ScreenEntry
 data object RegisterScreenEntry : ScreenEntry
 data object LoginScreenEntry : ScreenEntry
 
@@ -141,8 +141,7 @@ fun OpenKnightsApp() {
                 },
                 actions = {
                     IconButton(
-                        onClick = { backStack.add(NoticeScreenEntry) },
-                        enabled = isLoggedIn
+                        onClick = { backStack.add(NoticeScreenEntry(isLoggedIn)) }
                     ) {
                         // 1. 로그인 상태에 따라 '모양' 결정
                         val imageVector = if (isLoggedIn) {
@@ -239,6 +238,7 @@ fun OpenKnightsApp() {
                         val currentUserEmail by authViewModel.currentUserEmail.collectAsState()
                         NoticeScreen(
                             userEmail = currentUserEmail,
+                            isLoggedIn = entry.isLoggedIn,
                             onLogoutClick = { 
                                 authViewModel.signOut()
                                 backStack.clear()

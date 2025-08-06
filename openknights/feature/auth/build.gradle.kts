@@ -24,6 +24,8 @@ android {
 dependencies {
     // In-project dependencies
     implementation(project(":openknights:core:designsystem"))
+    implementation(project(":openknights:core:data:user"))
+    implementation(project(":openknights:core:model"))
 
     // AndroidX & Compose
     implementation(libs.androidx.core.ktx)

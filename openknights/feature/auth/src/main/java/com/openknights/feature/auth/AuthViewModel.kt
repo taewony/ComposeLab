@@ -2,59 +2,66 @@ package com.openknights.feature.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+// import com.google.firebase.auth.FirebaseAuth
+// import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import android.util.Log
+import kotlinx.coroutines.delay // For simulating network delay
 
-class AuthViewModel : ViewModel() {
+import com.openknights.core.model.User
+import com.openknights.core.data.user.UserRepository
+import com.openknights.core.data.user.UserRepositoryImpl
 
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+class AuthViewModel() : ViewModel() {
+
+    private val userRepository: UserRepository = UserRepositoryImpl()
+
+    // private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState
 
-    private val _isLoggedIn = MutableStateFlow(auth.currentUser != null)
+    private val _isLoggedIn = MutableStateFlow(false) // Default to not logged in for fake data
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
-    private val _currentUserEmail = MutableStateFlow<String?>(auth.currentUser?.email)
+    private val _currentUserEmail = MutableStateFlow<String?>(null)
     val currentUserEmail: StateFlow<String?> = _currentUserEmail
 
-    private val authStateListener: FirebaseAuth.AuthStateListener
+    // private val authStateListener: FirebaseAuth.AuthStateListener
 
     init {
-        authStateListener = FirebaseAuth.AuthStateListener {
-            val loggedIn = it.currentUser != null
-            _isLoggedIn.value = loggedIn
-            _currentUserEmail.value = it.currentUser?.email
-            Log.d("AuthViewModel", "Auth state changed: isLoggedIn = $loggedIn, currentUser = ${it.currentUser?.email}")
-        }
-        auth.addAuthStateListener(authStateListener)
-        Log.d("AuthViewModel", "Initial auth state: isLoggedIn = ${_isLoggedIn.value}, currentUser = ${auth.currentUser?.email}")
+        // authStateListener = FirebaseAuth.AuthStateListener {
+        //     val loggedIn = it.currentUser != null
+        //     _isLoggedIn.value = loggedIn
+        //     _currentUserEmail.value = it.currentUser?.email
+        //     Log.d("AuthViewModel", "Auth state changed: isLoggedIn = $loggedIn, currentUser = ${it.currentUser?.email}")
+        // }
+        // auth.addAuthStateListener(authStateListener)
+        // Log.d("AuthViewModel", "Initial auth state: isLoggedIn = ${_isLoggedIn.value}, currentUser = ${auth.currentUser?.email}")
+        Log.d("AuthViewModel", "AuthViewModel initialized with fake data.")
     }
 
     override fun onCleared() {
         super.onCleared()
-        auth.removeAuthStateListener(authStateListener)
-        Log.d("AuthViewModel", "AuthViewModel cleared, listener removed.")
+        // auth.removeAuthStateListener(authStateListener)
+        Log.d("AuthViewModel", "AuthViewModel cleared, no Firebase listener.")
     }
 
     fun registerUser(email: String, password: String) {
         _uiState.value = _uiState.value.copy(isLoading = true, error = null, success = false)
         viewModelScope.launch {
-            try {
-                auth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            _uiState.value = _uiState.value.copy(isLoading = false, success = true)
-                        } else {
-                            _uiState.value = _uiState.value.copy(isLoading = false, error = it.exception?.message)
-                        }
-                    }
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(isLoading = false, error = e.message)
+            delay(1000) // Simulate network delay
+            if (email.contains("@") && password.length >= 6) {
+                _uiState.value = _uiState.value.copy(isLoading = false, success = true)
+                // Simulate user creation and adding profile
+                val fakeUid = "fake_uid_" + System.currentTimeMillis()
+                val user = User(uid = fakeUid, email = email, name = "Fake User")
+                userRepository.addUserProfile(user)
+                Log.d("AuthViewModel", "Fake user registered: $email")
+            } else {
+                _uiState.value = _uiState.value.copy(isLoading = false, error = "Invalid email or password (fake data).")
             }
         }
     }
@@ -62,17 +69,14 @@ class AuthViewModel : ViewModel() {
     fun loginUser(email: String, password: String) {
         _uiState.value = _uiState.value.copy(isLoading = true, error = null, success = false)
         viewModelScope.launch {
-            try {
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            _uiState.value = _uiState.value.copy(isLoading = false, success = true)
-                        } else {
-                            _uiState.value = _uiState.value.copy(isLoading = false, error = it.exception?.message)
-                        }
-                    }
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(isLoading = false, error = e.message)
+            delay(1000) // Simulate network delay
+            if (email == "test@example.com" && password == "password") {
+                _uiState.value = _uiState.value.copy(isLoading = false, success = true)
+                _isLoggedIn.value = true
+                _currentUserEmail.value = email
+                Log.d("AuthViewModel", "Fake user logged in: $email")
+            } else {
+                _uiState.value = _uiState.value.copy(isLoading = false, error = "Invalid credentials (fake data).")
             }
         }
     }
@@ -82,8 +86,9 @@ class AuthViewModel : ViewModel() {
     }
 
     fun signOut() {
-        auth.signOut()
-        Log.d("AuthViewModel", "User signed out.")
+        _isLoggedIn.value = false
+        _currentUserEmail.value = null
+        Log.d("AuthViewModel", "Fake user signed out.")
     }
 }
 

@@ -41,7 +41,7 @@ dependencies {
     implementation(project(":openknights:core:designsystem"))
     implementation(project(":openknights:core:testing"))
     implementation(project(":openknights:core:ui"))
-    implementation(project(":openknights:core:data"))
+    implementation(project(":openknights:core:data:user"))
 
     // DroidKnightsApp의 feature 플러그인에서 가져온 의존성들
     implementation(libs.kotlinx.immutable)

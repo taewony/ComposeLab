@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoticeScreen(userEmail: String?, onLogoutClick: () -> Unit, onBack: () -> Unit) {
+fun NoticeScreen(userEmail: String?, isLoggedIn: Boolean, onLogoutClick: () -> Unit, onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -71,13 +71,23 @@ fun NoticeScreen(userEmail: String?, onLogoutClick: () -> Unit, onBack: () -> Un
                 Card(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = "공지사항이 없습니다.",
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
+                    if (isLoggedIn) {
+                        Text(
+                            text = "공지사항이 없습니다.",
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        Text(
+                            text = "로그인을 해야만 공지 메시지를 볼 수 있어요.",
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }
