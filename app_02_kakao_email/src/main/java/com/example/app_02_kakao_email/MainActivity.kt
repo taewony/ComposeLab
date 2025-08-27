@@ -56,7 +56,8 @@ fun KakaoEmailScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(WindowInsets.systemBars.asPaddingValues())
+			// 상단 status bar, 하단 navigation bar 영역을 피해서 UI를 배치
+            .padding(WindowInsets.systemBars.asPaddingValues()) // 시스템 영역 피하기
             .padding(16.dp),
         horizontalAlignment = Alignment.Start
     ) {
