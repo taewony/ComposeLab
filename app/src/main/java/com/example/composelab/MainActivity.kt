@@ -81,7 +81,7 @@ fun MainScreen() {
                     .padding(16.dp)
                     .fillMaxSize()         // 2. 남은 모든 공간을 채움
             ) {
-                Text("Hello, Compose!")
+                Text("Hello, Compose~~~~~")
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = { /* 클릭 액션 */ }) {
                     Text("Click Me")

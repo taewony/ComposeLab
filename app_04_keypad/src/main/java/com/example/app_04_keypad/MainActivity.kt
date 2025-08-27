@@ -70,20 +70,21 @@ fun MainScreen() {
 
         // 전화번호 표시
         Text(
-            text = "02-120",
+            text = "010-9530",
             fontSize = 40.sp, // textSize="40dp"
             modifier = Modifier.padding(top = 100.dp)
         )
 
         // 다이얼패드 (GridLayout)
         val dialPadItems = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#")
+		// LazyVerticalGrid 는 Jetpack Compose에서 그리드 형태의 스크롤 가능한 리스트를 만든다.
         LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
+            columns = GridCells.Fixed(3), // 열(column) 개수를 3개로 고정
             modifier = Modifier.padding(top = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(count = dialPadItems.size) { index ->
+            items(count = dialPadItems.size) { index -> // 리스트 길이만큼 (=12번) 반복
                 val item = dialPadItems[index]
                 DialPadKey(text = item)
             }

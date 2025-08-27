@@ -4,7 +4,7 @@
 
 [versions]
 # --- Project & Plugin Versions ---
-agp = "8.12.0"
+agp = "8.12.1"
 #kotlin = "2.2.0"
 #ksp = "2.2.0-2.0.2"
 kotlin = "2.0.0"
@@ -66,7 +66,6 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
 compose-shimmer = { group = "com.valentinilk.shimmer", name = "compose-shimmer", version.ref = "composeShimmer" }
 
-# --- Architecture & Navigation ---
 # --- Architecture & Navigation ---
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }

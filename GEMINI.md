@@ -6,23 +6,20 @@
 ### 파트 1: Compose UI 기초부터 UI 화면 구성 방법까지 (1장~11장)
 
 - 안드로이드 스튜디오 설치 및 첫 앱 작성
-- 코틀린 기초 문법과 객체지향
+- 코틀린 기초 문법과 객체지향 프로그래밍
 - 뷰 구성, 레이아웃 배치, 이벤트 처리, 리소스 활용
 - Dialog, Notification, Jetpack 기본 라이브러리 활용
 
 ### 2. 기술 스택 및 개발 환경 (Tech Stack & Environment)
-- IDE: Android Studio 2025.1.1
-- Android API: targetSDK 35, minSDK 32
+- IDE: Android Studio 2025.1.2
+- Android API: targetSDK 36, minSDK 32
 - UI Toolkit: Jetpack Compose (Material 3)
-- Language and [versions]
-  - agp = "8.11.1"
-  - kotlin = "2.0.21"
-  - composeBom = "2024.09.00"
+- 기타 library는 libs.versions.toml 파일 참조
 
 ### 3. 모듈 구조 (Module Structure)
 - **프로젝트 원칙**: 각 `app_xx` 모듈은 학생들이 개별 예제를 직접 빌드하고 실행하며 학습할 수 있도록, 독립적으로 실행 가능한 애플리케이션(Application)으로 구성하는 것을 원칙으로 합니다.
 - **모듈 명명 규칙**: 각 예제는 `app_xx_주제` 형식의 모듈 이름을 가집니다. (예: `app_01_layout_basics`, `app_02_state_management`)
-- **`app` 모듈의 역할**: `app` 모듈은 Android Studio 프로젝트 생성 시 기본으로 만들어진 애플리케이션 모듈입니다. 다른 예제 모듈(`app_xx`)을 통합하거나 호출하는 기능 없이, 프로젝트의 기본 골격을 유지하는 역할을 합니다.
+- **`app` 모듈의 역할**: `app` 모듈은 Android Studio 프로젝트 생성 시 기본으로 만들어진 default 애플리케이션 모듈입니다. 다른 예제 모듈(`app_xx`)을 통합하거나 호출하는 기능은 없습니다.
 
 ### 4. 코드 생성 규칙 (Code Generation Rules)
 점진적 코드 작성:
@@ -31,7 +28,7 @@
 - 코드가 중복되더라도, 이전 단계의 코드를 복사하여 수정하는 방식으로 점진적인 변화를 명확히 보여줍니다.
 
 독립적인 프리뷰(Preview):
-- 모든 단계별 Composable 함수는 반드시 자체적인 @Preview 함수를 가져야 합니다.
+- 모든 단계별 Composable 함수는 자체적인 @Preview 함수를 가져야 합니다.
 - 프리뷰 함수의 이름은 [원본함수명]Preview 형식으로 지정합니다. (예: GreetingStep1Preview)
 - 프리뷰에는 name, showBackground = true 등의 유용한 속성을 추가하여 구별하기 쉽게 만듭니다.
 
@@ -140,5 +137,5 @@ fun MainScreenPreview() {
 - 복잡하고 긴 명령어를 CLI에 직접 입력하는 불편함을 해소하기 위해, 프로젝트 루트 디렉토리에 `prompt.txt` 파일을 활용
 -  **`prompt.txt` 파일 생성**: 프로젝트의 가장 상위 폴더(루트 디렉토리)에 `prompt.txt` 파일을 생성
 -  **명령어 작성**: 텍스트 편집기로 `prompt.txt` 파일을 열어, 실행하고자 하는 작업 내용을 자유롭게 작성. (예: 신규 모듈 생성, 코드 수정, 리팩토링 등)
--  **CLI에서 실행 요청**: CLI 창에 간단하게 `"prompt 파일 실행해줘"` 또는 `"prompt.txt 읽어서 실행해줘"` 와 같이 요청
+-  **Gemini CLI에서 실행 요청**: CLI 창에 간단하게 `"prompt 파일 실행해줘"` 또는 `"prompt.txt 읽어서 실행해줘"` 와 같이 요청
 - Gemini가 `prompt.txt` 파일의 내용을 읽어, 작성된 명령어를 순차적으로 수행할 것입니다. 이 파일은 `.gitignore`에 등록되어 있어 Git 원격 저장소에는 공유되지 않으므로, 개인적인 작업 지시를 자유롭게 작성할 수 있습니다.
