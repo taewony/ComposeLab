@@ -12,58 +12,59 @@
 
 ## 2. 개선 작업 상세 계획 (Detailed Refactoring Plan)
 
-**작업 위치**: `D:\code\mobileApp\ComposeLab\openknights\core\designsystem\src\main\java\com\openknights\designsystem`
+**작업 위치**: `D:\code\mobileApp\ComposeLab\openknights\core\designsystem\src\main\java\com\openknights\app\core\designsystem`
 
-### 2.1. Step 1: 중복 및 미사용 파일 제거
+### 2.1. Step 1: 중복 및 미사용 파일 제거 (완료)
 
 - **목표**: 현재 `theme` 패키지에 존재하지만 실제로는 사용되지 않는 중복 파일들을 제거하여 혼란을 없앱니다.
-- **실행 항목**:
-  - 아래 파일들을 프로젝트에서 **삭제**합니다.
+- **실행 항목** (완료):
+  - 아래 파일들을 프로젝트에서 **삭제**했습니다.
     1.  `theme/KnightsColor.kt`
     2.  `theme/KnightsShape.kt`
     3.  `theme/KnightsType.kt`
 
-### 2.2. Step 2: 색상 시스템 단일화
+### 2.2. Step 2: 색상 시스템 단일화 (완료)
 
 - **목표**: `color` 패키지를 색상 토큰의 유일한 관리 지점으로 지정합니다.
-- **실행 항목**:
-  1.  `color/KnightsColor.kt` 파일을 엽니다.
-  2.  (필요시) 삭제될 `theme/KnightsColor.kt` 파일에서 필요했던 색상들을 `color/KnightsColor.kt`로 옮겨와 통합합니다.
-  3.  `theme/KnightsTheme.kt`에서 `darkColorScheme`과 `lightColorScheme`이 `com.openknights.designsystem.color.KnightsColor`를 올바르게 import하여 사용하고 있는지 확인합니다.
+- **실행 항목** (완료):
+  1.  `color/KnightsColor.kt` 파일을 열었습니다.
+  2.  삭제된 `theme/KnightsColor.kt` 파일에서 필요했던 색상들을 `color/KnightsColor.kt`로 옮겨와 통합했습니다. (`Blue03`, `PaleGray` 추가)
+  3.  `theme/KnightsTheme.kt`에서 `darkColorScheme`과 `lightColorScheme`이 `com.openknights.app.core.designsystem.color.KnightsColor`를 올바르게 import하여 사용하고 있는지 확인했습니다.
 
-### 2.3. Step 3: 타이포그래피 시스템 단일화
+### 2.3. Step 3: 타이포그래피 시스템 단일화 (완료)
 
 - **목표**: `typography` 패키지를 타이포그래피의 유일한 관리 지점으로 지정하고, 더 상세한 시스템을 채택합니다.
-- **실행 항목**:
-  1.  `typography/KnightsTypography.kt` 파일의 내용을 **삭제**합니다.
-  2.  삭제될 `theme/KnightsType.kt` 파일의 전체 내용을 `typography/KnightsTypography.kt` 파일에 **붙여넣기** 합니다.
-  3.  `theme/KnightsTheme.kt`에서 `LocalTypography`를 제공하는 부분을 확인하고, 새로 통합된 `KnightsTypography`를 사용하도록 필요시 수정합니다.
+- **실행 항목** (완료):
+  1.  `typography/KnightsTypography.kt` 파일의 내용을 **업데이트**했습니다.
+  2.  삭제된 `theme/KnightsType.kt` 파일의 전체 내용을 `typography/KnightsTypography.kt` 파일에 **통합**했습니다. (`titleSmallB` 등 추가)
+  3.  `typography/KnightsTypography.kt` 내의 `Material3Typography`를 `@Composable` 함수로 변경했습니다.
+  4.  `theme/KnightsTheme.kt`에서 `LocalTypography`를 제공하는 부분을 확인하고, 새로 통합된 `KnightsTypography`를 사용하도록 수정했습니다. (`Material3Typography()` 호출)
 
-### 2.4. Step 4: Shape 시스템 확인
+### 2.4. Step 4: Shape 시스템 확인 (완료)
 
 - **목표**: `shape` 패키지를 Shape 토큰의 유일한 관리 지점으로 지정합니다.
-- **실행 항목**:
-  1.  `theme/KnightsTheme.kt`에서 `shapes` 파라미터가 `com.openknights.designsystem.shape.KnightsShape`를 올바르게 import하여 사용하고 있는지 확인합니다.
+- **실행 항목** (완료):
+  1.  `theme/KnightsTheme.kt`에서 `shapes` 파라미터가 `com.openknights.app.core.designsystem.shape.KnightsShape`를 올바르게 import하여 사용하고 있는지 확인했습니다.
 
 ---
 
-## 3. 프리뷰를 통한 디자인 테스트 및 Dark/Light 모드 전환
+## 3. 프리뷰를 통한 디자인 테스트 및 Dark/Light 모드 전환 (완료)
 
 - **목표**: 디자인 시스템의 변경사항을 시각적으로 즉시 테스트하고, Dark/Light 모드 전환을 쉽게 제어할 수 있는 환경을 구축합니다.
 
-### 3.1. 테스트용 Preview 파일 생성
+### 3.1. 테스트용 Preview 파일 생성 (완료)
 
-- **실행 항목**:
-  1.  `designsystem` 모듈 내에 `preview` 라는 새 패키지를 생성합니다.
-     - `D:\code\mobileApp\ComposeLab\openknights\core\designsystem\src\main\java\com\openknights\designsystem\preview`
-  2.  해당 패키지 안에 `DesignSystemPreview.kt` 파일을 생성합니다.
+- **실행 항목** (완료):
+  1.  `designsystem` 모듈 내에 `preview` 라는 새 패키지를 생성했습니다.
+     - `D:\code\mobileApp\ComposeLab\openknights\core\designsystem\src\main\java\com\openknights\app\core\designsystem\preview`
+  2.  해당 패키지 안에 `DesignSystemPreview.kt` 파일을 생성했습니다.
 
-### 3.2. 디자인 시스템 테스트용 Preview 코드 작성
+### 3.2. 디자인 시스템 테스트용 Preview 코드 작성 (완료)
 
-- **실행 항목**: `DesignSystemPreview.kt` 파일에 아래와 같이 코드를 작성하여 색상, 타이포그래피, 컴포넌트를 한눈에 볼 수 있는 Preview를 구성합니다.
+- **실행 항목** (완료): `DesignSystemPreview.kt` 파일에 아래와 같이 코드를 작성하여 색상, 타이포그래피, 컴포넌트를 한눈에 볼 수 있는 Preview를 구성했습니다.
 
 ```kotlin
-package com.openknights.designsystem.preview
+package com.openknights.app.core.designsystem.preview
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -77,8 +78,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.openknights.designsystem.theme.KnightsTheme
-import com.openknights.designsystem.theme.knightsTypography
+import com.openknights.app.core.designsystem.theme.KnightsTheme
+import com.openknights.app.core.designsystem.theme.knightsTypography
 
 // 단일 테마(Light/Dark)에 대한 디자인 시스템 요소들을 보여주는 Composable
 @Composable
@@ -178,12 +179,14 @@ private fun ColorChip(name: String, color: Color) {
 
 ---
 
-## 4. 최종 App 모듈 적용 방안 (Final Application)
+## 4. 최종 App 모듈 적용 방안 (완료)
 
 - **목표**: 개선된 디자인 시스템을 `app` 모듈에 적용하여 앱 전체의 UI 일관성을 확보합니다.
-- **실행 항목**:
-  1.  `openknights`의 `app` 모듈에 있는 `MainActivity.kt` (또는 앱의 진입점) 파일을 엽니다.
-  2.  최상위 Composable을 `KnightsTheme`으로 감싸줍니다.
+- **실행 항목** (완료):
+  1.  `openknights`의 `app` 모듈에 있는 `MainActivity.kt` (또는 앱의 진입점) 파일을 열었습니다.
+  2.  최상위 Composable을 `KnightsTheme`으로 감싸주었습니다.
+  3.  `OpenKnightsApp.kt`의 `TopAppBar` 제목에 `MaterialTheme.knightsTypography.headlineMediumB` 스타일을 명시적으로 적용했습니다.
+  4.  `OpenKnightsApp.kt`에 `import com.openknights.app.core.designsystem.theme.knightsTypography`를 추가했습니다.
 
 ```kotlin
 // openknights/app/src/main/java/.../MainActivity.kt
