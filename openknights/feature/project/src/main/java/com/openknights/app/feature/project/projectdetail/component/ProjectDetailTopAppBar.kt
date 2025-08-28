@@ -12,7 +12,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.openknights.app.core.ui.KnightsTopAppBar
 import com.openknights.app.core.ui.TopAppBarNavigationType
-import com.openknights.app.core.designsystem.theme.KnightsColor
+import com.openknights.app.core.designsystem.color.KnightsColor
 import com.openknights.app.core.designsystem.theme.KnightsTheme
 import com.openknights.app.feature.project.R
 

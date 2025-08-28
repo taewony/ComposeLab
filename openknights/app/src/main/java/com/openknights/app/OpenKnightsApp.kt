@@ -37,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
 import com.openknights.app.core.designsystem.theme.KnightsTheme
+import com.openknights.app.core.designsystem.theme.knightsTypography
 import com.openknights.app.core.testing.FakeOpenKnightsData
 import com.openknights.app.feature.contest.ContestListScreen
 import com.openknights.app.feature.project.projectdetail.ProjectDetailScreen
@@ -75,7 +76,8 @@ fun OpenKnightsApp() {
                     Text(
                         "OpenKnights",
                         modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.knightsTypography.headlineMediumB
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

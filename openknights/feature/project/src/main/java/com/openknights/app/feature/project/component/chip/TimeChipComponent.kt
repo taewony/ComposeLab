@@ -6,7 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.openknights.app.core.ui.TextChip
-import com.openknights.app.core.designsystem.theme.KnightsColor
+import com.openknights.app.core.designsystem.color.KnightsColor
 import com.openknights.app.feature.project.R
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

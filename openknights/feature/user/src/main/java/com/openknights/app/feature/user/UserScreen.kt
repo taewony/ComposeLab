@@ -18,7 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.openknights.app.core.designsystem.theme.KnightsColor
+import com.openknights.app.core.designsystem.color.KnightsColor
 import com.openknights.app.core.model.User
 import com.openknights.app.core.ui.TextChip
 
