@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,28 +38,18 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// --- Refactoring Step 1: 두 개의 버튼을 나란히 표시 ---
-// 가장 기본적인 Row 사용법을 보여주는 Composable입니다.
+@Preview(showBackground = true, name = "1. Simple Two Buttons")
 @Composable
-fun TwoButtons() {
-    // Row를 사용하여 자식 Composable들을 가로로 배치합니다.
-    Row(modifier = Modifier.padding(8.dp)) {
-        Button(onClick = { /*TODO*/ }) {
-            Text(text = "Button #1")
-        }
-        // Spacer를 사용하여 버튼 사이에 간격을 줍니다.
-        Spacer(modifier = Modifier.width(8.dp))
-        Button(onClick = { /*TODO*/ }) {
-            Text(text = "Button #2")
-        }
+fun SimpleTwoButtonsPreview() {
+    ComposeLabTheme {
+        SimpleTwoButtons()
     }
 }
-
 /**
  * TwoButtons Composable의 미리보기를 생성합니다.
  * name 속성을 사용하여 Preview 창에서 쉽게 식별할 수 있도록 합니다.
  */
-@Preview(showBackground = true, name = "1. Two Buttons")
+@Preview(showBackground = true, name = "2. Two Buttons")
 @Composable
 fun TwoButtonsPreview() {
     ComposeLabTheme {
@@ -66,13 +57,94 @@ fun TwoButtonsPreview() {
     }
 }
 
+@Preview(showBackground = true, name = "3. Evenly Paced Two Buttons")
+@Composable
+fun EvenlyButtonsPreview() {
+    ComposeLabTheme {
+        EvenlyTwoButtons()
+    }
+}
+
+/**
+ * TwoButtonsWithWeight Composable의 미리보기를 생성합니다.
+ */
+@Preview(showBackground = true, name = "4. Two Buttons with Weight")
+@Composable
+fun TwoButtonsWithWeightPreview() {
+    ComposeLabTheme {
+        TwoButtonsWithWeight()
+    }
+}
+
+@Composable
+fun SimpleTwoButtons() {
+    Row {
+        Button(onClick = {  }) {
+            Text(text = "Button #1")
+        }
+        Button(onClick = {  }) {
+            Text(text = "Button #2")
+        }
+    }
+    Column {
+        Button(onClick = {  }) {
+            Text(text = "Button #3")
+        }
+        Button(onClick = {  }) {
+            Text(text = "Button #4")
+        }
+    }
+}
+
+// --- Refactoring Step 1: 두 개의 버튼을 나란히 표시 ---
+// 가장 기본적인 Row 사용법을 보여주는 Composable입니다.
+@Composable
+fun TwoButtons() {
+    // Row를 사용하여 자식 Composable들을 가로로 배치합니다.
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Button(onClick = {  }) {
+            Text(text = "Button #1")
+        }
+        // Spacer를 사용하여 버튼 사이에 간격을 줍니다.
+        Spacer(modifier = Modifier.width(8.dp))
+        Button(onClick = {  }) {
+            Text(text = "Button #2")
+        }
+    }
+}
+
+@Composable
+fun EvenlyTwoButtons() {
+    // Row를 사용하여 자식 Composable들을 가로로 배치합니다.
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Button(onClick = {  }) {
+            Text(text = "Button #1")
+        }
+        // Spacer를 사용하여 버튼 사이에 간격을 줍니다.
+        Spacer(modifier = Modifier.width(8.dp))
+        Button(onClick = {  }) {
+            Text(text = "Button #2")
+        }
+    }
+}
+
+
 // --- Refactoring Step 2: 가중치(weight)를 사용한 버튼 배치 ---
 // Row의 자식들이 공간을 어떻게 나누어 가질지 weight modifier를 통해 제어합니다.
 @Composable
 fun TwoButtonsWithWeight() {
     Row(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {  },
             // weight(2f)는 남은 공간의 2/3를 차지하도록 설정합니다.
             modifier = Modifier.weight(2f)
         ) {
@@ -80,7 +152,7 @@ fun TwoButtonsWithWeight() {
         }
         Spacer(modifier = Modifier.width(8.dp))
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {  },
             // weight(1f)는 남은 공간의 1/3을 차지하도록 설정합니다.
             modifier = Modifier.weight(1f)
         ) {
@@ -88,18 +160,6 @@ fun TwoButtonsWithWeight() {
         }
     }
 }
-
-/**
- * TwoButtonsWithWeight Composable의 미리보기를 생성합니다.
- */
-@Preview(showBackground = true, name = "2. Two Buttons with Weight")
-@Composable
-fun TwoButtonsWithModifierPreview() {
-    ComposeLabTheme {
-        TwoButtonsWithWeight()
-    }
-}
-
 
 // --- Refactoring Step 3: 프로필 카드 UI ---
 // 이미지, 텍스트를 조합하여 복합적인 UI를 만드는 예제입니다.
