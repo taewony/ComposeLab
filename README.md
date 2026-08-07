@@ -1,46 +1,11 @@
-## **Jetpack Compose 13주 완성 교육 과정 설계 (XML 개념 포함)**
-
-안드로이드 UI 시스템의 핵심 원리를 이해하고, 모든 실습은 Jetpack Compose를 통해 현대적인 방식으로 구현하는 13주 완성 커리큘럼입니다.
-총 두 개의 파트로 구성되어 있으며, Part 1은 단일 모듈 기반의 기초 Compose 실습, Part 2는 멀티모듈과 아키텍처 구조를 활용한 실제 Compose 앱 구현을 다룹니다.
+## **Jetpack Compose 13주 완성 교육 과정**
 
 ## 🚀 ComposeLab 프로젝트 개요
 
-- 교재: **'Do it! 깡샘의 안드로이드 앱 프로그래밍 with 코틀린(개정4판)'**
+- 교재: **'Do it! 깡샘의 안드로이드 앱 프로그래밍 with 코틀린(개정5판)'**
 - 기존 View 시스템 기반의 안드로이드 예제를 Kotlin 기반의 Jetpack Compose로 개발하는 실습
 - 최신 안드로이드 개발 트렌드를 따르는 '나만의 안드로이드 앱'을 만드는 과제 실행을 목표로 합니다.
 
-## 📚 강의 구성
-
-### Part 1: Compose 기초와 UI 컴포넌트 실습
-
-- 단일 독립 모듈 구조 (기본 `MainActivity.kt` 중심)
-- Jetpack Compose의 핵심 컴포넌트와 UI 작성 방식에 대한 기초 실습
-- Android Studio에서 즉시 실행 가능한 미니 앱 예제 중심
-- 주요 주제:
-  - `Composable` 함수 이해
-  - `Column`, `Row`, `Box` 레이아웃
-  - `Modifier`, 상태 관리 (`remember`, `mutableStateOf`)
-  - Theme, ColorScheme, DarkMode Preview
-  - 실습용 UI 요소: `Card`, `Button`, `Image`, `TextField` 등
-
----
-
-### Part 2: 아키텍처 기반 실전 앱 개발 (OpenKnights)
-
-- **멀티모듈** 기반 구조
-- Android Architecture Guide에 따라 **Layered MVI 구조** 구현
-- 실전 앱 수준의 구조 설계와 상태 관리, 화면 구성 방법 익히기
-- Firebase 연동, Navigation 3, Preview + Dark Mode 대응 포함
-- 최종 오픈소스-경진대회 용 실제 `OpenKnights` 앱 구조 실습
-
-> 📂 디렉토리 위치: `/openknights`
-> 📄 참고 파일: `openknights/GEMINI.md`, `openknights/app/src/main/...`, `core`, `feature`, `ui`
-
-### 파트 3: 종합 — Jetpack Compose로 마무리 (22장)
-
-- 상태 관리와 UI 선언형 프로그래밍 학습
-
----
 ## 🛠️ 기술 스택 및 개발 환경
 
 - **IDE**: Android Studio 2025.1.2
@@ -48,18 +13,6 @@
 - **UI Toolkit**: Jetpack Compose (Material 3)
 - **Architecture**: Multi-module Architecture, KSP for DI annotations
 - **SDK**: `compileSDK 36`, `minSDK 32`
-
-## 📦 모듈 구조 (Part 2 기준)
-
-```plaintext
-/openknights
-├── app               # 앱 진입점 (UI + Navigation)
-├── core              # 공통 유틸리티, 모델, 디자인 시스템
-├── feature           # 기능 단위 화면 (팀 관리, 심사 결과 등)
-├── ui                # 전역 UI 컴포넌트 (TopBar, Theme 등)
-├── data              # 정적/동적 데이터 제공 (추후 Firebase 연동 가능)
-└── GEMINI.md         # 구조 설계와 실습 목표 설명서
-```
 
 ## Part-I: Jetpack Compose UI 기본
 
