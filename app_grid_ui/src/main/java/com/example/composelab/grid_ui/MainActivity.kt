@@ -64,7 +64,7 @@ fun StudentMoodScreen() {
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("오늘 기분 어때?") },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = Color.White
                 )

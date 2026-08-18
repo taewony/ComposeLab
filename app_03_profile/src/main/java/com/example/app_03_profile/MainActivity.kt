@@ -170,7 +170,7 @@ data class Message(val author: String, val body: String)
 @Composable
 fun ProfileCard() {
     // 표시할 메시지 데이터를 생성합니다.
-    val msg = Message("홍길동", "Android 개발자 & Compose 학습자")
+    val msg = Message("홍길동", "Android 개발자 & Compose 전문가")
     Row(
         // Row 자체에 패딩을 주어 다른 Composable과 간격을 둡니다.
         modifier = Modifier.padding(all = 8.dp)

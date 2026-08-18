@@ -10,6 +10,12 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/app_01_compose_coffee" />
+            <option value="$PROJECT_DIR$/app_02_kakao_email" />
+            <option value="$PROJECT_DIR$/app_03_profile" />
+            <option value="$PROJECT_DIR$/app_04_keypad" />
+            <option value="$PROJECT_DIR$/app_grid_ui" />
+            <option value="$PROJECT_DIR$/app_overalpped_ui" />
           </set>
         </option>
       </GradleProjectSettings>
