@@ -4,12 +4,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.app_05_count"
-    compileSdk = 36
+    namespace = "com.example.app_07_stopwatchgame"
+    compileSdk {
+        version = release(36)
+    }
 
     defaultConfig {
-        applicationId = "com.example.app_05_count"
+        applicationId = "com.example.app_07_stopwatchgame"
         minSdk = 32
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -23,7 +26,6 @@ android {
             }
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -42,6 +44,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose) // for viewModel() in app_07_stopwatcchgame
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
