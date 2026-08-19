@@ -60,10 +60,12 @@ dependencies {
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
 
     // Dagger Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler) // hilt-compiler는 ksp로 설정해야 합니다.
+    ksp(libs.kotlinmetadata)
 
     // ★ hiltViewModel() 지원 추가
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
