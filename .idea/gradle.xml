@@ -17,8 +17,17 @@
             <option value="$PROJECT_DIR$/app_05_count" />
             <option value="$PROJECT_DIR$/app_06_stopwatch" />
             <option value="$PROJECT_DIR$/app_07_stopwatchgame" />
+            <option value="$PROJECT_DIR$/app_10_bubble_game" />
+            <option value="$PROJECT_DIR$/app_11_dropdown" />
+            <option value="$PROJECT_DIR$/app_11_jetpack" />
+            <option value="$PROJECT_DIR$/app_12_material_design" />
+            <option value="$PROJECT_DIR$/app_13_todotask" />
+            <option value="$PROJECT_DIR$/app_14_triple" />
+            <option value="$PROJECT_DIR$/app_17_todo_revised" />
+            <option value="$PROJECT_DIR$/app_18_fake_store" />
             <option value="$PROJECT_DIR$/app_grid_ui" />
             <option value="$PROJECT_DIR$/app_overalpped_ui" />
+            <option value="$PROJECT_DIR$/designsystem" />
           </set>
         </option>
       </GradleProjectSettings>
