@@ -19,15 +19,15 @@ interface TodoDao {
     // --- 데이터 쓰기 (INSERT) ---
     // ✅ 새로운 아이템을 추가하는 함수
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(item: TodoItem)
+    suspend fun insert(item: TodoItem): Long
 
     // --- 데이터 수정 (UPDATE) ---
     // ✅ 기존 아이템을 수정하는 함수
     @Update
-    suspend fun update(item: TodoItem)
+    suspend fun update(item: TodoItem): Int
 
     // --- 데이터 삭제 (DELETE) ---
     // ✅ 아이템을 삭제하는 함수
     @Delete
-    suspend fun delete(item: TodoItem)
+    suspend fun delete(item: TodoItem): Int
 }

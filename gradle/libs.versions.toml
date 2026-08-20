@@ -18,7 +18,7 @@ navigation3 = "1.1.6"
 kotlinxSerializationJson = "1.8.1"
 
 # --- Data Persistence ---
-room = "2.6.1"
+room = "2.8.4"
 # --- Networking ---
 coil = "3.5.0"
 retrofit = "3.0.0"

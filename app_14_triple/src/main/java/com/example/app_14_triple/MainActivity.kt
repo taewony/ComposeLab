@@ -62,15 +62,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.ui.NavDisplay
 import com.example.app_14_triple.ui.theme.ComposeLabTheme
 import kotlinx.coroutines.launch
-import com.example.app_14_triple.BatteryStatusRoute // import문 추가
-import com.example.app_14_triple.Mp3PlayerScreen
-import com.example.app_14_triple.GalleryScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,46 +79,52 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-const val ROUTE_MAIN = "main"
-const val ROUTE_ADD_TODO = "add"
-const val ROUTE_BATTERY_STATUS = "batteryStatus"
-const val ROUTE_MP3_PLAYER = "mp3Player"
-const val ROUTE_GALLERY = "gallery"
+sealed class TripleScreen {
+    data object Main : TripleScreen()
+    data object AddTodo : TripleScreen()
+    data object BatteryStatus : TripleScreen()
+    data object Mp3Player : TripleScreen()
+    data object Gallery : TripleScreen()
+}
 
 @Composable
 fun AppContent() {
-    val navController = rememberNavController()
+    val backStack = remember { mutableStateListOf<TripleScreen>(TripleScreen.Main) }
     val todos = remember { mutableStateListOf<String>() }
 
-    NavHost(navController = navController, startDestination = ROUTE_MAIN) {
-        composable(ROUTE_MAIN) {
-            MainScreenContent(
-                onAddClick = { navController.navigate(ROUTE_ADD_TODO) },
-                datas = todos,
-                navController = navController
-            )
-        }
-        composable(ROUTE_ADD_TODO) {
-            AddScreenContent(
-                onBack = { navController.popBackStack() },
-                onSave = { todo ->
-                    todos.add(todo)
-                    navController.popBackStack()
+    NavDisplay(
+        backStack = backStack,
+        onBack = { backStack.removeLastOrNull() },
+        entryProvider = { key: TripleScreen ->
+            when (key) {
+                is TripleScreen.Main -> NavEntry(key) {
+                    MainScreenContent(
+                        onAddClick = { backStack += TripleScreen.AddTodo },
+                        datas = todos,
+                        onNavigate = { screen -> backStack += screen }
+                    )
                 }
-            )
+                is TripleScreen.AddTodo -> NavEntry(key) {
+                    AddScreenContent(
+                        onBack = { backStack.removeLastOrNull() },
+                        onSave = { todo ->
+                            todos.add(todo)
+                            backStack.removeLastOrNull()
+                        }
+                    )
+                }
+                is TripleScreen.BatteryStatus -> NavEntry(key) {
+                    BatteryStatusRoute()
+                }
+                is TripleScreen.Mp3Player -> NavEntry(key) {
+                    Mp3PlayerScreen()
+                }
+                is TripleScreen.Gallery -> NavEntry(key) {
+                    GalleryScreen()
+                }
+            }
         }
-        composable(ROUTE_BATTERY_STATUS) {
-            // BatteryStatusScreen(batteryLevel = 80, isCharging = true) // Placeholder values
-            // 기존의 하드코딩된 값을 사용하는 대신, BatteryStatusRoute()를 호출하여 모든 로직을 위임합니다.
-            BatteryStatusRoute()
-        }
-        composable(ROUTE_MP3_PLAYER) {
-            Mp3PlayerScreen()
-        }
-        composable(ROUTE_GALLERY) {
-            GalleryScreen()
-        }
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -131,7 +132,7 @@ fun AppContent() {
 fun MainScreenContent(
     onAddClick: () -> Unit,
     datas: List<String>,
-    navController: NavController
+    onNavigate: (TripleScreen) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -172,9 +173,9 @@ fun MainScreenContent(
                         onClick = {
                             scope.launch { drawerState.close() }
                             when (title) {
-                                "Battery Status" -> navController.navigate(ROUTE_BATTERY_STATUS)
-                                "MP3 Player" -> navController.navigate(ROUTE_MP3_PLAYER)
-                                "Gallery" -> navController.navigate(ROUTE_GALLERY)
+                                "Battery Status" -> onNavigate(TripleScreen.BatteryStatus)
+                                "MP3 Player" -> onNavigate(TripleScreen.Mp3Player)
+                                "Gallery" -> onNavigate(TripleScreen.Gallery)
                             }
                         }
                     )
@@ -319,7 +320,11 @@ fun AddScreenContent(onSave: (String) -> Unit, onBack: () -> Unit) {
 @Composable
 fun MainScreenPreview() {
     ComposeLabTheme {
-        MainScreenContent({ }, datas = remember { mutableStateListOf("Sample Todo 1", "Sample Todo 2") }, navController = rememberNavController())
+        MainScreenContent(
+            onAddClick = { },
+            datas = remember { mutableStateListOf("Sample Todo 1", "Sample Todo 2") },
+            onNavigate = { }
+        )
     }
 }
 

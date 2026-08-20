@@ -54,7 +54,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -367,7 +366,7 @@ fun MainScreenWithTabs() {
             MediumTopAppBar(
                 title = { Text("OpenKnights Store") },
                 scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.mediumTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
             )
@@ -545,7 +544,7 @@ fun MainScreenWithTabsAndDrawer() {
                             Icon(Icons.Default.Menu, contentDescription = "Menu")
                         }
                     },
-                    colors = TopAppBarDefaults.mediumTopAppBarColors(
+                    colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 )
@@ -575,7 +574,7 @@ fun MainScreenWithTabsAndDrawer() {
                     .padding(innerPadding)
                     .fillMaxSize()
             ) {
-                TabRow(selectedTabIndex = pagerState.currentPage) {
+                SecondaryTabRow(selectedTabIndex = pagerState.currentPage) {
                     tabs.forEachIndexed { index, title ->
                         Tab(
                             selected = pagerState.currentPage == index,
