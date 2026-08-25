@@ -85,7 +85,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ComposeLabTheme {
-                MainScreen()
+                // MainScreen()
+                MainScreenWithTabsAndDrawer()
             }
         }
     }
@@ -505,7 +506,8 @@ fun MainScreenWithTabsAndDrawer() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp)
-                        .background(Color.Red),
+                        .background(MaterialTheme.colorScheme.primary),
+                        //.background(Color.Red),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     Text(
