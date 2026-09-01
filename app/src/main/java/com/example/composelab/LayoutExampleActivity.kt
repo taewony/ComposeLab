@@ -15,11 +15,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -108,10 +109,10 @@ fun ScaffoldWithTopBarScreen() {
         // topBar: 화면 상단에 고정되는 앱바를 설정합니다.
         topBar = {
             TopAppBar(
-                title = { Text("ComposeLab") }, // 앱바에 표시될 제목
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Blue,      // 앱바의 배경색
-                    titleContentColor = Color.White   // 제목 텍스트 색상 (대비를 위해 흰색으로 변경)
+                title = { Text("ComposeLab") },
+                colors = topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary, // 테마의 주요 색상
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },
@@ -158,9 +159,9 @@ fun CenteredContentScreen() {
         topBar = {
             TopAppBar(
                 title = { Text("ComposeLab") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Blue,      // 앱바의 배경색
-                    titleContentColor = Color.White   // 제목 텍스트 색상 (대비를 위해 흰색으로 변경)
+                colors = topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary, // 테마의 주요 색상
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },
