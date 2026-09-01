@@ -42,6 +42,35 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Composable
+fun MainScreen() {
+    Scaffold { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)  // 1. Scaffold의 안전 영역 패딩 먼저 적용
+                .fillMaxSize(),         // 2. 남은 공간 전체 차지
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Compose Coffee")
+            Image(
+                painter = painterResource(id = R.drawable.compose),
+                contentDescription = "Jetpack Compose 로고",
+                modifier = Modifier
+                    .size(300.dp)
+                    .padding(16.dp)
+            )
+            Text("위치: 우송대 정문앞")
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MainScreenPreview() {
+    MainScreen()
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DefaultScreen() {
@@ -114,33 +143,4 @@ fun DefaultScreen() {
 @Composable
 fun DefaultPreview() {
     DefaultScreen()
-}
-
-@Composable
-fun MainScreen() {
-    Scaffold { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)  // 1. Scaffold의 안전 영역 패딩 먼저 적용
-                .fillMaxSize(),         // 2. 남은 공간 전체 차지
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("Compose Coffee")
-            Image(
-                painter = painterResource(id = R.drawable.compose),
-                contentDescription = "Jetpack Compose 로고",
-                modifier = Modifier
-                    .size(300.dp)
-                    .padding(16.dp)
-            )
-            Text("위치: 우송대 정문앞")
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview() {
-    MainScreen()
 }
