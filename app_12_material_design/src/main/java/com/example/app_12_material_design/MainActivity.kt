@@ -14,18 +14,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Add
@@ -37,6 +41,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -50,6 +55,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
@@ -166,64 +172,59 @@ fun MaterialDesignScreenPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollapsedTopBarScreen(name: String = "World") {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
+        state = rememberTopAppBarState()
+    )
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             MediumTopAppBar(
                 title = {
-                    // 콘텐츠를 가운데 위아래로 정렬하려면 Box+Column
-                    Box(
+                    // ⭐ Box 대신 Row로 간단하게 배치
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start, // 왼쪽 정렬 (기본)
                         modifier = Modifier
-                            .fillMaxSize()
-                            .height(112.dp), // MediumTopAppBar 기본 높이 맞춤
-                        contentAlignment = Alignment.Center
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
+                        Image(
+                            painter = painterResource(R.drawable.open_source_logo),
+                            contentDescription = "logo",
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.open_source_logo),
-                                contentDescription = "logo",
-                                modifier = Modifier
-                                    .size(64.dp) // 조금 줄여서 텍스트와 조화
-                                    .clip(MaterialTheme.shapes.medium)
+                                .size(48.dp) // MediumTopAppBar에 적합한 크기
+                                .clip(MaterialTheme.shapes.medium)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "오픈소스 경진대회",
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
                             )
-
-                            Spacer(modifier = Modifier.width(16.dp))
-
-                            Column(
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "오픈소스 경진대회",
-                                    style = MaterialTheme.typography.titleLarge.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onPrimary
-                                    )
+                            Text(
+                                text = "(우송 SW융합대학)",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
-                                Text(
-                                    text = "(우송 SW융합대학)",
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        color = MaterialTheme.colorScheme.onPrimary
-                                    )
-                                )
-                            }
+                            )
                         }
                     }
                 },
-                navigationIcon = {},
+                // ⭐ navigationIcon 생략 (또는 뒤로가기 버튼 추가)
+                navigationIcon = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                },
+                // ⭐ 불필요한 Color.Unspecified 제거
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    scrolledContainerColor = Color.Unspecified,
-                    navigationIconContentColor = Color.Unspecified,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = Color.Unspecified
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 scrollBehavior = scrollBehavior
             )
@@ -243,7 +244,6 @@ fun CollapsedTopBarScreen(name: String = "World") {
                     text = "Hello $name!",
                     style = MaterialTheme.typography.headlineMedium
                 )
-
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -259,7 +259,6 @@ fun CollapsedTopBarScreen(name: String = "World") {
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
@@ -471,15 +470,19 @@ DrawerState와 rememberCoroutineScope을 활용해 Drawer 열기/닫기
 상단 AppBar에 메뉴 아이콘(햄버거 버튼) 추가
 NavigationDrawerItem을 4개 아이템으로 구성 (아이콘 포함)
 빨간 배경 + 흰 텍스트의 Drawer Header 구성
- */
+*/
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MainScreenWithTabsAndDrawer() {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val coroutineScope = rememberCoroutineScope()
+
+    // 상태 관리
     val tabs = listOf("추천", "인기 차트", "키즈")
     val pagerState = rememberPagerState { tabs.size }
-    val coroutineScope = rememberCoroutineScope()
     var selectedBottomNavItem by remember { mutableIntStateOf(0) }
+    var selectedDrawerItem by remember { mutableIntStateOf(0) } // Drawer 선택 상태 추가
+
     val bottomNavItems = listOf(
         "게임" to Icons.Default.Games,
         "앱" to Icons.Default.PhoneAndroid,
@@ -487,45 +490,40 @@ fun MainScreenWithTabsAndDrawer() {
     )
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-
     val drawerItems = listOf(
-        "아이템1" to Icons.Default.Share,
-        "아이템2" to Icons.AutoMirrored.Filled.Help,
-        "아이템3" to Icons.Default.Search,
-        "아이템4" to Icons.Default.AddCircle
+        "공유하기" to Icons.Default.Share,
+        "고객센터" to Icons.AutoMirrored.Filled.Help,
+        "검색" to Icons.Default.Search,
+        "추가 기능" to Icons.Default.AddCircle
     )
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet(
-                modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp * 0.7f)
-            ) {
-                // Header
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .background(MaterialTheme.colorScheme.primary),
-                        //.background(Color.Red),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Text(
-                        text = "Navigation Title",
-                        color = Color.White,
-                        modifier = Modifier.padding(start = 16.dp),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
+            // M3: Modifier.width 강제 지정 제거 (기본 동작에 위임)
+            ModalDrawerSheet {
+                // 상단 상태바(Edge-to-Edge) 침범 방지용 여백
+                Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
 
-                Spacer(modifier = Modifier.height(8.dp))
+                // M3 스타일의 깔끔한 Header
+                Text(
+                    text = "OpenKnights Menu",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(horizontal = 28.dp, vertical = 24.dp)
+                )
 
-                drawerItems.forEach { (title, icon) ->
+                Divider(modifier = Modifier.padding(horizontal = 28.dp, vertical = 8.dp))
+
+                drawerItems.forEachIndexed { index, (title, icon) ->
                     NavigationDrawerItem(
                         label = { Text(title) },
                         icon = { Icon(imageVector = icon, contentDescription = title) },
-                        selected = false,
+                        selected = selectedDrawerItem == index, // 선택 상태 연동
+                        // M3: 아이템 양옆 패딩 적용 (필수)
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                         onClick = {
+                            selectedDrawerItem = index
                             coroutineScope.launch { drawerState.close() }
                         }
                     )
@@ -567,7 +565,7 @@ fun MainScreenWithTabsAndDrawer() {
                 ExtendedFloatingActionButton(
                     icon = { Icon(Icons.Default.Add, contentDescription = "Add") },
                     text = { Text("EXTENDED FAB") },
-                    onClick = { /* 원하는 동작 추가 */ }
+                    onClick = { /* FAB 동작 */ }
                 )
             }
         ) { innerPadding ->
@@ -594,10 +592,9 @@ fun MainScreenWithTabsAndDrawer() {
                     state = pagerState,
                     modifier = Modifier.fillMaxSize()
                 ) { page ->
-                    when (page) {
-                        0 -> CardList(getRecommendationCards())
-                        1 -> CardList(getPopularCards())
-                        2 -> CardList(getKidsCards())
+                    // 실제 컴포저블 구현부로 대체
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(text = "${tabs[page]} 화면")
                     }
                 }
             }

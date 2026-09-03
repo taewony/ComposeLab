@@ -55,12 +55,12 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     // Coil
-    implementation("io.coil-kt.coil3:coil-compose:3.5.0")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.5.0")  // OkHttp 네트워크 엔진
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)  // OkHttp 네트워크 엔진
 
     // Retrofit
-    implementation("com.squareup.retrofit2:retrofit:3.0.0")
-    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
 
     // Dagger Hilt
     implementation(libs.hilt.android)
@@ -68,5 +68,5 @@ dependencies {
     ksp(libs.kotlinmetadata)
 
     // ★ hiltViewModel() 지원 추가
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.androidx.hilt.navigation.compose)
 }
