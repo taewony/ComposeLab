@@ -30,6 +30,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.composelab.grid_ui.ui.theme.ComposeLabTheme
 
 class MainActivity : ComponentActivity() {
@@ -58,6 +60,7 @@ fun StudentMoodScreen() {
     val students = List(30) { "학생 ${it + 1}" }
 
     var selectedStudent by remember { mutableStateOf<String?>(null) }
+    val studentMoods = remember { mutableStateMapOf<String, String>() }
     var isModalOpen by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -85,6 +88,7 @@ fun StudentMoodScreen() {
                 items(students) { student ->
                     StudentItem(
                         name = student,
+                        mood = studentMoods[student],
                         isSelected = student == selectedStudent,
                         onClick = {
                             if (student == selectedStudent) {
@@ -102,7 +106,9 @@ fun StudentMoodScreen() {
                     studentName = selectedStudent!!,
                     onDismiss = { isModalOpen = false },
                     onMoodSelected = { mood ->
-                        println("${selectedStudent}의 기분: $mood")
+                        selectedStudent?.let { student ->
+                            studentMoods[student] = mood  // Map에 Mood 저장 → UI 자동 갱신
+                        }
                         isModalOpen = false
                     }
                 )
@@ -112,9 +118,16 @@ fun StudentMoodScreen() {
 }
 
 @Composable
-fun StudentItem(name: String, isSelected: Boolean, onClick: () -> Unit) {
+fun StudentItem(name: String, mood: String?, isSelected: Boolean, onClick: () -> Unit) {
     val borderColor = if (isSelected) Color(0xFF1976D2) else Color.Transparent
-    val backgroundColor = if (isSelected) Color(0xFFE3F2FD) else Color(0xFFE0E0E0)
+    // ⭐ 기분별 배경색 매핑
+    val backgroundColor = when (mood) {
+        "😊" -> Color(0xFFFFF9C4) // 노랑 (행복)
+        "😢" -> Color(0xFFBBDEFB) // 파랑 (슬픔)
+        "😡" -> Color(0xFFFFCDD2) // 빨강 (화남)
+        "😴" -> Color(0xFFD1C4E9) // 보라 (졸림)
+        else -> if (isSelected) Color(0xFFE3F2FD) else Color(0xFFE0E0E0)
+    }
 
     Box(
         modifier = Modifier
@@ -125,11 +138,13 @@ fun StudentItem(name: String, isSelected: Boolean, onClick: () -> Unit) {
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = name,
-            textAlign = TextAlign.Center,
-            color = Color.Black
-        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = name, textAlign = TextAlign.Center, color = Color.Black)
+            // ⭐ 기분 이모지도 함께 표시하면 UX가 좋아짐
+            mood?.let {
+                Text(text = it, fontSize = 24.sp)
+            }
+        }
     }
 }
 
@@ -146,10 +161,10 @@ fun MoodSelectionDialog(studentName: String, onDismiss: () -> Unit, onMoodSelect
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    MoodButton("😊", onMoodSelected)
-                    MoodButton("😢", onMoodSelected)
-                    MoodButton("😡", onMoodSelected)
-                    MoodButton("😴", onMoodSelected)
+                    MoodButton("😊", onMoodSelected, modifier = Modifier.weight(1f))
+                    MoodButton("😢", onMoodSelected, modifier = Modifier.weight(1f))
+                    MoodButton("😡", onMoodSelected, modifier = Modifier.weight(1f))
+                    MoodButton("😴", onMoodSelected, modifier = Modifier.weight(1f))
                 }
             }
         },
@@ -165,6 +180,7 @@ fun MoodSelectionDialog(studentName: String, onDismiss: () -> Unit, onMoodSelect
 fun MoodButton(mood: String, onMoodSelected: (String) -> Unit, modifier: Modifier = Modifier) {
     Button(
         onClick = { onMoodSelected(mood) },
+        contentPadding = PaddingValues(horizontal = 8.dp),
         modifier = modifier.height(48.dp)
     ) {
         Text(mood, fontSize = MaterialTheme.typography.headlineMedium.fontSize)
