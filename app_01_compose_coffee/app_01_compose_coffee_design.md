@@ -11,37 +11,72 @@
 *   **요구사항 5**: 모든 UI 요소는 화면의 가로 중앙에 정렬되어야 합니다.
 *   **요구사항 6**: 각 요소 사이에는 적절한 간격이 있어야 합니다.
 
+---
+
 ## 2. UI 구조 개요
 
 요구사항을 만족시키기 위한 Composable 함수의 계층 구조는 다음과 같습니다.
 
-```mermaid
-graph TD
-    subgraph "전체 화면 구조"
-        A[Scaffold] --> B[Column]
-    end
+### 2.1 컴포저블 트리 (텍스트 버전)
 
-    subgraph "콘텐츠 레이���웃"
-        B --> C["Text: Compose Coffee"]
-        B --> D["Image: 카페 로고"]
-        B --> E[Row]
-        B --> F["Text: 위치 정보"]
-    end
-
-    subgraph "버튼 그룹"
-        E --> G["Button: 커피 주문"]
-        E --> H["Button: 쥬스 주문"]
-    end
-
-    style A fill:#4CAF50,color:white
-    style B fill:#2196F3,color:white
-    style C fill:#FFC107
-    style D fill:#FF5722,color:white
-    style E fill:#9C27B0,color:white
-    style F fill:#FFC107
-    style G fill:#E91E63,color:white
-    style H fill:#E91E63,color:white
 ```
+Scaffold
+│
+└── Column  (수평 중앙 정렬: CenterHorizontally)
+    │
+    ├── Text        "Compose Coffee"   (headlineMedium)
+    │
+    ├── Image       카페 로고           (size = 300.dp)
+    │
+    ├── Row         [버튼 그룹]
+    │   ├── Button  "커피 주문"          (onClick = { })
+    │   └── Button  "쥬스 주문"          (onClick = { })
+    │
+    └── Text        "위치: 우송대 정문 앞"
+```
+
+### 2.2 화면 배치 개념도
+
+```
+┌──────────────────────────────────────────┐
+│                Scaffold                  │
+│  ┌────────────────────────────────────┐  │
+│  │              Column                │  │
+│  │                                    │  │
+│  │         "Compose Coffee"           │  │
+│  │        (Text, headlineMedium)      │  │
+│  │                                    │  │
+│  │           ┌──────────┐             │  │
+│  │           │  Image   │             │  │
+│  │           │ 300 x 300│             │  │
+│  │           └──────────┘             │  │
+│  │                                    │  │
+│  │      ┌────────┐  ┌────────┐        │  │
+│  │      │  커피  │  │  쥬스  │        │  │
+│  │      │  주문  │  │  주문  │        │  │
+│  │      └────────┘  └────────┘        │  │
+│  │           (Row 안에 나란히)         │  │
+│  │                                    │  │
+│  │      "위치: 우송대 정문 앞"         │  │
+│  │                                    │  │
+│  └────────────────────────────────────┘  │
+└──────────────────────────────────────────┘
+```
+
+### 2.3 계층 요약 표
+
+| 레벨 | 컴포저블 | 자식 | 역할 |
+| :--- | :--- | :--- | :--- |
+| 1 | `Scaffold` | `Column` | 화면 전체의 틀 제공 |
+| 2 | `Column` | Text, Image, Row, Text | 세로 배치 + 수평 중앙 정렬 |
+| 3 | `Text` | - | "Compose Coffee" 제목 |
+| 3 | `Image` | - | 카페 로고 (300dp) |
+| 3 | `Row` | Button, Button | 버튼 2개를 가로 배치 |
+| 4 | `Button` | - | "커피 주문" |
+| 4 | `Button` | - | "쥬스 주문" |
+| 3 | `Text` | - | "위치: 우송대 정문 앞" |
+
+---
 
 ## 3. 주요 컴포저블 설명
 
@@ -54,6 +89,8 @@ graph TD
     *   `modifier = Modifier.size(300.dp)`: 이미지의 크기를 300dp로 지정합니다.
 *   **`Row`**: 자식 Composable들을 가로 방향으로 순차적으로 배치합니다. "커피 주문"과 "쥬스 주문" 버튼을 나란히 놓기 위해 사용됩니다.
 *   **`Button`**: 사용자가 클릭할 수 있는 버튼을 만듭니다. 각 버튼은 `onClick` 람다를 비워두어 현재는 아무 동작도 하지 않습니다.
+
+---
 
 ## 4. 미리보기(Preview) 설명
 

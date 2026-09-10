@@ -12,34 +12,94 @@
 *   **요구사항 6**: 화면 하단에는 "확인" 버튼이 있어야 하고, 이 버튼은 화면 가로 폭을 꽉 채워야 합니다.
 *   **요구사항 7**: 전체 화면의 배경색은 옅은 분홍색(#FFEBEE)으로 지정합니다.
 
+---
+
 ## 2. UI 구조 개요
 
 요구사항을 만족시키기 위한 Composable 함수의 계층 구조는 다음과 같습니다.
 
-```mermaid
-graph TD
-    subgraph "전체 화면 구조"
-        A[Surface] --> B[Column]
-    end
+### 2.1 컴포저블 트리 (텍스트 버전)
 
-    subgraph "콘텐츠 레이아웃"
-        B --> C["Text: 로그인 안내"]
-        B --> D["Text: 이메일 주소"]
-        B --> E["Spacer: 구분선"]
-        B --> F["OutlinedTextField: 비밀번호 입력"]
-        B --> G["Text: 비밀번호 조건 안내"]
-        B --> H["Button: 확인"]
-    end
-
-    style A fill:#FFEBEE
-    style B fill:#2196F3,color:white
-    style C fill:#FFC107
-    style D fill:#BDBDBD
-    style E height:1px,fill:#BDBDBD
-    style F fill:#4DB6AC,color:white
-    style G fill:#FFC107
-    style H fill:#4CAF50,color:white
 ```
+Surface  (배경색: 0xFFFFEBEE)
+│
+└── Column  (padding = 16.dp)
+    │
+    ├── Text              "카카오계정으로 로그인하세요."
+    │
+    ├── Text              "kkang104@gmail.com"  (회색)
+    │
+    ├── Spacer            ─────────────  (height = 1.dp, 회색)
+    │
+    ├── OutlinedTextField  비밀번호 입력
+    │                      - placeholder: "비밀번호"
+    │                      - visualTransformation: Password
+    │                      - keyboardType: Password
+    │
+    ├── Text              "비밀번호는 8~32자리의 영문 대소문자,
+    │                       숫자, 특수문자를 조합하여 설정해 주세요."
+    │
+    └── Button            "확인"  (fillMaxWidth)
+```
+
+### 2.2 화면 배치 개념도
+
+```
+┌──────────────────────────────────────────┐
+│  Surface (배경: #FFEBEE 옅은 분홍)       │
+│  ┌────────────────────────────────────┐  │
+│  │  Column (padding 16dp)             │  │
+│  │                                    │  │
+│  │  카카오계정으로 로그인하세요.       │  │
+│  │  (안내 문구)                       │  │
+│  │                                    │  │
+│  │  kkang104@gmail.com                │  │
+│  │  (회색 이메일 주소)                │  │
+│  │                                    │  │
+│  │  ───────────────────────────────   │  │
+│  │  (Spacer, 회색 구분선 1dp)         │  │
+│  │                                    │  │
+│  │  ┌──────────────────────────────┐  │  │
+│  │  │ 비밀번호                     │  │  │
+│  │  │ (OutlinedTextField)          │  │  │
+│  │  └──────────────────────────────┘  │  │
+│  │                                    │  │
+│  │  비밀번호는 8~32자리의 영문        │  │
+│  │  대소문자, 숫자, 특수문자를        │  │
+│  │  조합하여 설정해 주세요.           │  │
+│  │                                    │  │
+│  │  ┌──────────────────────────────┐  │  │
+│  │  │           확인               │  │  │
+│  │  └──────────────────────────────┘  │  │
+│  │  (Button, fillMaxWidth)            │  │
+│  │                                    │  │
+│  └────────────────────────────────────┘  │
+└──────────────────────────────────────────┘
+```
+
+### 2.3 계층 요약 표
+
+| 레벨 | 컴포저블 | 부모 | 역할 |
+| :--- | :--- | :--- | :--- |
+| 1 | `Surface` | - | 화면 전체 컨테이너 + 배경색 |
+| 2 | `Column` | Surface | 세로 배치 + 16dp 여백 |
+| 3 | `Text` | Column | 로그인 안내 문구 |
+| 3 | `Text` | Column | 이메일 주소 (회색) |
+| 3 | `Spacer` | Column | 회색 구분선 (1dp) |
+| 3 | `OutlinedTextField` | Column | 비밀번호 입력 필드 |
+| 3 | `Text` | Column | 비밀번호 조건 안내 |
+| 3 | `Button` | Column | "확인" 버튼 (가로 꽉 채움) |
+
+### 2.4 색상 및 스타일 매핑
+
+| 요소 | 속성 | 값 |
+| :--- | :--- | :--- |
+| `Surface` | 배경색 | `Color(0xFFFFEBEE)` (옅은 분홍) |
+| 이메일 `Text` | 색상 | 회색 계열 |
+| `Spacer` | 색상 / 높이 | `Color(0xFFD4D4D3)` / `1.dp` |
+| `Button` | 너비 | `Modifier.fillMaxWidth()` |
+
+---
 
 ## 3. 주요 컴포저블 설명
 
@@ -52,9 +112,11 @@ graph TD
 *   **`OutlinedTextField`**: 사용자가 텍스트를 입력할 수 있는 필드입니다.
     *   `placeholder`: 입력 필드가 비어있을 때 "비밀번호"라는 힌트를 보여줍니다.
     *   `visualTransformation = PasswordVisualTransformation()`: 입력된 내용을 `*`로 마스킹하여 비밀번호를 보호합니다.
-    *   `keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)`: 비밀번호 입력에 최적화된 키보��를 표시합니다.
+    *   `keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)`: 비밀번호 입력에 최적화된 키보드를 표시합니다.
 *   **`Button`**: "확인" 동작을 수행하는 버튼입니다.
     *   `modifier = Modifier.fillMaxWidth()`: 버튼의 너비를 화면 가로 폭 전체로 확장합니다.
+
+---
 
 ## 4. 미리보기(Preview) 설명
 
