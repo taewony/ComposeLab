@@ -1,5 +1,7 @@
 package com.example.multi_screen_games.bubble
 
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
 import com.example.multi_screen_games.core.BaseGameViewModel
 import com.example.multi_screen_games.core.launchFrameLoop
@@ -10,88 +12,114 @@ class BubbleGameViewModel : BaseGameViewModel<BubbleGameState, BubbleGameIntent>
     initialState = BubbleGameState()
 ) {
     private var gameLoopJob: Job? = null
-    private val random = Random(System.currentTimeMillis())
-    private var msSinceLastSpawn = 0L
-    private val spawnIntervalMs = 900L   // 튜닝 가능
 
-    override fun reduce(state: BubbleGameState, intent: BubbleGameIntent): BubbleGameState =
-        when (intent) {
-            BubbleGameIntent.StartGame -> BubbleGameState(
-                isRunning = true, nextBubbleId = 0L
+    // ── side-effect 전용 상태 (UiState 밖) ────────────────
+    private var canvasWidth: Float = 0f
+    private var canvasHeight: Float = 0f
+    private var msSinceLastSpawn: Long = 0L
+    private val random = Random.Default
+
+    private val spawnIntervalMs = 800L
+    private val bubbleLifetimeMs = 3_000L
+    private val bubbleRadiusMin = 40f
+    private val bubbleRadiusMax = 80f
+
+    /** Canvas 크기를 알려주는 인프라 메서드 (UI의 onSizeChanged에서 호출) */
+    fun updateCanvasSize(width: Float, height: Float) {
+        canvasWidth = width
+        canvasHeight = height
+    }
+
+    // ── 순수 리듀서 ────────────────────────────────────────
+    override fun reduce(
+        state: BubbleGameState,
+        intent: BubbleGameIntent
+    ): BubbleGameState = when (intent) {
+
+        BubbleGameIntent.StartGame -> BubbleGameState(
+            isRunning = true,
+            nextBubbleId = 0L
+        )
+
+        BubbleGameIntent.GameOver -> state.copy(
+            isRunning = false,
+            isGameOver = true
+        )
+
+        is BubbleGameIntent.TapBubble -> {
+            // 미존재 id 방어
+            val target = state.bubbles.firstOrNull { it.id == intent.bubbleId }
+                ?: return state
+            state.copy(
+                score = state.score + 10,
+                bubbles = state.bubbles - target
             )
-
-            BubbleGameIntent.GameOver ->
-                state.copy(isGameOver = true, isRunning = false)
-
-            is BubbleGameIntent.TapBubble -> {
-                // ★ 존재하지 않는 버블 중복 터치 방어
-                val target = state.bubbles.firstOrNull { it.id == intent.bubbleId }
-                    ?: return state
-                state.copy(
-                    score = state.score + 1,
-                    bubbles = state.bubbles - target
-                )
-            }
-
-            is BubbleGameIntent.SpawnBubble -> {
-                if (!state.isRunning) return state
-                state.copy(
-                    bubbles = state.bubbles + intent.bubble,
-                    nextBubbleId = state.nextBubbleId + 1
-                )
-            }
-
-            is BubbleGameIntent.Tick -> {
-                if (!state.isRunning) return state
-                val dtSec = intent.deltaMillis / 1000f
-                val moved = state.bubbles.map {
-                    it.copy(y = it.y + it.speed * dtSec)
-                }
-                // 화면 하단 완전 이탈(y - radius > 1f) 판정
-                val escaped = moved.any { it.y - it.radius > 1f }
-                val survivors = moved.filter { it.y - it.radius <= 1f }
-
-                if (escaped) state.copy(
-                    bubbles = survivors,
-                    isRunning = false,
-                    isGameOver = true
-                ) else state.copy(bubbles = survivors)
-            }
         }
 
-    override fun handleSideEffects(intent: BubbleGameIntent, newState: BubbleGameState) {
+        is BubbleGameIntent.SpawnBubble -> {
+            if (!state.isRunning) return state
+            state.copy(
+                bubbles = state.bubbles + intent.bubble,
+                nextBubbleId = state.nextBubbleId + 1
+            )
+        }
+
+        is BubbleGameIntent.Tick -> {
+            if (!state.isRunning) return state
+            val survived = state.bubbles
+                .map { it.copy(remainingMillis = it.remainingMillis - intent.deltaMillis) }
+                .filter { it.remainingMillis > 0L }
+            state.copy(bubbles = survived)
+        }
+    }
+
+    // ── 부수 효과 ─────────────────────────────────────────
+    override fun handleSideEffects(
+        intent: BubbleGameIntent,
+        newState: BubbleGameState
+    ) {
         when (intent) {
             BubbleGameIntent.StartGame -> {
                 msSinceLastSpawn = 0L
                 startGameLoop()
             }
-            is BubbleGameIntent.Tick -> {
-                if (!newState.isRunning && !newState.isGameOver) return
-                if (newState.isGameOver) { stopGameLoop(); return }
 
-                // Spawn 결정 (side-effect 영역)
+            BubbleGameIntent.GameOver -> stopGameLoop()
+
+            is BubbleGameIntent.Tick -> {
+                if (!newState.isRunning) return
+
+                // Spawn 타이밍 판단 (side-effect 영역)
                 msSinceLastSpawn += intent.deltaMillis
-                if (msSinceLastSpawn >= spawnIntervalMs) {
+                if (msSinceLastSpawn >= spawnIntervalMs &&
+                    canvasWidth > 0f && canvasHeight > 0f
+                ) {
                     msSinceLastSpawn = 0L
                     handleIntent(BubbleGameIntent.SpawnBubble(createRandomBubble(newState)))
                 }
             }
-            BubbleGameIntent.GameOver,
-            is BubbleGameIntent.SpawnBubble,
-            is BubbleGameIntent.TapBubble -> Unit
+
+            else -> Unit
         }
     }
 
+    // ── 헬퍼 ──────────────────────────────────────────────
     private fun createRandomBubble(state: BubbleGameState): Bubble {
-        val radius = 0.06f + random.nextFloat() * 0.04f     // 0.06~0.10
-        val x = radius + random.nextFloat() * (1f - 2 * radius) // 벽에 안 붙게
-        val speed = 0.25f + random.nextFloat() * 0.25f      // 0.25~0.50 /초
+        val radius = bubbleRadiusMin + random.nextFloat() * (bubbleRadiusMax - bubbleRadiusMin)
+        val margin = radius + 8f
+        val x = margin + random.nextFloat() * (canvasWidth - 2 * margin).coerceAtLeast(1f)
+        val y = margin + random.nextFloat() * (canvasHeight - 2 * margin).coerceAtLeast(1f)
         return Bubble(
             id = state.nextBubbleId,
-            x = x,
-            y = -radius,                                    // 화면 위에서 시작
+            position = Offset(x, y),
             radius = radius,
-            speed = speed
+            color = Color(
+                red = random.nextFloat(),
+                green = random.nextFloat(),
+                blue = random.nextFloat(),
+                alpha = 0.8f
+            ),
+            remainingMillis = bubbleLifetimeMs
         )
     }
 

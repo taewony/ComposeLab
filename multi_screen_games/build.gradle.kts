@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.multi_screen_games"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.multi_screen_games"
