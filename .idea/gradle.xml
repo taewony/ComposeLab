@@ -34,6 +34,7 @@
             <option value="$PROJECT_DIR$/app_grid_ui" />
             <option value="$PROJECT_DIR$/app_overalpped_ui" />
             <option value="$PROJECT_DIR$/designsystem" />
+            <option value="$PROJECT_DIR$/multi_screen_games" />
           </set>
         </option>
       </GradleProjectSettings>
