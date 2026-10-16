@@ -11,7 +11,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.example.multi_screen_games.bubble.ui.BubbleGameScreen
 import com.example.multi_screen_games.home.ui.HomeScreen
 import com.example.multi_screen_games.navigation.Screen
-import com.example.multi_screen_games.stopwatch.ui.StopwatchScreen
+import com.example.multi_screen_games.ui.StopwatchScreen
 import com.example.multi_screen_games.ui.theme.ComposeLabTheme
 
 class MainActivity : ComponentActivity() {

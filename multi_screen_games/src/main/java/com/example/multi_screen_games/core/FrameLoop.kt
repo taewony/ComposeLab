@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
  * deltaMillis를 사용하면 기기 주사율과 무관하게 동일한 물리/시간 결과를 얻습니다.
  */
 fun CoroutineScope.launchFrameLoop(
-    onFrame: suspend (deltaMillis: Long) -> Unit
+    onFrame: (deltaMillis: Long) -> Unit
 ): Job = launch {
     var lastNanos = withFrameNanos { it }
     while (isActive) {

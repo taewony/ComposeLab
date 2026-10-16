@@ -33,30 +33,52 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.multi_screen_games.stopwatch.StopwatchViewModel
+import com.example.multi_screen_games.stopwatch.ui.StopwatchIntent
+import com.example.multi_screen_games.ui.theme.ComposeLabTheme   // 실제 테마 이름으로 교체
+import com.example.multi_screen_games.stopwatch.ui.StopwatchState
 
-// ── 도메인 모델: 새 구조에서는 stopwatch/ 패키지에 위치 ──
-import com.example.multi_screen_games.stopwatch.GameConfig
-import com.example.multi_screen_games.stopwatch.GameData
-import com.example.multi_screen_games.stopwatch.GamePhase
-import com.example.multi_screen_games.stopwatch.GameUiState
-import com.example.multi_screen_games.stopwatch.UserData
-// ── 테마: 프로젝트의 실제 테마 이름으로 교체하세요 (예: ComposeLabTheme) ──
-import com.example.multi_screen_games.ui.theme.ComposeLabTheme
+/* ══════════════════════════════════════════════════════════
+ *  1. Stateful Wrapper — MainActivity의 entry가 호출하는 함수
+ *     onBack만 받고, 나머지는 ViewModel과 연결
+ * ══════════════════════════════════════════════════════════ */
 
-/* ──────────────────────────────────────────────────────────
- *  메인 화면 (Stateless)
- *  - Nav3의 entryProvider에서 uiState + 콜백을 주입
- *  - onBack은 backStack.removeLastOrNull()로 연결
- * ────────────────────────────────────────────────────────── */
+@Composable
+fun StopwatchScreen(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: StopwatchViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    StopwatchScreenContent(
+        uiState = uiState,
+        onStart = { viewModel.handleIntent(StopwatchIntent.StartClick) },
+        onStop  = { viewModel.handleIntent(StopwatchIntent.StopClick) },
+        onReset = { viewModel.handleIntent(StopwatchIntent.ResetClick) },
+        onLap   = { viewModel.handleIntent(StopwatchIntent.LapClick) },
+        onBack  = onBack,
+        modifier = modifier
+    )
+}
+
+/* ══════════════════════════════════════════════════════════
+ *  2. Stateless Content — 순수 UI, Preview/테스트 대상
+ * ══════════════════════════════════════════════════════════ */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StopwatchScreen(
-    uiState: GameUiState,
+fun StopwatchScreenContent(
+    uiState: StopwatchState,
     onStart: () -> Unit,
     onStop: () -> Unit,
-    onNextRound: () -> Unit,
     onReset: () -> Unit,
+    onLap: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -64,7 +86,7 @@ fun StopwatchScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text("스톱워치 게임") },
+                title = { Text("스톱워치") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -83,108 +105,49 @@ fun StopwatchScreen(
                 .padding(horizontal = 20.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // ── 상단: 목표 시간 + 라운드 진행 ────────────
-            TargetHeader(uiState = uiState)
-
-            Spacer(Modifier.height(24.dp))
-
-            // ── 중앙: 스톱워치 ─────────────────────────
             Box(
                 modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.Center
             ) {
                 StopwatchDisplay(
                     elapsedMillis = uiState.elapsedMillis,
-                    targetMillis = uiState.config.targetMillis,
-                    phase = uiState.phase
+                    isRunning = uiState.isRunning
                 )
-
-                if (uiState.phase == GamePhase.RESULT) {
-                    uiState.lastResult?.let { result ->
-                        ResultOverlay(result = result)
-                    }
-                }
             }
 
             Spacer(Modifier.height(20.dp))
 
-            // ── 하단: 세션 요약 + 컨트롤 ─────────────────
-            SessionSummary(uiState = uiState)
+            ControlButtons(
+                isRunning = uiState.isRunning,
+                onStart = onStart,
+                onStop = onStop,
+                onReset = onReset,
+                onLap = onLap
+            )
 
             Spacer(Modifier.height(16.dp))
 
-            ControlButtons(
-                phase = uiState.phase,
-                onStart = onStart,
-                onStop = onStop,
-                onNextRound = onNextRound,
-                onReset = onReset
-            )
+            if (uiState.lapTimes.isNotEmpty()) {
+                LapList(lapTimes = uiState.lapTimes)
+            }
         }
     }
 }
 
 /* ──────────────────────────────────────────────────────────
- *  이하 컴포넌트는 원본 그대로 유지 (변경 없음)
+ *  이하 private 컴포넌트 — 이전 답변과 동일
  * ────────────────────────────────────────────────────────── */
-
-@Composable
-private fun TargetHeader(
-    uiState: GameUiState,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "TARGET",
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = formatMillis(uiState.config.targetMillis),
-            style = MaterialTheme.typography.displaySmall,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = "허용 오차 ±${uiState.config.toleranceMillis}ms",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        if (uiState.phase != GamePhase.IDLE) {
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "Round ${uiState.currentRound.coerceAtMost(uiState.config.maxRounds)}"
-                        + " / ${uiState.config.maxRounds}",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-    }
-}
 
 @Composable
 private fun StopwatchDisplay(
     elapsedMillis: Long,
-    targetMillis: Long,
-    phase: GamePhase,
+    isRunning: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val isOverTarget = elapsedMillis > targetMillis
-
-    val containerColor = when {
-        phase != GamePhase.RUNNING -> MaterialTheme.colorScheme.surfaceVariant
-        isOverTarget -> MaterialTheme.colorScheme.errorContainer
-        else -> MaterialTheme.colorScheme.primaryContainer
-    }
-
-    val textColor = when {
-        phase != GamePhase.RUNNING -> MaterialTheme.colorScheme.onSurfaceVariant
-        isOverTarget -> MaterialTheme.colorScheme.onErrorContainer
-        else -> MaterialTheme.colorScheme.onPrimaryContainer
-    }
+    val containerColor = if (isRunning) MaterialTheme.colorScheme.primaryContainer
+    else MaterialTheme.colorScheme.surfaceVariant
+    val textColor = if (isRunning) MaterialTheme.colorScheme.onPrimaryContainer
+    else MaterialTheme.colorScheme.onSurfaceVariant
 
     Card(
         modifier = modifier.size(240.dp),
@@ -198,13 +161,13 @@ private fun StopwatchDisplay(
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = formatMillis(elapsedMillis),
-                    style = MaterialTheme.typography.displayMedium,
+                    text = formatElapsed(elapsedMillis),
+                    style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.Bold,
                     color = textColor
                 )
                 Text(
-                    text = "seconds",
+                    text = if (isRunning) "RUNNING" else "PAUSED",
                     style = MaterialTheme.typography.labelSmall,
                     color = textColor
                 )
@@ -214,198 +177,84 @@ private fun StopwatchDisplay(
 }
 
 @Composable
-private fun ResultOverlay(
-    result: GameData,
-    modifier: Modifier = Modifier
-) {
-    val accent = if (result.isSuccess) Color(0xFF4CAF50)
-    else MaterialTheme.colorScheme.error
-    val title = if (result.isSuccess) "SUCCESS" else "MISS"
-    val emoji = when {
-        !result.isSuccess -> "❌"
-        result.deviation == 0L -> "⭐"
-        result.deviation <= result.toleranceMillis / 3 -> "✨"
-        else -> "👍"
-    }
-
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "$emoji  $title",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = accent
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "${formatMillis(result.stoppedMillis)} " +
-                        "(${signOf(result.deviation)}${result.deviation}ms)",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = "+${result.score}점",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = accent
-            )
-        }
-    }
-}
-
-@Composable
-private fun SessionSummary(
-    uiState: GameUiState,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (uiState.roundResults.isNotEmpty()) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                uiState.roundResults.forEach { r ->
-                    RoundDot(isSuccess = r.isSuccess)
-                }
-            }
-            Spacer(Modifier.height(12.dp))
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            StatChip(
-                modifier = Modifier.weight(1f),
-                label = "세션 점수",
-                value = "${uiState.sessionScore}"
-            )
-            StatChip(
-                modifier = Modifier.weight(1f),
-                label = "성공률",
-                value = "${(uiState.sessionSuccessRate * 100).toInt()}%"
-            )
-            StatChip(
-                modifier = Modifier.weight(1f),
-                label = "최고 점수",
-                value = "${uiState.userData.bestScore}"
-            )
-        }
-    }
-}
-
-@Composable
-private fun RoundDot(
-    isSuccess: Boolean,
-    modifier: Modifier = Modifier
-) {
-    val color = if (isSuccess) Color(0xFF4CAF50)
-    else MaterialTheme.colorScheme.error
-    Box(
-        modifier = modifier.size(12.dp)
-    ) {
-        Card(
-            shape = CircleShape,
-            colors = CardDefaults.cardColors(containerColor = color),
-            modifier = Modifier.fillMaxSize()
-        ) {}
-    }
-}
-
-@Composable
-private fun StatChip(
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@Composable
 private fun ControlButtons(
-    phase: GamePhase,
+    isRunning: Boolean,
     onStart: () -> Unit,
     onStop: () -> Unit,
-    onNextRound: () -> Unit,
     onReset: () -> Unit,
+    onLap: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        when (phase) {
-            GamePhase.IDLE, GamePhase.FINISHED -> {
-                Button(
-                    onClick = onStart,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(if (phase == GamePhase.FINISHED) "다시 도전" else "시작")
-                }
-            }
-            GamePhase.RUNNING -> {
-                Button(
-                    onClick = onStop,
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError
-                    )
-                ) {
-                    Text("정지!")
-                }
-            }
-            GamePhase.RESULT -> {
-                Button(
-                    onClick = onNextRound,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("다음 라운드")
-                }
-            }
+        Button(
+            onClick = if (isRunning) onStop else onStart,
+            modifier = Modifier.weight(1f),
+            colors = if (isRunning) ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error,
+                contentColor = MaterialTheme.colorScheme.onError
+            ) else ButtonDefaults.buttonColors()
+        ) {
+            Text(if (isRunning) "정지" else "시작")
+        }
+
+        OutlinedButton(
+            onClick = onLap,
+            enabled = isRunning
+        ) {
+            Text("랩")
         }
 
         OutlinedButton(
             onClick = onReset,
-            enabled = phase != GamePhase.RUNNING
+            enabled = !isRunning
         ) {
             Text("초기화")
+        }
+    }
+}
+
+@Composable
+private fun LapList(
+    lapTimes: List<Long>,
+    modifier: Modifier = Modifier
+) {
+    val reversed = lapTimes.asReversed()
+
+    LazyColumn(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(200.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        itemsIndexed(reversed) { idx, time ->
+            val lapNo = lapTimes.size - idx
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Lap $lapNo",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = formatElapsed(time),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
         }
     }
 }
@@ -414,75 +263,42 @@ private fun ControlButtons(
  *  유틸
  * ────────────────────────────────────────────────────────── */
 
-/** ms → "S.mmm" 형식 (예: 3.042) */
-fun formatMillis(millis: Long): String {
-    val seconds = millis / 1000
-    val ms = millis % 1000
-    return "%d.%03d".format(seconds, ms)
+/** ms → "MM:SS.CC" 형식 (예: 01:23.45) */
+fun formatElapsed(millis: Long): String {
+    val totalCs = millis / 10
+    val cs = totalCs % 100
+    val totalSec = totalCs / 100
+    val sec = totalSec % 60
+    val min = totalSec / 60
+    return "%02d:%02d.%02d".format(min, sec, cs)
 }
 
-private fun signOf(value: Long): String = if (value >= 0) "+" else "-"
-
 /* ──────────────────────────────────────────────────────────
- *  Preview
+ *  Preview — Content를 직접 호출
  * ────────────────────────────────────────────────────────── */
 
 @Preview(showBackground = true, heightDp = 780)
 @Composable
-private fun StopwatchScreen_IdlePreview() {
+private fun StopwatchScreenContent_IdlePreview() {
     ComposeLabTheme {
-        StopwatchScreen(
-            uiState = GameUiState(),
-            onStart = {}, onStop = {}, onNextRound = {}, onReset = {},
-            onBack = {}
+        StopwatchScreenContent(
+            uiState = StopwatchState(),
+            onStart = {}, onStop = {}, onReset = {}, onLap = {}, onBack = {}
         )
     }
 }
 
 @Preview(showBackground = true, heightDp = 780)
 @Composable
-private fun StopwatchScreen_RunningPreview() {
+private fun StopwatchScreenContent_RunningPreview() {
     ComposeLabTheme {
-        StopwatchScreen(
-            uiState = GameUiState(
-                phase = GamePhase.RUNNING,
-                config = GameConfig(targetMillis = 3000, toleranceMillis = 100, maxRounds = 5),
-                elapsedMillis = 2450,
-                currentRound = 2
+        StopwatchScreenContent(
+            uiState = StopwatchState(
+                elapsedMillis = 83_450L,
+                isRunning = true,
+                lapTimes = listOf(12_340L, 28_560L, 42_990L)
             ),
-            onStart = {}, onStop = {}, onNextRound = {}, onReset = {},
-            onBack = {}
-        )
-    }
-}
-
-@Preview(showBackground = true, heightDp = 780)
-@Composable
-private fun StopwatchScreen_ResultPreview() {
-    val sampleResult = GameData(
-        round = 2,
-        targetMillis = 3000,
-        stoppedMillis = 3012,
-        toleranceMillis = 100
-    )
-    ComposeLabTheme {
-        StopwatchScreen(
-            uiState = GameUiState(
-                phase = GamePhase.RESULT,
-                config = GameConfig(),
-                userData = UserData(
-                    bestScore = 100, currentScore = 210,
-                    totalGames = 12, successGames = 9
-                ),
-                elapsedMillis = 3012,
-                currentRound = 2,
-                roundResults = listOf(
-                    GameData(1, 3000, 3005, 100),
-                    sampleResult
-                )
-            ),
-            onStart = {}, onStop = {}, onNextRound = {}, onReset = {},
-            onBack = {}
+            onStart = {}, onStop = {}, onReset = {}, onLap = {}, onBack = {}
         )
     }
 }
