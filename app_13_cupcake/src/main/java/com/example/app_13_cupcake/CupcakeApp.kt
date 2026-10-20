@@ -19,7 +19,7 @@ fun CupcakeApp(viewModel: OrderViewModel) {
     // ✅ 2. NavDisplay + entry 블록 (공식 API)
     NavDisplay(
         backStack = backStack,
-        onBack = { backStack.removeAt(backStack.lastIndex) },  // 뒤로 가기 동작 연결
+        onBack = { backStack.removeLastOrNull() },  // 뒤로 가기 동작 연결
         entryProvider = entryProvider {
             entry<CupcakeNavKey.Start> {
                 StartScreen(
@@ -30,14 +30,14 @@ fun CupcakeApp(viewModel: OrderViewModel) {
                 FlavorScreen(
                     viewModel = viewModel,
                     onNext = { backStack.add(CupcakeNavKey.Pickup) },
-                    onBack = { backStack.removeAt(backStack.lastIndex) }
+                    onBack = { backStack.removeLastOrNull() }
                 )
             }
             entry<CupcakeNavKey.Pickup> {
                 PickupScreen(
                     viewModel = viewModel,
                     onNext = { backStack.add(CupcakeNavKey.Summary) },
-                    onBack = { backStack.removeAt(backStack.lastIndex) }
+                    onBack = { backStack.removeLastOrNull() }
                 )
             }
             entry<CupcakeNavKey.Summary> {

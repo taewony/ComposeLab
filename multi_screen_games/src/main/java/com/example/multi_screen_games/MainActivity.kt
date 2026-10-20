@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    StandaloneApp()
+                    SimpleNavigationApp()
                 }
             }
         }
@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
 
 // ── 3. Navigation 호스트 ─────────────────────────────────
 @Composable
-private fun StandaloneApp() {
+private fun SimpleNavigationApp() {
     // 시작 키를 Home으로 지정하여 영속적 백스택 생성
     val backStack = rememberNavBackStack(Screen.Home)
 
