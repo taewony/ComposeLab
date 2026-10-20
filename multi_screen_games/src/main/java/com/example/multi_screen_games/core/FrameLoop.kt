@@ -1,5 +1,6 @@
 package com.example.multi_screen_games.core
 
+import androidx.compose.ui.platform.AndroidUiDispatcher
 import androidx.compose.runtime.withFrameNanos
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
  */
 fun CoroutineScope.launchFrameLoop(
     onFrame: (deltaMillis: Long) -> Unit
-): Job = launch {
+): Job = launch(AndroidUiDispatcher.Main) {
     var lastNanos = withFrameNanos { it }
     while (isActive) {
         withFrameNanos { nowNanos ->
