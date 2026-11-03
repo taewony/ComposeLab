@@ -48,8 +48,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.example.app_13_todotask.ui.theme.ComposeLabTheme
+import kotlinx.serialization.Serializable
+import java.util.Map.entry
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,8 +68,13 @@ class MainActivity : ComponentActivity() {
 }
 
 // --- Navigation3 화면 Entry Key 정의 ---
-private data object MainScreen
-private data object AddScreen
+@kotlinx.serialization.Serializable
+sealed class MainNavKey : NavKey {
+    @kotlinx.serialization.Serializable
+    data object MainScreen : MainNavKey()
+    @Serializable
+    data object AddScreen : MainNavKey()
+}
 
 @Composable
 fun AppContent() {
@@ -73,29 +82,28 @@ fun AppContent() {
     val todos = remember { mutableStateListOf<String>() }
 
     // Navigation3 Backstack
-    val backStack = remember { mutableStateListOf<Any>(MainScreen) }
+    val backStack = remember {
+        mutableStateListOf<NavKey>(MainNavKey.MainScreen)
+    }
 
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
-        entryProvider = { key ->
-            when (key) {
-                is MainScreen -> NavEntry(key) {
-                    MainScreenContent(
-                        onAddClick = { backStack += AddScreen },
-                        datas = todos
-                    )
-                }
-                is AddScreen -> NavEntry(key) {
-                    AddScreenContent(
-                        onBack = { backStack.removeLastOrNull() },
-                        onSave = { todo ->
-                            todos.add(todo)
-                            backStack.removeLastOrNull()
-                        }
-                    )
-                }
-                else -> error("Unknown key: $key")
+        entryProvider = entryProvider {
+            entry<MainNavKey.MainScreen> {
+                MainScreenContent(
+                    onAddClick = { backStack.add(MainNavKey.AddScreen) },
+                    datas = todos
+                )
+            }
+            entry<MainNavKey.AddScreen> {
+                AddScreenContent(
+                    onSave = { text ->
+                        todos.add(text)
+                        backStack.removeLastOrNull() // 저장 후 뒤로가기
+                    },
+                    onBack = { backStack.removeLastOrNull() }
+                )
             }
         }
     )
