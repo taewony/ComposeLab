@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ComposeLabTheme {
-                AppContent()
+                TodoTaskApp()
             }
         }
     }
@@ -77,7 +77,7 @@ sealed class MainNavKey : NavKey {
 }
 
 @Composable
-fun AppContent() {
+fun TodoTaskApp() {
     // 상태 관리: 할 일 목록
     val todos = remember { mutableStateListOf<String>() }
 
