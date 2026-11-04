@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +33,7 @@ import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Games
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PhoneAndroid
@@ -41,7 +41,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -69,6 +68,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -76,8 +76,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -91,168 +91,93 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ComposeLabTheme {
-                // MainScreen()
-                MainScreenWithTabsAndDrawer()
+                // 단계별 학습을 위한 메인 네비게이터 실행
+                MaterialDesignAppNavigator()
             }
+        }
+    }
+}
+
+// --- 앱 내 단계별 화면 전환을 위한 심플 네비게이터 ---
+enum class AppStep(val title: String, val description: String) {
+    STEP_1("1단계: 기본 TopAppBar", "가장 기본적인 상단 앱 바와 구조 학습"),
+    STEP_2("2단계: 스크롤 연동 TopAppBar", "스크롤에 따라 접히는 MediumTopAppBar와 카드 리스트"),
+    STEP_3("3단계: 탭 & 바텀 내비게이션", "TabRow, HorizontalPager, NavigationBar 결합"),
+    STEP_4("4단계: 내비게이션 드로어 최종 완성", "측면 메뉴(Drawer)와 확장 FAB이 포함된 종합 스토어")
+}
+
+@Composable
+fun MaterialDesignAppNavigator() {
+    var currentStep by remember { mutableStateOf<AppStep?>(null) }
+
+    if (currentStep == null) {
+        // 단계 선택 메인 메뉴 화면
+        StepMenuScreen(onStepSelected = { step -> currentStep = step })
+    } else {
+        // 선택된 단계별 화면 렌더링 + 뒤로가기 지원
+        val onBack = { currentStep = null }
+        when (currentStep) {
+            AppStep.STEP_1 -> BasicTopAppBarScreen(onBack = onBack)
+            AppStep.STEP_2 -> ScrollableTopBarScreen(onBack = onBack)
+            AppStep.STEP_3 -> TabsAndBottomNavScreen(onBack = onBack)
+            AppStep.STEP_4 -> FinalStoreScreen(onBack = onBack)
+            null -> {}
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(name: String = "World") {
+fun StepMenuScreen(onStepSelected: (AppStep) -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "오픈소스 경진대회",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "(우송 SW융합대학)",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                    }
-                },
-                // 왼쪽 로고 이미지
-                navigationIcon = {
-                    Image(
-                        painterResource(R.drawable.open_source_logo),
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .padding(start = 12.dp)
-                            .clip(MaterialTheme.shapes.medium),
-                        contentDescription = "logo"
-                    )
-                },
+                title = { Text("Material Design 단계별 학습") },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
             )
         }
     ) { innerPadding ->
-        Surface(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            color = MaterialTheme.colorScheme.background
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Text(
-                    text = "Hello $name!",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MaterialDesignScreenPreview() {
-    ComposeLabTheme {
-        MainScreen("우송대학교")
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CollapsedTopBarScreen(name: String = "World") {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
-        state = rememberTopAppBarState()
-    )
-
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            MediumTopAppBar(
-                title = {
-                    // ⭐ Box 대신 Row로 간단하게 배치
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start, // 왼쪽 정렬 (기본)
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.open_source_logo),
-                            contentDescription = "logo",
-                            modifier = Modifier
-                                .size(48.dp) // MediumTopAppBar에 적합한 크기
-                                .clip(MaterialTheme.shapes.medium)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = "오픈소스 경진대회",
-                                style = MaterialTheme.typography.titleLarge.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
-                            )
-                            Text(
-                                text = "(우송 SW융합대학)",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
-                            )
-                        }
-                    }
-                },
-                // ⭐ navigationIcon 생략 (또는 뒤로가기 버튼 추가)
-                navigationIcon = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                },
-                // ⭐ 불필요한 Color.Unspecified 제거
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                scrollBehavior = scrollBehavior
-            )
-        }
-    ) { innerPadding ->
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Hello $name!",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                LazyColumn(
+            items(AppStep.values()) { step ->
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                        .clickable { onStepSelected(step) },
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    items(20) { index ->
-                        CardItem(index = index + 1)
+                    Row(
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = step.title,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = step.description,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = "이동"
+                        )
                     }
                 }
             }
@@ -260,99 +185,105 @@ fun CollapsedTopBarScreen(name: String = "World") {
     }
 }
 
-@Preview(showBackground = true)
+
+// ==========================================
+// STEP 1: 기본 TopAppBar 화면
+// ==========================================
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CollapsedTopBarScreenPreview() {
-    ComposeLabTheme {
-        CollapsedTopBarScreen("우송대학교")
+fun BasicTopAppBarScreen(onBack: () -> Unit) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Column {
+                        Text(text = "1단계: 기본 TopAppBar", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                        Text(text = "(우송 SW융합대학)", style = MaterialTheme.typography.bodySmall)
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "메뉴로 돌아가기")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = "가장 기본적인 상단 앱 바 구조입니다.", style = MaterialTheme.typography.bodyLarge)
+        }
     }
 }
 
-// 별도의 카드 컴포저블 함수
+
+// ==========================================
+// STEP 2: 스크롤 연동 TopAppBar (MediumTopAppBar)
+// ==========================================
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardItem(index: Int) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = "카드 #$index",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "이 카드는 오픈소스 경진대회의 예시 UI입니다. 우송 SW융합대학에서 주최하는 이 행사는 학생들의 창의성을 발휘할 수 있는 기회를 제공합니다.",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Text(
-                    text = "상세보기 →",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable { /* 클릭 액션 */ }
+fun ScrollableTopBarScreen(onBack: () -> Unit) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            MediumTopAppBar(
+                title = { Text("2단계: 스크롤 접힘 기능") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "돌아가기")
+                    }
+                },
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
+            )
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(15) { index ->
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(text = "연습 카드 #$index", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(text = "화면을 아래로 스크롤하면 TopBar가 접히고, 위로 올리면 나타나는 구조를 학습합니다.")
+                    }
+                }
             }
         }
     }
 }
 
-// TabRow, HorizontalPager, 그리고 하단 NavigationBar를 추가한 전체 화면 예제
-// 카드 종류를 정의하는 데이터 클래스
+
+// ==========================================
+// STEP 3: 탭 & 바텀 내비게이션
+// ==========================================
 data class CardInfo(val title: String, val content: String, val color: Color)
-
-
-// --- 샘플 데이터 함수 ---
-private fun getRecommendationCards(): List<CardInfo> {
-    return listOf(
-        CardInfo("AI 기반 도서관 좌석 추천", "새로운 추천 알고리즘 적용!", Color(0xFFE0F7FA)),
-        CardInfo("캠퍼스 내 분실물 추적", "실시간 GPS 업데이트 기능 추가", Color(0xFFFFF9C4)),
-        CardInfo("AI 기반 도서관 좌석 추천", "새로운 추천 알고리즘 적용!", Color(0xFFE0F7FA)),
-        CardInfo("캠퍼스 내 분실물 추적", "실시간 GPS 업데이트 기능 추가", Color(0xFFFFF9C4)),
-        CardInfo("AI 기반 도서관 좌석 추천", "새로운 추천 알고리즘 적용!", Color(0xFFE0F7FA)),
-        CardInfo("캠퍼스 내 분실물 추적", "실시간 GPS 업데이트 기능 추가", Color(0xFFFFF9C4)),
-        CardInfo("AI 기반 도서관 좌석 추천", "새로운 추천 알고리즘 적용!", Color(0xFFE0F7FA)),
-        CardInfo("캠퍼스 내 분실물 추적", "실시간 GPS 업데이트 기능 추가", Color(0xFFFFF9C4))
-    )
-}
-
-private fun getPopularCards(): List<CardInfo> {
-    return listOf(
-        CardInfo("가장 인기있는 게임", "GUNS UP! Mobile", Color(0xFFFFEBEE)),
-        CardInfo("사용자 평점 1위 앱", "승리의 여신: 니케", Color(0xFFF3E5F5))
-    )
-}
-
-private fun getKidsCards(): List<CardInfo> {
-    return listOf(
-        CardInfo("어린이 코딩 교육", "블록 코딩으로 놀면서 배우기", Color(0xFFE8F5E9)),
-        CardInfo("창의력 쑥쑥 그림 그리기", "다양한 브러쉬와 색상 제공", Color(0xFFFFFDE7))
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun MainScreenWithTabs() {
-    // 1. TopAppBar 스크롤 동작 정의
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-
-    // 2. Tab과 Pager의 상태를 관리
-    val tabs = listOf("추천", "인기 차트", "키즈")
+fun TabsAndBottomNavScreen(onBack: () -> Unit) {
+    val tabs = listOf("추천", "인기", "키즈")
     val pagerState = rememberPagerState { tabs.size }
     val coroutineScope = rememberCoroutineScope()
 
-    // 3. 하단 네비게이션 상태 관리
     var selectedBottomNavItem by remember { mutableIntStateOf(0) }
     val bottomNavItems = listOf(
         "게임" to Icons.Default.Games,
@@ -361,14 +292,15 @@ fun MainScreenWithTabs() {
     )
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            MediumTopAppBar(
-                title = { Text("OpenKnights Store") },
-                scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+            TopAppBar(
+                title = { Text("3단계: 탭 & 바텀바 연동") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "돌아가기")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
             )
         },
         bottomBar = {
@@ -389,99 +321,52 @@ fun MainScreenWithTabs() {
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            // 4. TabRow 구현
-            SecondaryTabRow(
-                selectedTabIndex = pagerState.currentPage,
-                modifier = Modifier,
-                containerColor = TabRowDefaults.primaryContainerColor,
-                contentColor = TabRowDefaults.primaryContentColor,
-                indicator = {
-                    TabRowDefaults.SecondaryIndicator(
-                        Modifier.tabIndicatorOffset(pagerState.currentPage)
+            SecondaryTabRow(selectedTabIndex = pagerState.currentPage) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = pagerState.currentPage == index,
+                        onClick = {
+                            coroutineScope.launch { pagerState.animateScrollToPage(index) }
+                        },
+                        text = { Text(text = title) }
                     )
-                },
-                divider = { HorizontalDivider() },
-                tabs = {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            },
-                            text = { Text(text = title) }
-                        )
-                    }
                 }
-            )
+            }
 
-            // 5. HorizontalPager로 각 탭에 해당하는 콘텐츠 표시
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             ) { page ->
-                // 페이지(탭)에 따라 다른 카드 목록을 전달
-                when (page) {
-                    0 -> CardList(getRecommendationCards())
-                    1 -> CardList(getPopularCards())
-                    2 -> CardList(getKidsCards())
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "[하단 바: ${bottomNavItems[selectedBottomNavItem].first}] - ${tabs[page]} 탭 콘텐츠 영역",
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
             }
         }
     }
 }
 
-// 카드 목록을 보여주는 LazyColumn
-@Composable
-fun CardList(cards: List<CardInfo>) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(cards) { card ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = card.color)
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Text(text = card.title, style = MaterialTheme.typography.titleLarge)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = card.content, style = MaterialTheme.typography.bodyMedium)
-                }
-            }
-        }
-    }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun MainScreenWithTabsPreview() {
-    ComposeLabTheme {
-        MainScreenWithTabs()
-    }
-}
-
-
-/* 기존 MainScreenWithTabs() 에 "Navigation Drawer"를 추가
-ModalNavigationDrawer로 Drawer 추가
-DrawerState와 rememberCoroutineScope을 활용해 Drawer 열기/닫기
-상단 AppBar에 메뉴 아이콘(햄버거 버튼) 추가
-NavigationDrawerItem을 4개 아이템으로 구성 (아이콘 포함)
-빨간 배경 + 흰 텍스트의 Drawer Header 구성
-*/
+// ==========================================
+// STEP 4: 내비게이션 드로어 최종 스토어 화면
+// ==========================================
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun MainScreenWithTabsAndDrawer() {
+fun FinalStoreScreen(onBack: () -> Unit) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val coroutineScope = rememberCoroutineScope()
 
-    // 상태 관리
     val tabs = listOf("추천", "인기 차트", "키즈")
     val pagerState = rememberPagerState { tabs.size }
     var selectedBottomNavItem by remember { mutableIntStateOf(0) }
-    var selectedDrawerItem by remember { mutableIntStateOf(0) } // Drawer 선택 상태 추가
+    var selectedDrawerItem by remember { mutableIntStateOf(0) }
 
     val bottomNavItems = listOf(
         "게임" to Icons.Default.Games,
@@ -491,40 +376,37 @@ fun MainScreenWithTabsAndDrawer() {
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val drawerItems = listOf(
+        "메인 메뉴로 돌아가기" to Icons.AutoMirrored.Filled.ArrowBack,
         "공유하기" to Icons.Default.Share,
         "고객센터" to Icons.AutoMirrored.Filled.Help,
-        "검색" to Icons.Default.Search,
-        "추가 기능" to Icons.Default.AddCircle
+        "검색" to Icons.Default.Search
     )
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            // M3: Modifier.width 강제 지정 제거 (기본 동작에 위임)
             ModalDrawerSheet {
-                // 상단 상태바(Edge-to-Edge) 침범 방지용 여백
                 Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
-
-                // M3 스타일의 깔끔한 Header
                 Text(
                     text = "OpenKnights Menu",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(horizontal = 28.dp, vertical = 24.dp)
                 )
-
-                Divider(modifier = Modifier.padding(horizontal = 28.dp, vertical = 8.dp))
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 28.dp, vertical = 8.dp))
 
                 drawerItems.forEachIndexed { index, (title, icon) ->
                     NavigationDrawerItem(
                         label = { Text(title) },
                         icon = { Icon(imageVector = icon, contentDescription = title) },
-                        selected = selectedDrawerItem == index, // 선택 상태 연동
-                        // M3: 아이템 양옆 패딩 적용 (필수)
+                        selected = selectedDrawerItem == index,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                         onClick = {
                             selectedDrawerItem = index
                             coroutineScope.launch { drawerState.close() }
+                            if (index == 0) {
+                                onBack() // 첫 번째 메뉴 클릭 시 학습 메인으로 복귀
+                            }
                         }
                     )
                 }
@@ -535,13 +417,13 @@ fun MainScreenWithTabsAndDrawer() {
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 MediumTopAppBar(
-                    title = { Text("OpenKnights Store") },
+                    title = { Text("OpenKnights Store (종합)") },
                     scrollBehavior = scrollBehavior,
                     navigationIcon = {
                         IconButton(onClick = {
                             coroutineScope.launch { drawerState.open() }
                         }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+                            Icon(Icons.Default.Menu, contentDescription = "햄버거 메뉴 열기")
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -565,7 +447,7 @@ fun MainScreenWithTabsAndDrawer() {
                 ExtendedFloatingActionButton(
                     icon = { Icon(Icons.Default.Add, contentDescription = "Add") },
                     text = { Text("EXTENDED FAB") },
-                    onClick = { /* FAB 동작 */ }
+                    onClick = { /* FAB 액션 */ }
                 )
             }
         ) { innerPadding ->
@@ -579,9 +461,7 @@ fun MainScreenWithTabsAndDrawer() {
                         Tab(
                             selected = pagerState.currentPage == index,
                             onClick = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
+                                coroutineScope.launch { pagerState.animateScrollToPage(index) }
                             },
                             text = { Text(text = title) }
                         )
@@ -592,9 +472,8 @@ fun MainScreenWithTabsAndDrawer() {
                     state = pagerState,
                     modifier = Modifier.fillMaxSize()
                 ) { page ->
-                    // 실제 컴포저블 구현부로 대체
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = "${tabs[page]} 화면")
+                        Text(text = "4단계 완성형 화면 - [ ${tabs[page]} ] 탭 내용")
                     }
                 }
             }
@@ -604,8 +483,40 @@ fun MainScreenWithTabsAndDrawer() {
 
 @Preview(showBackground = true)
 @Composable
-fun MainScreenWithTabsAndDrawerPreview() {
+fun StepMenuScreenPreview() {
     ComposeLabTheme {
-        MainScreenWithTabsAndDrawer()
+        StepMenuScreen(onStepSelected = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BasicTopAppBarScreenPreview() {
+    ComposeLabTheme {
+        BasicTopAppBarScreen(onBack = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ScrollableTopBarScreenPreview() {
+    ComposeLabTheme {
+        ScrollableTopBarScreen(onBack = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TabsAndBottomNavScreenPreview() {
+    ComposeLabTheme {
+        TabsAndBottomNavScreen(onBack = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun FinalStoreScreenPreview() {
+    ComposeLabTheme {
+        FinalStoreScreen(onBack = {})
     }
 }
