@@ -6,57 +6,63 @@ import androidx.lifecycle.viewModelScope
 import com.example.app_17_todo_revised.data.local.AppDatabase
 import com.example.app_17_todo_revised.data.local.TodoItem
 import com.example.app_17_todo_revised.data.settings.SettingsRepository
-import com.example.app_17_todo_revised.data.settings.SortOrder
+import com.example.app_17_todo_revised.data.settings.SortBy
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class TodoViewModel(application: Application) : AndroidViewModel(application) {
-    // --- ✅ 1. PreferenceViewModel에서 가져온 코드 ---
-    private val todoDao = AppDatabase.getDatabase(application).todoDao()
+
+    // 1. Room Database 및 DAO 인스턴스 가져오기 (AppDatabase 싱글톤 활용)
+    private val database = AppDatabase.getDatabase(application)
+    private val todoDao = database.todoDao()
+
+    // 2. DataStore Repository 인스턴스 생성
     private val settingsRepository = SettingsRepository(application)
-    val sortOrder: StateFlow<SortOrder> = settingsRepository.sortOrderFlow
+
+    // 3. 정렬 기준(SortBy)에 따라 Room DB의 Flow를 동적으로 전환 (`flatMapLatest`)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiState: StateFlow<TodoUiState> = settingsRepository.sortFlow
+        .flatMapLatest { sortBy ->
+            val todosFlow = when (sortBy) {
+                SortBy.TIME -> todoDao.getTodosSortedByTime() // 최신순 쿼리
+                SortBy.TEXT -> todoDao.getTodosSortedByName() // 이름순 쿼리[cite: 3]
+            }
+            todosFlow.map { todos ->
+                TodoUiState(todos = todos, sortBy = sortBy)
+            }
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = SortOrder.TIME
+            initialValue = TodoUiState()
         )
 
-    fun updateSortOrder(newSortOrder: SortOrder) {
+    // 4. 할 일 추가 함수 (TodoItem 엔티티 구조에 맞춤)
+    fun addTodo(taskText: String) {
         viewModelScope.launch {
-            settingsRepository.updateSortOrder(newSortOrder)
+            val newItem = TodoItem(
+                task = taskText,
+                createdAt = System.currentTimeMillis()
+            )
+            todoDao.insert(newItem)
         }
     }
 
-    // ✅ 2. todoItems가 sortOrder의 변경을 감지하여 쿼리를 바꾸도록 수정합니다.
-    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-    val todoItems: StateFlow<List<TodoItem>> = settingsRepository.sortOrderFlow
-        .flatMapLatest { sortOrder ->
-            // sortOrderFlow에서 새로운 값이 올 때마다,
-            // 아래 when 문에 따라 적절한 DB 쿼리(Flow)로 전환합니다.
-            when (sortOrder) {
-                SortOrder.TIME -> todoDao.getTodosSortedByTime()
-                SortOrder.TASK_NAME -> todoDao.getTodosSortedByName()
-            }
-        }.stateIn( // DB에서 가져온 Flow를 UI가 사용할 StateFlow로 변환
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-
-    fun addTodo(task: String) = viewModelScope.launch {
-        if (task.isNotBlank()) {
-            todoDao.insert(TodoItem(task = task))
+    // 5. 정렬 기준 변경 함수 (DataStore에 저장)
+    fun setSortBy(sortBy: SortBy) {
+        viewModelScope.launch {
+            settingsRepository.saveSortBy(sortBy)
         }
-    }
-
-    fun updateTodo(item: TodoItem) = viewModelScope.launch {
-        todoDao.update(item)
-    }
-
-    fun deleteTodo(item: TodoItem) = viewModelScope.launch {
-        todoDao.delete(item)
     }
 }
+
+// UI 상태 데이터 클래스
+data class TodoUiState(
+    val todos: List<TodoItem> = emptyList(),
+    val sortBy: SortBy = SortBy.TIME
+)

@@ -27,16 +27,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.app_17_todo_revised.data.local.TodoItem
-import com.example.app_17_todo_revised.ui.theme.ComposeLabTheme
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddScreenContent(onSave: (item: TodoItem) -> Unit, onBack: () -> Unit) {
+fun AddScreen(
+    onSave: (String) -> Unit,
+    onBack: () -> Unit
+) {
     var todoText by remember { mutableStateOf("") }
 
     Scaffold(
@@ -70,16 +69,16 @@ fun AddScreenContent(onSave: (item: TodoItem) -> Unit, onBack: () -> Unit) {
             )
             OutlinedTextField(
                 value = todoText,
-                onValueChange = { todoText = it },  // 입력값 필터링 없이 그대로 저장
+                onValueChange = { todoText = it },
                 label = { Text("할 일을 입력하세요") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = false, // 한글 조합 입력 깨짐 방지
+                singleLine = false,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
             )
             Button(
                 onClick = {
                     if (todoText.isNotBlank()) {
-                        onSave(TodoItem(task=todoText))
+                        onSave(todoText)
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -89,13 +88,3 @@ fun AddScreenContent(onSave: (item: TodoItem) -> Unit, onBack: () -> Unit) {
         }
     }
 }
-
-
-@Preview(showBackground = true)
-@Composable
-fun AddScreenPreview() {
-    ComposeLabTheme {
-        AddScreenContent({}, onBack = {})
-    }
-}
-
