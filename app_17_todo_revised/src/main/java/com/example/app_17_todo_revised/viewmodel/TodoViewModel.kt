@@ -59,6 +59,13 @@ class TodoViewModel(application: Application) : AndroidViewModel(application) {
             settingsRepository.saveSortBy(sortBy)
         }
     }
+
+    // 할 일 삭제 함수
+    fun deleteTodo(item: TodoItem) {
+        viewModelScope.launch {
+            todoDao.delete(item) // Room DB에서 해당 아이템 삭제
+        }
+    }
 }
 
 // UI 상태 데이터 클래스

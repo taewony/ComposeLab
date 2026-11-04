@@ -29,8 +29,9 @@ android {
         }
     }
 
-    kotlin {
-        jvmToolchain(21)
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
@@ -60,10 +61,9 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-
+    implementation(libs.kotlinx.serialization.json)
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
-
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

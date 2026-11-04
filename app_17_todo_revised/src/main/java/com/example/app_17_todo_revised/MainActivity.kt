@@ -62,7 +62,10 @@ fun TodoTaskApp(
                 MainScreen(
                     datas = uiState.todos,
                     onAddClick = { backStack.add(MainNavKey.AddScreen) },
-                    onSettingsClick = { backStack.add(MainNavKey.SettingsScreen) }
+                    onSettingsClick = { backStack.add(MainNavKey.SettingsScreen) },
+                    onDeleteClick = { todoItem ->
+                        viewModel.deleteTodo(todoItem) // 👈 삭제 버튼 클릭 시 ViewModel의 삭제 함수 호출
+                    }
                 )
             }
             entry<MainNavKey.AddScreen> {

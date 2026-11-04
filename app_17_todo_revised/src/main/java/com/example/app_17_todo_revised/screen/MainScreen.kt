@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -46,7 +47,8 @@ import java.util.Locale
 fun MainScreen(
     datas: List<TodoItem>,
     onAddClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    onDeleteClick: (TodoItem) -> Unit // 1. 삭제 콜백 추가
 ) {
     Scaffold(
         topBar = {
@@ -93,7 +95,10 @@ fun MainScreen(
                     contentPadding = PaddingValues(16.dp)
                 ) {
                     items(datas, key = { it.id }) { todo ->
-                        TodoItem(todo = todo)
+                        TodoItem(
+                            todo = todo,
+                            onDeleteClick = { onDeleteClick(todo) } // 2. 아이템에 전달
+                        )
                     }
                 }
             }
@@ -102,7 +107,10 @@ fun MainScreen(
 }
 
 @Composable
-fun TodoItem(todo: TodoItem) {
+fun TodoItem(
+    todo: TodoItem,
+    onDeleteClick: () -> Unit // 3. 삭제 이벤트 수신
+) {
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()) }
     val formattedDate = remember(todo.createdAt) {
         dateFormat.format(Date(todo.createdAt))
@@ -133,6 +141,13 @@ fun TodoItem(todo: TodoItem) {
                 text = formattedDate,
                 fontSize = 12.sp,
                 color = Color.Gray
+            )
+        }
+        IconButton(onClick = onDeleteClick) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Delete Todo",
+                tint = Color.Gray
             )
         }
     }
